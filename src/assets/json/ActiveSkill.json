@@ -1,0 +1,564 @@
+[
+  {
+    "skill_id": 1,
+    "name": "Slash",
+    "info": "A basic sword attack that deals physical damage to one enemy.",
+    "attribute": 1,
+    "interval": 1.0,
+    "consume_type": "MP",
+    "consume_amount": 5,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "effect_amount": 1.5,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/skill/swordman/slash.gif",
+        "anime_time": 500
+      }
+    ]
+  },
+  {
+    "skill_id": 2,
+    "name": "Double Slash",
+    "info": "A swift sword attack that deals physical damage to one enemy twice.",
+    "attribute": 1,
+    "interval": 1.5,
+    "consume_type": "MP",
+    "consume_amount": 10,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 2,
+        "base_status": "ATK",
+        "effect_amount": 1.0,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/skill/swordman/double_slash.gif",
+        "anime_time": 650
+      }
+    ]
+  },
+  {
+    "skill_id": 3,
+    "name": "Cross Slash",
+    "info": "A powerful sword attack that deals physical damage to one row of enemies.",
+    "attribute": 1,
+    "interval": 2.0,
+    "consume_type": "MP",
+    "consume_amount": 15,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "effect_amount": 1.5,
+        "target": 2,
+        "target_type": "rowEnemy",
+        "skill_anime": "effect/skill/swordman/cross_slash.gif",
+        "anime_time": 550
+      }
+    ]
+  },
+  {
+    "skill_id": 4,
+    "name": "Blaze Slash",
+    "info": "A fiery sword attack that deals fire damage to all enemies.",
+    "attribute": 4,
+    "interval": 2.5,
+    "consume_type": "MP",
+    "consume_amount": 20,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "effect_amount": 1.4,
+        "target": 2,
+        "target_type": "allEnemy",
+        "skill_anime": "effect/skill/swordman/blaze_slash.gif",
+        "anime_time": 1000
+      }
+    ]
+  },
+  {
+    "skill_id": 5,
+    "name": "Healing Slash",
+    "info": "A sword attack that deals physical damage to one enemy and heals the user.",
+    "attribute": 0,
+    "interval": 3.0,
+    "consume_type": "HP",
+    "consume_amount": 10,
+    "effect_number": 2,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "effect_amount": 1.0,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/skill/swordman/healing_slash1.gif",
+        "anime_time": 480
+      },
+      {
+        "effect_type": "heal",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "MGC",
+        "effect_amount": 0.5,
+        "target": 1,
+        "target_type": "myself",
+        "skill_anime": "effect/skill/swordman/healing_slash2.gif",
+        "anime_time": 560
+      }
+    ]
+  },
+  {
+    "skill_id": 101,
+    "name": "Holy Strike",
+    "info": "A holy sword attack that deals light damage to one enemy and reduces their dark resistance.",
+    "attribute": 8,
+    "interval": 1.0,
+    "consume_type": "MP",
+    "consume_amount": 5,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "effect_amount": 1.2,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/skill/holyknight/holy_strike.gif",
+        "anime_time": 930
+      }
+    ]
+  },
+  {
+    "skill_id": 102,
+    "name": "Heal",
+    "info": "A healing spell that restores HP to one ally.",
+    "attribute": 10,
+    "interval": 1.0,
+    "consume_type": "MP",
+    "consume_amount": 10,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "heal",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "MGC",
+        "effect_amount": 1.0,
+        "target": 1,
+        "target_type": "oneFriend",
+        "skill_anime": "effect/skill/holyknight/heal.gif",
+        "anime_time": 740
+      }
+    ]
+  },
+  {
+    "skill_id": 103,
+    "name": "Holy Shield",
+    "info": "A protective spell that increases the physical and magical defense of one ally for a few turns.",
+    "attribute": 8,
+    "interval": 2.0,
+    "consume_type": "MP",
+    "consume_amount": 15,
+    "effect_number": 2,
+    "skill_effect": [
+      {
+        "effect_type": "buff",
+        "effect_kind": "DEF",
+        "effect_times": 3,
+        "base_status": "MGC",
+        "effect_amount": 1.2,
+        "target": 1,
+        "target_type": "oneFriend",
+        "skill_anime": "effect/skill/holyknight/holy_shield.gif",
+        "anime_time": 750
+      },
+      {
+        "effect_type": "buff",
+        "effect_kind": "MDF",
+        "effect_times": 3,
+        "base_status": "MGC",
+        "effect_amount": 1.2,
+        "target": 1,
+        "target_type": "oneFriend",
+        "skill_anime": "",
+        "anime_time": 0
+      }
+    ]
+  },
+  {
+    "skill_id": 104,
+    "name": "Holy Light",
+    "info": "A radiant spell that deals light damage to all enemies and heals all allies.",
+    "attribute": 8,
+    "interval": 3.0,
+    "consume_type": "MP",
+    "consume_amount": 20,
+    "effect_number": 2,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "effect_amount": 1.0,
+        "target": 2,
+        "target_type": "allEnemy",
+        "skill_anime": "effect/skill/holyknight/holy_light.gif",
+        "anime_time": 1040
+      },
+      {
+        "effect_type": "heal",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "MGC",
+        "effect_amount": 0.5,
+        "target": 1,
+        "target_type": "allFriends",
+        "skill_anime": "",
+        "anime_time": 0
+      }
+    ]
+  },
+  {
+    "skill_id": 105,
+    "name": "Divine Judgment",
+    "info": "A supreme spell that deals massive light damage to one enemy and has a chance to inflict instant death.",
+    "attribute": 8,
+    "interval": 4.0,
+    "consume_type": "MP",
+    "consume_amount": 25,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "MGC",
+        "effect_amount": 2.0,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/skill/holyknight/divine_judgment.gif",
+        "anime_time": 1680
+      }
+    ]
+  },
+  {
+    "skill_id": 201,
+    "name": "Pray",
+    "info": "A simple prayer that restores a small amount of MP to the user.",
+    "attribute": 10,
+    "interval": 1.0,
+    "consume_type": "HP",
+    "consume_amount": 5,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "heal",
+        "effect_kind": "nowMP",
+        "effect_times": 1,
+        "base_status": "MGC",
+        "effect_amount": 0.2,
+        "target": 1,
+        "target_type": "myself",
+        "skill_anime": "effect/skill/priest/pray.gif",
+        "anime_time": 980
+      }
+    ]
+  },
+  {
+    "skill_id": 202,
+    "name": "Cure",
+    "info": "A healing spell that restores HP to one ally and removes one negative status effect.",
+    "attribute": 10,
+    "interval": 1.5,
+    "consume_type": "MP",
+    "consume_amount": 10,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "heal",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "MGC",
+        "effect_amount": 0.8,
+        "target": 1,
+        "target_type": "oneFriend",
+        "skill_anime": "effect/skill/priest/cure.gif",
+        "anime_time": 1050
+      }
+    ]
+  },
+  {
+    "skill_id": 203,
+    "name": "Bless",
+    "info": "A holy spell that increases the luck of one ally for a few turns.",
+    "attribute": 8,
+    "interval": 2.0,
+    "consume_type": "MP",
+    "consume_amount": 15,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "buff",
+        "effect_kind": "LUK",
+        "effect_times": 3,
+        "base_status": "MGC",
+        "effect_amount": 1.2,
+        "target": 1,
+        "target_type": "oneFriend",
+        "skill_anime": "effect/skill/priest/bless.gif",
+        "anime_time": 1040
+      }
+    ]
+  },
+  {
+    "skill_id": 204,
+    "name": "Regen",
+    "info": "A healing spell that restores HP to all allies gradually for a few turns.",
+    "attribute": 10,
+    "interval": 2.5,
+    "consume_type": "MP",
+    "consume_amount": 20,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "condition",
+        "effect_kind": "regeneration",
+        "effect_times": 3,
+        "base_status": "MGC",
+        "effect_amount": 0.3,
+        "target": 1,
+        "target_type": "allFriends",
+        "skill_anime": "effect/skill/priest/regen.gif",
+        "anime_time": 2080
+      }
+    ]
+  },
+  {
+    "skill_id": 205,
+    "name": "Resurrect",
+    "info": "A miracle spell that revives one fallen ally with some HP.",
+    "attribute": 10,
+    "interval": 3.0,
+    "consume_type": "MP",
+    "consume_amount": 25,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "revive",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "MGC",
+        "effect_amount": 0.5,
+        "target": 1,
+        "target_type": "oneFriend",
+        "skill_anime": "effect/skill/priest/resurrect.gif",
+        "anime_time": 1470
+      }
+    ]
+  },
+  {
+    "skill_id": 301,
+    "name": "Arrow Shot",
+    "info": "A basic bow attack that deals physical damage to one enemy.",
+    "attribute": 0,
+    "interval": 1.0,
+    "consume_type": "MP",
+    "consume_amount": 5,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "effect_amount": 1.5,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/skill/archar/arrow_shot.gif",
+        "anime_time": 480
+      }
+    ]
+  },
+  {
+    "skill_id": 302,
+    "name": "Multi Shot",
+    "info": "A bow attack that deals physical damage to multiple enemies randomly.",
+    "attribute": 0,
+    "interval": 1.5,
+    "consume_type": "MP",
+    "consume_amount": 10,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 4,
+        "base_status": "ATK",
+        "effect_amount": 0.8,
+        "target": 2,
+        "target_type": "randomEnemy",
+        "skill_anime": "effect/skill/archar/multi_shot.gif",
+        "anime_time": 1600
+      }
+    ]
+  },
+  {
+    "skill_id": 303,
+    "name": "Piercing Shot",
+    "info": "A bow attack that deals physical damage to one column of enemies and ignores their defense.",
+    "attribute": 0,
+    "interval": 2.0,
+    "consume_type": "MP",
+    "consume_amount": 15,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "effect_amount": 1.5,
+        "target": 2,
+        "target_type": "columnEnemy",
+        "skill_anime": "effect/skill/archar/piercing_shot.gif",
+        "anime_time": 880
+      }
+    ]
+  },
+  {
+    "skill_id": 304,
+    "name": "Poison Shot",
+    "info": "A bow attack that deals physical damage to one enemy and has a chance to inflict poison status for a few turns.",
+    "attribute": 0,
+    "interval": 2.5,
+    "consume_type": "MP",
+    "consume_amount": 20,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "effect_amount": 1.0,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/skill/archar/poison_shot.gif",
+        "anime_time": 720
+      }
+    ]
+  },
+  {
+    "skill_id": 305,
+    "name": "Explosive Shot",
+    "info": "A bow attack that deals fire damage to one enemy and causes an explosion that damages nearby enemies.",
+    "attribute": 4,
+    "interval": 3.0,
+    "consume_type": "MP",
+    "consume_amount": 25,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "effect_amount": 2.5,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/skill/archar/explosive_shot.gif",
+        "anime_time": 1400
+      }
+    ]
+  },
+  {
+    "skill_id": 401,
+    "name": "Pillar Fire",
+    "info": "A magic fire attack that deals damage to one enemy.",
+    "attribute": 4,
+    "interval": 2.0,
+    "consume_type": "MP",
+    "consume_amount": 5,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "MGC",
+        "effect_amount": 1.5,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/skill/archar/arrow_shot.gif",
+        "anime_time": 1000
+      }
+    ]
+  },
+  {
+    "skill_id": 402,
+    "name": "Windlash",
+    "info": "A magical wind blade that deals magical damage to one row of enemies.",
+    "attribute": 7,
+    "interval": 3.0,
+    "consume_type": "MP",
+    "consume_amount": 10,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "MGC",
+        "effect_amount": 1.3,
+        "target": 2,
+        "target_type": "rowEnemy",
+        "skill_anime": "effect/skill/swordman/cross_slash.gif",
+        "anime_time": 1000
+      }
+    ]
+  },
+  {
+    "skill_id": 403,
+    "name": "Flame Tower",
+    "info": "A flame magic that deals damage to one column of enemies.",
+    "attribute": 4,
+    "interval": 2.0,
+    "consume_type": "MP",
+    "consume_amount": 10,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "MGC",
+        "effect_amount": 1.8,
+        "target": 2,
+        "target_type": "columnEnemy",
+        "skill_anime": "effect/skill/archar/piercing_shot.gif",
+        "anime_time": 1500
+      }
+    ]
+  },
+]

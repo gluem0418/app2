@@ -1,0 +1,191 @@
+[
+	{
+		"skill_id": 1,
+		"name": "Master Of Swords",
+		"info": "When equipped with a sword, physical attack power and accuracy increase.",
+		"skill_cost": 10,
+		"condition": {
+			"equipment": "WEP",
+			"kind": "sword"
+		},
+		"effect_number": 2,
+		"skill_effect": [
+			{
+				"effect_type": 1,
+				"effect_target": "ATK",
+				"effect_amount": 20,
+				"target": 1
+			},
+			{
+				"effect_type": 1,
+				"effect_target": "DEX",
+				"effect_amount": 10,
+				"target": 1
+			}
+		]
+	},
+	{
+		"skill_id": 2,
+		"name": "Body Of Steel",
+		"info": "When HP is below 50%, physical defense and magic defense increase.",
+		"skill_cost": 15,
+		"condition": {
+			"character": "nowHP",
+			"under": 0.5
+		},
+		"effect_number": 2,
+		"skill_effect": [
+			{
+				"effect_type": 1,
+				"effect_target": "DEF",
+				"effect_amount": 30,
+				"target": 1
+			},
+			{
+				"effect_type": 1,
+				"effect_target": "MDF",
+				"effect_amount": 30,
+				"target": 1
+			}
+		]
+	},
+	{
+		"skill_id": 3,
+		"name": "Flame Blade",
+		"info": "Deals additional fire damage when attacking.",
+		"skill_cost": 20,
+		"condition": {
+			"attack": 0.3
+		},
+		"effect_number": 1,
+		"skill_effect": [
+			{
+				"effect_type": 9,
+				"effect_target": "ATK",
+				"effect_amount": 50,
+				"target": 4
+			}
+		]
+	},
+	{
+		"skill_id": 4,
+		"name": "Fighting Spirit",
+		"info": "When HP is below 20%, attack power and speed increase.",
+		"skill_cost": 25,
+		"condition": {
+			"character": "nowHP",
+			"under": 0.2
+		},
+		"effect_number": 2,
+		"skill_effect": [
+			{
+				"effect_type": 1,
+				"effect_target": "ATK",
+				"effect_amount": 50,
+				"target": 1
+			},
+			{
+				"effect_type": 1,
+				"effect_target": "SPD",
+				"effect_amount": 50,
+				"target": 1
+			}
+		]
+	},
+	{
+		"skill_id": 5,
+		"name": "Ready To Counterattack",
+		"info": "被ダメージ時に確率で反撃する",
+		"skill_cost": 30,
+		"condition": {
+			"counter": 0.3
+		},
+		"effect_number": 1,
+		"skill_effect": [
+			{
+				"effect_type": 9,
+				"effect_target": "ATK",
+				"effect_amount": 100,
+				"target": 4
+			}
+		]
+	},
+	{
+		"skill_id": 6,
+		"name": "Divine Protection",
+		"info": "常にHPが少しずつ回復する",
+		"skill_cost": 10,
+		"condition": [],
+		"effect_number": 1,
+		"skill_effect": [
+			{
+				"effect_type": 9,
+				"effect_target": "HP",
+				"effect_amount": 10,
+				"target": 1
+			}
+		]
+	},
+	{
+		"skill_id": 7,
+		"name": "God's Wrath",
+		"info": "HPが50%以下の時、聖属性の追加ダメージを与える",
+		"skill_cost": 100,
+		"condition": {
+			"character": "nowHP",
+			"under": 0.5
+		},
+		"effect_number": 1,
+		"skill_effect": [
+			{
+				"effect_type": 9,
+				"effect_target": "ATK",
+				"effect_amount": 50,
+				"target": 4
+			}
+		]
+	},
+	{
+		"skill_id": 8,
+		"name": "God's Mercy",
+		"info": "HPが10%以下の時、完全回復する",
+		"skill_cost": 20,
+		"condition": {
+			"character": "nowHP",
+			"under": 0.1
+		},
+		"effect_number": 1,
+		"skill_effect": [
+			{
+				"effect_type": 9,
+				"effect_target": "HP",
+				"effect_amount": 0,
+				"target": 1
+			}
+		]
+	},
+	{
+		"skill_id": 9,
+		"name": "Power Of God",
+		"info": "2ターンの間、自分の攻撃力と防御力を上げる",
+		"skill_cost": 25,
+		"condition": {
+			"underturns": 2
+		},
+		"effect_number": 2,
+		"skill_effect": [
+			{
+				"effect_type": 1,
+				"effect_target": "ATK",
+				"effect_amount": 30,
+				"target": 1
+			},
+			{
+				"effect_type": 1,
+				"effect_target": "DEF",
+				"effect_amount": 30,
+				"target": 1
+			}
+		]
+	}
+]

@@ -1,0 +1,229 @@
+<template>
+  <div class="partyUI" v-if="showUIStore.party || statusStore.action == Config.actionRemoveMember">
+    <div class="characters">
+      <div v-for="(character, index) in partyStore.characters" :key="character.cha_id"
+        @click="selectCharacter(index, character)" class="character-card"
+        :class="{ 'changing': changing && changeIndex.includes(index) }">
+        <StatusUI class="StatusUI" :character="character" />
+        <div class="charaflame">
+          <img :src="character.poseGraphicUrl" alt="" class="charaimage" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <CharacterUI :character="selectedCharacter" :index="selectedIndex" v-show="showUIStore.character"
+    @changeCharacter='changeCharacter' />
+  <IconBack class="IconBack" @click="clickBack" v-show="showUIStore.party || showUIStore.character" />
+  <IconParty class="IconParty" @click="clickParty" v-if="statusStore.action != Config.actionRemoveMember" />
+  <IconChange class="IconChange" @click="changeOrder" v-show="showUIStore.party" :class="{ 'changing': changing }" />
+
+  <Confirmation v-show="showUIStore.message" :message="confirmationMessage"
+    @confirmationResponse="confirmationResponse" />
+  <Information v-show="showUIStore.errorMessage" :message="errorMessage" @hideError="hideErrorMessage" />
+</template>
+  
+<script setup lang="ts">
+import { ref } from 'vue';
+
+import StatusUI from './Status.vue';
+import CharacterUI from './Character.vue';
+
+import Character from '@/Class/Character.ts';
+import IconBack from '@/components/icon/IconBack.vue';
+import IconParty from '@/components/icon/IconParty.vue';
+import IconChange from '@/components/icon/IconChange.vue';
+import Confirmation from '@/components/information/Confirmation.vue';
+import Information from '@/components/information/Information.vue';
+
+import Config from '@/config.ts';
+
+//パーティ情報
+import { usePartyStore } from '@/stores/Party.ts';
+const partyStore = usePartyStore()
+//UI表示
+import { useShowUI } from '@/stores/ShowUI.ts';
+const showUIStore = useShowUI()
+//状態管理
+import { useStatusStore } from '@/stores/Status.ts';
+const statusStore = useStatusStore()
+
+//戻るアイコン
+const clickBack = () => {
+  changing.value = false;
+  if (showUIStore.party) {
+    partyBack()
+  } else {
+    characterBack()
+  }
+};
+const partyBack = () => {
+  changing.value = false;
+  showUIStore.party = false;
+  showUIStore.character = false;
+  showUIStore.map = true;
+  showUIStore.current = true;
+};
+const characterBack = () => {
+  showUIStore.party = true;
+  showUIStore.character = false;
+  selectedIndex.value = undefined;
+  selectedCharacter.value = undefined;
+
+};
+//パーティーアイコンを押して表示切替
+const clickParty = () => {
+  changing.value = false;
+  //パーティー非表示かつキャラクター非表示の場合、他UI非表示
+  if (!showUIStore.party && !showUIStore.character) {
+    showUIStore.map = false;
+    showUIStore.current = false;
+  }
+  //パーティー表示の場合、戻る
+  if (showUIStore.party) {
+    partyBack()
+    return
+  }
+  showUIStore.party = !showUIStore.party;
+  showUIStore.character = false;
+};
+
+//characterUIにてキャラクター変更時
+const changeCharacter = (selectType: string) => {
+  if (selectType == 'next') {
+    selectedIndex.value = selectedIndex.value == partyStore.characters.length - 1 ? 0 : selectedIndex.value! + 1
+    selectedCharacter.value = partyStore.characters[selectedIndex.value]
+  } else {
+    selectedIndex.value = selectedIndex.value == 0 ? partyStore.characters.length - 1 : selectedIndex.value! - 1
+    selectedCharacter.value = partyStore.characters[selectedIndex.value]
+  }
+}
+
+//キャラクターを押して表示切替
+const selectedIndex = ref<number | undefined>(undefined);
+const selectedCharacter = ref<Character | undefined>(undefined);
+const changing = ref(false);
+const changeIndex = ref<number[]>([]);
+let confirmationMessage: string
+let errorMessage: string
+
+function selectCharacter(index: number, character: Character) {
+  console.log("selectCharacter")
+  console.log("statusStore.action", statusStore.action)
+  //メンバーを外す場合
+  if (statusStore.action == Config.actionRemoveMember) {
+    if (character.cha_id == Config.mainChaid) {
+      errorMessage = Config.msgRemovePartyError
+      showUIStore.errorMessage = true;
+      return;
+    }
+    confirmationMessage = Config.msgRemoveParty1 + character.name + Config.msgRemoveParty2
+    showUIStore.message = true;
+    selectedCharacter.value = character;
+    return;
+  }
+  //入れ替え中
+  if (changing.value) {
+    // すでに選択されているキャラクターを再度選択した場合、選択を解除
+    if (changeIndex.value.includes(index)) {
+      changeIndex.value = changeIndex.value.filter(i => i !== index);
+    } else if (changeIndex.value.length < 2) {
+      // 2つ未満のキャラクターが選択されている場合、選択を追加
+      changeIndex.value.push(index);
+    }
+    // 順番を入れ替える処理
+    if (changeIndex.value.length === 2) {
+      const temp = partyStore.characters[changeIndex.value[0]];
+      partyStore.characters[changeIndex.value[0]] = partyStore.characters[changeIndex.value[1]];
+      partyStore.characters[changeIndex.value[1]] = temp;
+      //character hate update
+      for (let order of changeIndex.value) {
+        partyStore.characters[order].updateHate(order);
+        console.log('partyStore.characters[order]', partyStore.characters[order])
+      }
+
+      changeIndex.value = [];
+    }
+    //キャラ選択
+  } else {
+    selectedIndex.value = index;
+    selectedCharacter.value = character;
+    showUIStore.party = false;
+    showUIStore.character = true;
+  }
+}
+// YESの場合、該当キャラクターをパーティから外す
+const confirmationResponse = (response: string) => {
+  showUIStore.message = false;
+  if (response == Config.textYes) {
+    // partyStore.characters.push(selectedCharacter.value!);
+    partyStore.characters = partyStore.characters.filter(character => character.cha_id !== selectedCharacter.value!.cha_id);
+    showUIStore.character = false;
+  }
+};
+const hideErrorMessage = () => {
+  showUIStore.errorMessage = false;
+};
+
+const changeOrder = () => {
+  changing.value = !changing.value
+};
+</script>
+  
+<style scoped>
+.partyUI {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background: #3B413C80;
+}
+
+.characters {
+  margin-top: 3vh;
+  margin-left: 3vw;
+}
+
+.character-card {
+  display: inline-block;
+  margin: 1.5vh;
+  width: 23%;
+}
+
+.character-card.changing {
+  animation: blink 0.5s linear infinite;
+}
+
+.StatusUI {
+  animation: slideTop 0.5s ease-in-out;
+}
+
+.charaflame {
+  text-align: center;
+  animation: slideRight 0.5s ease-in-out;
+}
+
+.charaimage {
+  height: 40vh;
+}
+
+.IconBack {
+  position: absolute;
+  left: 2%;
+  bottom: 2%;
+}
+
+.IconChange {
+  position: absolute;
+  right: 15%;
+  bottom: 2%;
+}
+
+.IconChange.changing {
+  animation: blink 0.5s linear infinite;
+}
+
+.IconParty {
+  position: absolute;
+  right: 2%;
+  bottom: 2%;
+}
+</style>

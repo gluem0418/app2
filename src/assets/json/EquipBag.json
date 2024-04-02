@@ -1,0 +1,206 @@
+[
+  {
+    "eqpbag_id": 1,
+    "eqp_id": 103,
+    "type": "WEP",
+    "equippedBy": 1
+  },
+  {
+    "eqpbag_id": 2,
+    "eqp_id": 1003,
+    "type": "ARM",
+    "equippedBy": 1
+  },
+  {
+    "eqpbag_id": 3,
+    "eqp_id": 2001,
+    "type": "ACC",
+    "equippedBy": 1
+  },
+  {
+    "eqpbag_id": 4,
+    "eqp_id": 101,
+    "type": "WEP",
+    "equippedBy": 2
+  },
+  {
+    "eqpbag_id": 5,
+    "eqp_id": 1002,
+    "type": "ARM",
+    "equippedBy": 2
+  },
+  {
+    "eqpbag_id": 6,
+    "eqp_id": 2101,
+    "type": "ACC",
+    "equippedBy": 2
+  },
+  {
+    "eqpbag_id": 7,
+    "eqp_id": 501,
+    "type": "WEP",
+    "equippedBy": 3
+  },
+  {
+    "eqpbag_id": 8,
+    "eqp_id": 1201,
+    "type": "ARM",
+    "equippedBy": 3
+  },
+  {
+    "eqpbag_id": 9,
+    "eqp_id": 2201,
+    "type": "ACC",
+    "equippedBy": 3
+  },
+  {
+    "eqpbag_id": 10,
+    "eqp_id": 401,
+    "type": "WEP",
+    "equippedBy": 4
+  },
+  {
+    "eqpbag_id": 11,
+    "eqp_id": 1301,
+    "type": "ARM",
+    "equippedBy": 4
+  },
+  {
+    "eqpbag_id": 12,
+    "eqp_id": 2001,
+    "type": "ACC",
+    "equippedBy": 4
+  },
+  {
+    "eqpbag_id": 13,
+    "eqp_id": 601,
+    "type": "WEP",
+    "equippedBy": 5
+  },
+  {
+    "eqpbag_id": 14,
+    "eqp_id": 1001,
+    "type": "ARM",
+    "equippedBy": 5
+  },
+  {
+    "eqpbag_id": 15,
+    "eqp_id": 2101,
+    "type": "ACC",
+    "equippedBy": 5
+  },
+  {
+    "eqpbag_id": 16,
+    "eqp_id": 502,
+    "type": "WEP",
+    "equippedBy": 6
+  },
+  {
+    "eqpbag_id": 17,
+    "eqp_id": 1201,
+    "type": "ARM",
+    "equippedBy": 6
+  },
+  {
+    "eqpbag_id": 18,
+    "eqp_id": 2301,
+    "type": "ACC",
+    "equippedBy": 6
+  },
+  {
+    "eqpbag_id": 19,
+    "eqp_id": 201,
+    "type": "WEP",
+    "equippedBy": 7
+  },
+  {
+    "eqpbag_id": 20,
+    "eqp_id": 1301,
+    "type": "ARM",
+    "equippedBy": 7
+  },
+  {
+    "eqpbag_id": 21,
+    "eqp_id": 2001,
+    "type": "ACC",
+    "equippedBy": 7
+  },
+  {
+    "eqpbag_id": 22,
+    "eqp_id": 102,
+    "type": "WEP",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 23,
+    "eqp_id": 110,
+    "type": "WEP",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 24,
+    "eqp_id": 301,
+    "type": "WEP",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 25,
+    "eqp_id": 402,
+    "type": "WEP",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 26,
+    "eqp_id": 510,
+    "type": "WEP",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 27,
+    "eqp_id": 1020,
+    "type": "ARM",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 28,
+    "eqp_id": 1101,
+    "type": "ARM",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 29,
+    "eqp_id": 1110,
+    "type": "ARM",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 30,
+    "eqp_id": 1210,
+    "type": "ARM",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 31,
+    "eqp_id": 1321,
+    "type": "ARM",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 32,
+    "eqp_id": 2151,
+    "type": "ACC",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 33,
+    "eqp_id": 2451,
+    "type": "ACC",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 34,
+    "eqp_id": 2551,
+    "type": "ACC",
+    "equippedBy": null
+  }
+]

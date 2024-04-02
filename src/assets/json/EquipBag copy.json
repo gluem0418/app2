@@ -1,0 +1,163 @@
+[
+  {
+    "eqpbag_id": 1,
+    "eqp_id": 100,
+    "type": "WEP",
+    "name": "Sword",
+    "equippedBy": 1
+  },
+  {
+    "eqpbag_id": 2,
+    "eqp_id": 300,
+    "type": "ARM",
+    "name": "Armor",
+    "equippedBy": 1
+  },
+  {
+    "eqpbag_id": 3,
+    "eqp_id": 501,
+    "type": "ACC",
+    "name": "Bangle",
+    "equippedBy": 1
+  },
+  {
+    "eqpbag_id": 4,
+    "eqp_id": 100,
+    "type": "WEP",
+    "name": "Sword",
+    "equippedBy": 2
+  },
+  {
+    "eqpbag_id": 5,
+    "eqp_id": 350,
+    "type": "ARM",
+    "name": "Shield",
+    "equippedBy": 2
+  },
+  {
+    "eqpbag_id": 6,
+    "eqp_id": 501,
+    "type": "ACC",
+    "name": "Bangle",
+    "equippedBy": 2
+  },
+  {
+    "eqpbag_id": 7,
+    "eqp_id": 150,
+    "type": "WEP",
+    "name": "Wand",
+    "equippedBy": 3
+  },
+  {
+    "eqpbag_id": 8,
+    "eqp_id": 400,
+    "type": "ARM",
+    "name": "Robe",
+    "equippedBy": 3
+  },
+  {
+    "eqpbag_id": 9,
+    "eqp_id": 502,
+    "type": "ACC",
+    "name": "Ring",
+    "equippedBy": 3
+  },
+  {
+    "eqpbag_id": 10,
+    "eqp_id": 200,
+    "type": "WEP",
+    "name": "Bow",
+    "equippedBy": 4
+  },
+  {
+    "eqpbag_id": 11,
+    "eqp_id": 450,
+    "type": "ARM",
+    "name": "Cloth",
+    "equippedBy": 4
+  },
+  {
+    "eqpbag_id": 12,
+    "eqp_id": 502,
+    "type": "ACC",
+    "name": "Ring",
+    "equippedBy": 4
+  },
+  {
+    "eqpbag_id": 13,
+    "eqp_id": 101,
+    "type": "WEP",
+    "name": "x-Cariver",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 14,
+    "eqp_id": 151,
+    "type": "WEP",
+    "name": "WaWaWand",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 15,
+    "eqp_id": 201,
+    "type": "WEP",
+    "name": "Artemis",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 16,
+    "eqp_id": 301,
+    "type": "ARM",
+    "name": "12Armor",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 17,
+    "eqp_id": 351,
+    "type": "ARM",
+    "name": "TRXShield",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 18,
+    "eqp_id": 401,
+    "type": "ARM",
+    "name": "EngelRobe",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 19,
+    "eqp_id": 451,
+    "type": "ARM",
+    "name": "NinjaSuits",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 20,
+    "eqp_id": 510,
+    "type": "ACC",
+    "name": "Neckless",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 21,
+    "eqp_id": 511,
+    "type": "ACC",
+    "name": "DevilRing",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 22,
+    "eqp_id": 512,
+    "type": "ACC",
+    "name": "RiderBelt",
+    "equippedBy": null
+  },
+  {
+    "eqpbag_id": 23,
+    "eqp_id": 513,
+    "type": "ACC",
+    "name": "HolyBless",
+    "equippedBy": null
+  }
+]

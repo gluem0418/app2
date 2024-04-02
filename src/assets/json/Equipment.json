@@ -1,0 +1,349 @@
+[
+  {
+    "eqp_id": 101,
+    "type": "WEP",
+    "kind": "Sword",
+    "attribute": 1,
+    "name": "Sword",
+    "status": {
+      "ATK": 10,
+      "HitRate": 90
+    }
+  },
+  {
+    "eqp_id": 102,
+    "type": "WEP",
+    "kind": "Sword",
+    "attribute": 1,
+    "name": "LongSword",
+    "status": {
+      "ATK": 15,
+      "HitRate": 90
+    }
+  },
+  {
+    "eqp_id": 103,
+    "type": "WEP",
+    "kind": "Sword",
+    "attribute": 1,
+    "name": "Katana",
+    "status": {
+      "ATK": 12,
+      "DEX": 3,
+      "HitRate": 90
+    }
+  },
+  {
+    "eqp_id": 110,
+    "type": "WEP",
+    "kind": "Sword",
+    "attribute": 1,
+    "name": "x-Cariver",
+    "status": {
+      "ATK": 100,
+      "HitRate": 90,
+      "Earth": 50
+    }
+  },
+  {
+    "eqp_id": 201,
+    "type": "WEP",
+    "kind": "Dagger",
+    "attribute": 1,
+    "name": "Dagger",
+    "status": {
+      "ATK": 5,
+      "DEX": 5,
+      "HitRate": 95
+    }
+  },
+  {
+    "eqp_id": 301,
+    "type": "WEP",
+    "kind": "Spear",
+    "attribute": 1,
+    "name": "Spear",
+    "status": {
+      "ATK": 12,
+      "HitRate": 90
+    }
+  },
+  {
+    "eqp_id": 401,
+    "type": "WEP",
+    "kind": "Bow",
+    "attribute": 3,
+    "name": "Bow",
+    "status": {
+      "ATK": 5,
+      "DEX": 5,
+      "HitRate": 90
+    }
+  },
+  {
+    "eqp_id": 402,
+    "type": "WEP",
+    "kind": "Bow",
+    "attribute": 7,
+    "name": "Artemis",
+    "status": {
+      "ATK": 50,
+      "DEX": 50,
+      "HitRate": 100,
+      "Wind": 50
+    }
+  },
+  {
+    "eqp_id": 501,
+    "type": "WEP",
+    "kind": "Wand",
+    "attribute": 2,
+    "name": "Staff",
+    "status": {
+      "ATK": 5,
+      "MGC": 5,
+      "HitRate": 85
+    }
+  },
+  {
+    "eqp_id": 502,
+    "type": "WEP",
+    "kind": "Wand",
+    "attribute": 2,
+    "name": "Wand",
+    "status": {
+      "MGC": 10,
+      "HitRate": 85
+    }
+  },
+  {
+    "eqp_id": 510,
+    "type": "WEP",
+    "kind": "Wand",
+    "attribute": 2,
+    "name": "WaWaWand",
+    "status": {
+      "MGC": 100,
+      "HitRate": 85,
+      "Dark": 50
+    }
+  },
+  {
+    "eqp_id": 601,
+    "type": "WEP",
+    "kind": "Axe",
+    "attribute": 1,
+    "name": "Axe",
+    "status": {
+      "ATK": 15,
+      "HitRate": 80
+    }
+  },
+  {
+    "eqp_id": 1001,
+    "type": "ARM",
+    "kind": "Armor",
+    "attribute": 0,
+    "name": "Armor",
+    "status": {
+      "DEF": 5,
+      "MDF": 5,
+      "SPD": -5
+    }
+  },
+  {
+    "eqp_id": 1002,
+    "type": "ARM",
+    "kind": "Armor",
+    "attribute": 0,
+    "name": "Plate Armor",
+    "status": {
+      "DEF": 10,
+      "MDF": 5,
+      "SPD": -10
+    }
+  },
+  {
+    "eqp_id": 1003,
+    "type": "ARM",
+    "kind": "Armor",
+    "attribute": 0,
+    "name": "Leather Armor",
+    "status": {
+      "DEF": 5,
+      "MDF": 5
+    }
+  },
+  {
+    "eqp_id": 1020,
+    "type": "ARM",
+    "kind": "Armor",
+    "attribute": 0,
+    "name": "12Armor",
+    "status": {
+      "DEF": 50,
+      "MDF": 50,
+      "Slash": 20,
+      "Hit": 20,
+      "Stab": 20
+    }
+  },
+  {
+    "eqp_id": 1101,
+    "type": "ARM",
+    "kind": "Shield",
+    "attribute": 0,
+    "name": "Shield",
+    "status": {
+      "DEF": 7,
+      "MDF": 3
+    }
+  },
+  {
+    "eqp_id": 1110,
+    "type": "ARM",
+    "kind": "Shield",
+    "attribute": 0,
+    "name": "TRXShield",
+    "status": {
+      "DEF": 70,
+      "MDF": 30,
+      "Earth": 50
+    }
+  },
+  {
+    "eqp_id": 1201,
+    "type": "ARM",
+    "kind": "Robe",
+    "attribute": 0,
+    "name": "Robe",
+    "status": {
+      "DEF": 3,
+      "MDF": 7
+    }
+  },
+  {
+    "eqp_id": 1210,
+    "type": "ARM",
+    "kind": "Robe",
+    "attribute": 8,
+    "name": "EngelRobe",
+    "status": {
+      "DEF": 40,
+      "MDF": 60,
+      "Light": 100
+    }
+  },
+  {
+    "eqp_id": 1301,
+    "type": "ARM",
+    "kind": "Cloth",
+    "attribute": 0,
+    "name": "Cloth",
+    "status": {
+      "DEF": 4,
+      "MDF": 4
+    }
+  },
+  {
+    "eqp_id": 1321,
+    "type": "ARM",
+    "kind": "Cloth",
+    "attribute": 9,
+    "name": "NinjaSuits",
+    "status": {
+      "DEF": 30,
+      "MDF": 30,
+      "DEX": 30,
+      "SPD": 10,
+      "Dark": 50
+    }
+  },
+  {
+    "eqp_id": 2001,
+    "type": "ACC",
+    "kind": "Bangle",
+    "attribute": 0,
+    "name": "Bangle",
+    "status": {
+      "ATK": 5
+    }
+  },
+  {
+    "eqp_id": 2101,
+    "type": "ACC",
+    "kind": "Ring",
+    "attribute": 0,
+    "name": "Ring",
+    "status": {
+      "DEF": 5
+    }
+  },
+  {
+    "eqp_id": 2151,
+    "type": "ACC",
+    "kind": "Ring",
+    "attribute": 9,
+    "name": "DevilRing",
+    "status": {
+      "ATK": 50,
+      "MDF": -50,
+      "Dark": 100
+    }
+  },
+  {
+    "eqp_id": 2201,
+    "type": "ACC",
+    "kind": "Neckless",
+    "attribute": 0,
+    "name": "Neckless",
+    "status": {
+      "MDF": 5
+    }
+  },
+  {
+    "eqp_id": 2301,
+    "type": "ACC",
+    "kind": "Amulet",
+    "attribute": 0,
+    "name": "Amulet",
+    "status": {
+      "MGC": 5
+    }
+  },
+  {
+    "eqp_id": 2451,
+    "type": "ACC",
+    "kind": "Belt",
+    "attribute": 0,
+    "name": "RiderBelt",
+    "status": {
+      "HP": 100,
+      "MP": 50,
+      "ATK": 30,
+      "MGC": 10,
+      "DEF": 30,
+      "MDF": 30,
+      "DEX": 30,
+      "SPD": 10,
+      "Fire": 30,
+      "Water": 30,
+      "Earth": 30,
+      "Wind": 30
+    }
+  },
+  {
+    "eqp_id": 2551,
+    "type": "ACC",
+    "kind": "cape",
+    "attribute": 8,
+    "name": "HolyBless",
+    "status": {
+      "MP": 100,
+      "MGC": 50,
+      "DEF": 20,
+      "MDF": 50,
+      "Light": 100
+    }
+  }
+]
