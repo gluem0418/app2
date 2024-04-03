@@ -110,6 +110,7 @@ export default {
   /////////////////////////////////////
   //メッセージ
   /////////////////////////////////////
+  msgInGame: 'Please turn the screen horizontally.',
   msgAddParty1: 'Do you add ',
   msgAddParty2: ' to your party?',
   msgRemoveParty1: 'Do you remove ',

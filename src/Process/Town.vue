@@ -15,7 +15,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 
 import Guild from '@/Process/Guild.vue';
 import Pub from '@/Process/Pub.vue';

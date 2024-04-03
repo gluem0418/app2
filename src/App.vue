@@ -72,6 +72,9 @@ console.log('monsterList', monsterList.value)
 import { useShowUI } from '@/stores/ShowUI.ts';
 const showUIStore = useShowUI()
 
+//全画面表示
+document.documentElement.requestFullscreen()
+
 </script>
 
 <style scoped>

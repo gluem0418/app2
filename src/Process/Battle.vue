@@ -1111,8 +1111,8 @@ const addNewLog = (log: string) => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: auto;
-  width: 80vw;
+  height: 100vh;
+  width: auto;
   z-index: 5;
 }
 
@@ -1122,7 +1122,7 @@ const addNewLog = (log: string) => {
   left: 5%;
   font-family: "Mystery Quest";
   color: #F34213;
-  font-size: 36vh;
+  font-size: 30vh;
   clip-path: inset(0 100% 0 0);
   animation: textfadein 1.0s 0s both;
 }
@@ -1133,7 +1133,7 @@ const addNewLog = (log: string) => {
   left: 5%;
   font-family: "Mystery Quest";
   color: #F34213;
-  font-size: 36vh;
+  font-size: 30vh;
   clip-path: inset(0 100% 0 0);
   animation: textfadein 1.0s 0s both;
 }

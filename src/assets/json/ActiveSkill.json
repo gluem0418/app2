@@ -510,7 +510,7 @@
         "effect_amount": 1.5,
         "target": 2,
         "target_type": "oneEnemy",
-        "skill_anime": "effect/skill/archar/arrow_shot.gif",
+        "skill_anime": "effect/skill/magician/PillarFire.gif",
         "anime_time": 1000
       }
     ]
@@ -533,7 +533,7 @@
         "effect_amount": 1.3,
         "target": 2,
         "target_type": "rowEnemy",
-        "skill_anime": "effect/skill/swordman/cross_slash.gif",
+        "skill_anime": "effect/skill/magician/Windlash.gif",
         "anime_time": 1000
       }
     ]
@@ -556,8 +556,54 @@
         "effect_amount": 1.8,
         "target": 2,
         "target_type": "columnEnemy",
-        "skill_anime": "effect/skill/archar/piercing_shot.gif",
+        "skill_anime": "effect/skill/magician/FlameTower.gif",
         "anime_time": 1500
+      }
+    ]
+  },
+  {
+    "skill_id": 404,
+    "name": "Earthquake",
+    "info": "Raise the ground with magic and attack all enemiess.",
+    "attribute": 6,
+    "interval": 3,
+    "consume_type": "MP",
+    "consume_amount": 20,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "MGC",
+        "effect_amount": 1.5,
+        "target": 2,
+        "target_type": "allEnemy",
+        "skill_anime": "effect/skill/magician/Earthquake.gif",
+        "anime_time": 2200
+      }
+    ]
+  },
+  {
+    "skill_id": 405,
+    "name": "Heaven's Roar",
+    "info": "Generates a dense thundercloud that attacks all enemies.",
+    "attribute": 8,
+    "interval": 4,
+    "consume_type": "MP",
+    "consume_amount": 40,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 3,
+        "base_status": "MGC",
+        "effect_amount": 1.0,
+        "target": 2,
+        "target_type": "allEnemy",
+        "skill_anime": "effect/skill/magician/Heaven's Roar.gif",
+        "anime_time": 3000
       }
     ]
   }

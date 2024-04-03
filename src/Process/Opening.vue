@@ -4,15 +4,32 @@
     <SelectBtn class="btnCard" id="btn2" :inside="Config.newgame" @click="newgame()"></SelectBtn>
   </div>
 </template>
+
 <script setup lang="ts">
+import { onMounted } from 'vue';
+
+import useFullscreen from '@/Process/UseFullscreen';
+// const { isFullscreen, enterFullscreen, exitFullscreen } = useFullscreen();
+const { enterFullscreen } = useFullscreen();
 import SelectBtn from '@/components/button/GreenBtn.vue';
 import Config from '@/config.ts';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
 const statusStore = useStatusStore()
 
+//ロード時
+onMounted(() => {
+
+  if (window.innerHeight > window.innerWidth) {
+    window.onload = () => {
+      alert(Config.msgInGame)
+    }
+  }
+});
+
 //イベント送信
 function newgame() {
+  enterFullscreen()
   statusStore.status = Config.statusTown
   statusStore.process = Config.statusTown
 }
@@ -56,8 +73,7 @@ function newgame() {
   position: absolute;
   top: 80%;
   left: 50%;
-  transform: translateY(-50%) translateX(-50%) ;
+  transform: translateY(-50%) translateX(-50%);
   animation: show 1.7s;
 }
-
 </style>
