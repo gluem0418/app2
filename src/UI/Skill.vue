@@ -19,10 +19,6 @@
             <span class="marginLeft05">{{ skill.name }}</span>
             <span class="costValue">{{ skill.skill_cost }}</span>
 
-            <!-- <span v-if="skill === selectedSkill" class='button-equip'
-            :class="{ 'equip': skill.equip == false, 'unequip': skill.equip == true }">
-            <button @click="updateSkill(skill)">{{ equipbutton(skill.equip) }}</button>
-          </span> -->
             <span v-if="skill === selectedSkill" class='buttonPosition'>
               <span @click="updateSkill(skill)" class='button-equip'
                 :class="{ 'equip': skill.equip == false, 'unequip': skill.equip == true }">{{ equipbutton(skill.equip)
@@ -60,17 +56,11 @@
     </div>
     <SkillInfo v-if="selectedSkill" class="skillInfo" :skillInfo="selectedSkill.info" />
   </div>
-
-
-  <!-- <div class="underLine"></div>
-  <div v-if="selectedSkill" class="skillDetail">
-    {{ selectedSkill.info }}
-  </div> -->
 </template>
 
 <script setup lang="ts">
 
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import PassiveSkill from '@/Class/PassiveSkill.ts';
 import ActiveSkill from '@/Class/ActiveSkill.ts';
 import Character from '@/Class/Character.ts';
@@ -151,11 +141,21 @@ const hideErrorMessage = () => {
   showError.value = false;
 };
 
+const selectedCharacter = ref<Character | undefined>(undefined);
+
+watch(() => props.character, () => {
+  if (props.character !== selectedCharacter.value) {
+    selectedSkill.value = null
+  }
+  selectedCharacter.value = props.character;
+})
+
+
 </script>
 
 <style scoped>
 .SkillUI {
-  font-family: 'Century';
+  font-family: serif;
   color: #F2EDD5;
   font-size: 2.8vh;
   position: relative;
@@ -167,8 +167,8 @@ const hideErrorMessage = () => {
   background: rgba(59, 65, 60, 0.7);
   background-image: url('/img/flame/flame032703.png');
   background-size: 100% 100%;
-  padding: 1.3vh 0vw;
-  height: 55vh;
+  padding: 1vh 0vw;
+  height: 60vh;
   width: 25vw;
 }
 
@@ -177,10 +177,11 @@ const hideErrorMessage = () => {
   text-align: center;
   list-style-type: none;
   color: #E2D8A6;
+  align-items: center;
   /* padding: 0vh 0.7vw; */
   padding: 0vh 0.6vw;
   font-size: 3.4vh;
-  font-family: "Vidaloka";
+  font-family: "Verily Serif Mono";
 }
 
 .skillType li {
@@ -189,11 +190,13 @@ const hideErrorMessage = () => {
 
 .selected-tab {
   background: #624CAB80;
+  border-radius: 1vh;
+  border: 0.2vh solid #E2D8A6;
 }
 
 .underLine {
   margin: 0vh 0.5vw;
-  border-bottom: 0.5vh solid #3CD0E3;
+  border-bottom: 0.7vh double #3CD0E3;
 }
 
 .skillList {
@@ -202,6 +205,17 @@ const hideErrorMessage = () => {
   color: #F2EDD5;
   margin: 0.7vh 0.7vw;
   list-style-type: none;
+}
+
+.skillItem {
+  /* display: flex; */
+  vertical-align: middle;
+  /* align-items: center; */
+  /* これにより縦位置が中央になります */
+  justify-content: start;
+  list-style-type: none;
+  /* vertical-align: top; */
+  height: 5vh;
 }
 
 .marginEquip {
@@ -217,8 +231,11 @@ const hideErrorMessage = () => {
 }
 
 .consumeType {
-  position: absolute;
-  right: 4vw;
+  /* position: absolute; */
+  float: right;
+  margin-right: 1vh;
+  /* right: 4vw; */
+  /* justify-content: flex-end; */
   font-family: "Verily Serif Mono";
   color: #E2D8A6;
 }
@@ -238,14 +255,6 @@ const hideErrorMessage = () => {
   margin-left: 2vw;
 }
 
-.skillOk {
-  position: absolute;
-  right: 6vw;
-  margin-top: -0.7vh;
-  width: 6vw;
-  background: #624CAB;
-}
-
 .equip {
   background: #0CCA4A;
 }
@@ -254,41 +263,9 @@ const hideErrorMessage = () => {
   background: #F34213;
 }
 
-.skillDetail {
-  /* font-family: "Verily Serif Mono"; */
-  padding: 0.5vh 1.5vw;
-}
-
-.status-key {
-  font-family: "Verily Serif Mono";
-  padding-left: 2vw;
-}
-
-.status-value {
-  padding-left: 0.5vw;
-}
-
-.status-diff {
-  padding-left: 0.5vw;
-}
-
-.colorblue {
-  color: #84E2FB;
-}
-
-.colorred {
-  color: #F34213;
-}
-
 .statuskinds {
   margin-left: 0.5vw;
   font-family: "Verily Serif Mono";
   color: #E2D8A6;
-}
-
-.skillInfo {
-  /* position: absolute;
-  right: 2vw;
-  bottom: 2vh; */
 }
 </style>

@@ -1,88 +1,144 @@
 <template>
-  <canvas ref="MapUI"></canvas>
+  <div>
+    <div class="miniMapFlame">
+      <canvas class="miniMap" ref="MapUI" @click="clickMap()"></canvas>
+    </div>
+    <div v-show="showFullMap" class="modal" @click="clickMap()">
+      <div class="fullMapFlame">
+        <canvas class="fullMap" ref="fullMap" ></canvas>
+      </div>
+    </div>
+  </div>
 </template>
-  
+
 <script setup lang="ts">
 import { ref, watch, Ref, nextTick } from 'vue';
-import * as THREE from 'three';
+// import * as THREE from 'three';
 import Config from '@/config.ts';
 import { MapData } from '@/Process//CreateDungeon.ts';
 
 //プレイヤー現在地
 import { usePositionStore } from '@/stores/Position.ts';
 const positionStore = usePositionStore();
+// let prevPlayerPosition: THREE.Vector3 | null = null;
 
 const MapUI: Ref<HTMLCanvasElement | undefined> = ref();
+const fullMap: Ref<HTMLCanvasElement | undefined> = ref();
 
 //img import
 import img_Position from '/icon/playerPosition.png';
 const playerIcon = new Image();
 playerIcon.src = img_Position;
 
-let prevPlayerPosition: THREE.Vector3 | null = null;
+// マップ全体を表示するフラグ
+const showFullMap = ref(false);
 
 // ミニマップを描画
 const initMapUI = () => {
+  if (MapData!.length == 0 || !fullMap.value || !MapUI.value) return;
+  const fullCtx = fullMap.value.getContext('2d');
+  if (!fullCtx) return;
 
-  if (MapData!.length == 0) return;
-  if (!MapUI.value) return;
-  const ctx = MapUI.value?.getContext('2d');
-  if (!ctx) return;
-  MapUI.value.height = Config.MiniHeight
+  fullMap.value.width = MapData[0].length * 3;
+  fullMap.value.height = MapData.length * 3;
+  MapUI.value.width = 40 * 3
+  MapUI.value.height = 40 * 3
 
   for (let i = 0; i < MapData!.length; i++) {
     for (let j = 0; j < MapData![i].length; j++) {
       switch (MapData![i][j]) {
         case 0: // 壁
-          ctx.fillStyle = Config.MiniWallColor;
+          fullCtx.fillStyle = Config.MiniWallColor;
           break;
         case 1: // 部屋                
         case 2: // 通路
-          ctx.fillStyle = Config.MiniRoomColor;
+          fullCtx.fillStyle = Config.MiniRoomColor;
           break;
       }
-      ctx.fillRect(j * 3, i * 3, 3, 3);
+      fullCtx.fillRect(j * 3, i * 3, 3, 3);
     }
   }
-  playerMove()
+  playerMove();
 };
 
 // ミニマップを更新
 const playerMove = () => {
-
+  if (!MapUI.value || !fullMap.value || !positionStore.playerPosition) return;
   const ctx = MapUI.value?.getContext('2d');
-  if (!ctx) return;
-  if (!positionStore.playerPosition) return;
-  // プレイヤーの描画
-  // playerIcon.src = img_Position;
-  // 前のプレイヤーの位置
-  // if (prevPlayerPosition) {
-  if (prevPlayerPosition) {
-    ctx.fillStyle = Config.MiniMoveColor;
-    ctx.fillRect(Math.floor(prevPlayerPosition.x / Config.BlockSize - 1) * 3, Math.floor(prevPlayerPosition.z / Config.BlockSize - 1) * 3, Config.BlockSize, Config.BlockSize);
-  }
+  const fullCtx = fullMap.value.getContext('2d');
+  if (!ctx || !fullCtx) return;
+
   // プレイヤーの現在地
-  ctx.drawImage(playerIcon, Math.floor(positionStore.playerPosition.x / Config.BlockSize - 1) * 3, Math.floor(positionStore.playerPosition.z / Config.BlockSize - 1) * 3, Config.BlockSize, Config.BlockSize);
+  const playerX = Math.floor(positionStore.playerPosition.x / Config.BlockSize - 1);
+  const playerZ = Math.floor(positionStore.playerPosition.z / Config.BlockSize - 1);
+
+  ctx.clearRect(0, 0, MapUI.value.width, MapUI.value.height);
+  ctx.drawImage(fullMap.value, playerX * 3 - 20 * 3, playerZ * 3 - 20 * 3, 40 * 3, 40 * 3, 0, 0, 40 * 3, 40 * 3);
+  // playerIcon.onload = function() {
+  ctx.drawImage(playerIcon, 20 * 3, 20 * 3, Config.BlockSize, Config.BlockSize);
+  // }
+
+  // プレイヤーの現在地を探索済みとしてマーク
+  fullCtx.fillStyle = Config.MiniMoveColor;
+  fullCtx.fillRect((playerX + 1) * 3, (playerZ + 1) * 3, 3, 3);
+
   // プレイヤーの現在地を保存
-  prevPlayerPosition = positionStore.playerPosition.clone();
+  // prevPlayerPosition = positionStore.playerPosition.clone();
 };
+
+function clickMap() {
+  showFullMap.value = !showFullMap.value;
+  playerMove();
+  console.log('clickMap', showFullMap)
+}
 
 watch(() => MapData, () => {
   nextTick(initMapUI);
 }, { immediate: true, deep: true });
 
 watch(() => positionStore.playerPosition, () => {
-  // nextTick(playerMove);
   playerMove();
 }, { immediate: true, deep: true });
 
 </script>
-  
+
 <style scoped>
-/* canvas {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  height: 250px;
-} */
+.miniMapFlame {
+  background-image: url('/img/flame/flame05081.png');
+  background-size: 100% 100%;
+  padding: 3.2vh 1.7vw;
+  width: 19.5vw;
+  height: 36.5vh;
+}
+
+.miniMap {
+  height: 30vh;
+  width: 16vw;
+}
+
+
+.modal {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.fullMapFlame {
+  margin: 0.5vh 18vw;
+  background-image: url('/img/flame/flame05081.png');
+  background-size: 100% 100%;
+  padding: 8.5vh 5.1vw;
+  height: 97vh;
+  width: 60.5vw;
+}
+
+.fullMap {
+  /* border-radius: 1vw; */
+  height: 80vh;
+  width: 50vw;
+}
 </style>

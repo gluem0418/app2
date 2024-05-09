@@ -1,25 +1,32 @@
 <template>
-  <div class="partyUI" v-if="showUIStore.party || statusStore.action == Config.actionRemoveMember">
-    <div class="characters">
-      <div v-for="(character, index) in partyStore.characters" :key="character.cha_id"
-        @click="selectCharacter(index, character)" class="character-card"
-        :class="{ 'changing': changing && changeIndex.includes(index) }">
-        <StatusUI class="StatusUI" :character="character" />
-        <div class="charaflame">
-          <img :src="character.poseGraphicUrl" alt="" class="charaimage" />
+  <div class="partyUI">
+    <div class="party" v-if="showUIStore.party || statusStore.guildMenu == Config.menuRemoveMember">
+      <div class="characters">
+        <div v-for="(character, index) in partyStore.characters" :key="character.cha_id"
+          @click="selectCharacter(index, character)" class="character-card"
+          :class="{ 'changing': changing && changeIndex.includes(index) }">
+          <StatusUI class="StatusUI" :character="character" />
+          <div class="charaflame">
+            <img :src="character.poseGraphicUrl" alt="" class="charaimage" />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <CharacterUI :character="selectedCharacter" :index="selectedIndex" v-show="showUIStore.character"
-    @changeCharacter='changeCharacter' />
-  <IconBack class="IconBack" @click="clickBack" v-show="showUIStore.party || showUIStore.character" />
-  <IconParty class="IconParty" @click="clickParty" v-if="statusStore.action != Config.actionRemoveMember" />
-  <IconChange class="IconChange" @click="changeOrder" v-show="showUIStore.party" :class="{ 'changing': changing }" />
+ 
+    <CharacterUI :character="selectedCharacter" :index="selectedIndex" v-show="showUIStore.character"
+      @changeCharacter='changeCharacter' />
+    <ItemBagUI class="ItemBag" v-show="showUIStore.item" />
+    <IconBack class="IconBack" @click="clickBack" v-show="showUIStore.party || showUIStore.character" />
 
-  <Confirmation v-show="showUIStore.message" :message="confirmationMessage"
-    @confirmationResponse="confirmationResponse" />
-  <Information v-show="showUIStore.errorMessage" :message="errorMessage" @hideError="hideErrorMessage" />
+    <IconBag class="IconBag" @click="clickBag" v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.character" />
+
+    <IconChange class="IconChange" @click="changeOrder" v-show="showUIStore.party" :class="{ 'changing': changing }" />
+    <IconParty class="IconParty" @click="clickParty" v-if="statusStore.guildMenu != Config.menuRemoveMember" />
+
+    <Confirmation v-show="showUIStore.message" :message="confirmationMessage"
+      @confirmationResponse="confirmationResponse" />
+    <Information v-show="showUIStore.errorMessage" :message="errorMessage" @hideError="hideErrorMessage" />
+  </div>
 </template>
   
 <script setup lang="ts">
@@ -27,9 +34,12 @@ import { ref } from 'vue';
 
 import StatusUI from './Status.vue';
 import CharacterUI from './Character.vue';
+import ItemBagUI from './ItemBag.vue';
+// import CurrentUI from '@/UI/Current.vue';
 
 import Character from '@/Class/Character.ts';
 import IconBack from '@/components/icon/IconBack.vue';
+import IconBag from '@/components/icon/IconBag.vue';
 import IconParty from '@/components/icon/IconParty.vue';
 import IconChange from '@/components/icon/IconChange.vue';
 import Confirmation from '@/components/information/Confirmation.vue';
@@ -70,9 +80,20 @@ const characterBack = () => {
   selectedCharacter.value = undefined;
 
 };
+//かばんアイコン
+const clickBag = () => {
+  showUIStore.item = !showUIStore.item;
+  showUIStore.current = !showUIStore.item
+  // if (showUIStore.item) {
+  //   showUIStore.current = true;
+  // }
+  showUIStore.party = false;
+};
+
 //パーティーアイコンを押して表示切替
 const clickParty = () => {
   changing.value = false;
+  showUIStore.item = false;
   //パーティー非表示かつキャラクター非表示の場合、他UI非表示
   if (!showUIStore.party && !showUIStore.character) {
     showUIStore.map = false;
@@ -107,10 +128,8 @@ let confirmationMessage: string
 let errorMessage: string
 
 function selectCharacter(index: number, character: Character) {
-  console.log("selectCharacter")
-  console.log("statusStore.action", statusStore.action)
   //メンバーを外す場合
-  if (statusStore.action == Config.actionRemoveMember) {
+  if (statusStore.guildMenu == Config.menuRemoveMember) {
     if (character.cha_id == Config.mainChaid) {
       errorMessage = Config.msgRemovePartyError
       showUIStore.errorMessage = true;
@@ -171,10 +190,15 @@ const changeOrder = () => {
   
 <style scoped>
 .partyUI {
-  position: absolute;
   width: 100vw;
   height: 100vh;
+}
+
+.party {
+  position: absolute;
   background: #3B413C80;
+  width: 100vw;
+  height: 100vh;
 }
 
 .characters {
@@ -184,25 +208,32 @@ const changeOrder = () => {
 
 .character-card {
   display: inline-block;
-  margin: 1.5vh;
-  width: 23%;
+  width: 24vw;
 }
 
 .character-card.changing {
   animation: blink 0.5s linear infinite;
 }
-
 .StatusUI {
   animation: slideTop 0.5s ease-in-out;
 }
 
+.ItemBag {
+
+}
+
 .charaflame {
+  position: absolute;
+  height: 48vh;
   text-align: center;
   animation: slideRight 0.5s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .charaimage {
-  height: 40vh;
+  width: 23vw;
 }
 
 .IconBack {
@@ -213,17 +244,23 @@ const changeOrder = () => {
 
 .IconChange {
   position: absolute;
-  right: 15%;
-  bottom: 2%;
+  right: 19vw;
+  bottom: 1vh;
 }
 
 .IconChange.changing {
   animation: blink 0.5s linear infinite;
 }
 
+.IconBag {
+  position: absolute;
+  right: 11vw;
+  bottom: 1vh;
+}
+
 .IconParty {
   position: absolute;
-  right: 2%;
-  bottom: 2%;
+  right: 2vw;
+  bottom: 1vh;
 }
 </style>

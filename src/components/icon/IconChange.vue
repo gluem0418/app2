@@ -4,11 +4,11 @@
   
 <script setup lang="ts">
 
-import img from "/icon/change.svg"
+import img from "/icon/change.png"
 
 </script>
 <style scoped>
 .Icon {
-  height: 9vh;
+  height: 12vh;
 }
 </style>

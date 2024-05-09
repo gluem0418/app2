@@ -86,11 +86,11 @@ const props = defineProps({
 <style scoped>
 .CharaStatusUI {
   background: rgba(59, 65, 60, 0.7);
-  background-image: url('/img/flame/flame032701.png');
+  /* background-image: url('/img/flame/flame032701.png'); */
+  background-image: url('/img/flame/flame05082.png');
   background-size: 100% 100%;
   color: #F2EDD5;
-  font-family: 'Century';
-  /* font-size: 1.4vw; */
+  font-family: serif;
   font-size: 2.8vh;
   padding: 3vh 2vw;
   position: relative;

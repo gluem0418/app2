@@ -7,17 +7,19 @@
       <Town />
     </div>
     <div v-else-if="statusStore.status == Config.statusDungeon">
-      <div v-if="statusStore.process == Config.processSearch">
-        <CurrentUI class="CurrentUI" v-show="showUIStore.current"/>
-        <PartyUI />
+      <!-- <Dungeon /> -->
+      <div v-if="statusStore.processDungeon == Config.processSearch">
+        <CurrentUI class="CurrentUI" v-show="showUIStore.current" />
+        <!-- <PartyUI /> -->
+        <PartyUI class="PartyUI" />
       </div>
-      <div v-else-if="statusStore.process == Config.processBattle">
-        <Battle/>
+      <div v-else-if="statusStore.processDungeon == Config.processBattle">
+        <Battle />
       </div>
-      <!-- <Dungeon class="Dungeon"/> -->
       <Dungeon />
-      <MapUI class="MapUI" v-show="showUIStore.map"/>
+      <MapUI class="MapUI" v-show="showUIStore.map" />
     </div>
+    <IconFullscreen class="IconFullscreen" />
   </div>
 </template>
 
@@ -36,6 +38,7 @@ import MapUI from '@/UI/Map.vue';
 import Monster from '@/Class/Monster.ts';
 import monster_json from '@/assets/json/Monster.json';
 import Config from '@/config.ts';
+import IconFullscreen from '@/components/icon/IconFullscreen.vue';
 
 import { passiveSkills } from '@/Class/PassiveSkill.ts';
 import { activeSkills } from '@/Class/ActiveSkill.ts';
@@ -72,26 +75,26 @@ console.log('monsterList', monsterList.value)
 import { useShowUI } from '@/stores/ShowUI.ts';
 const showUIStore = useShowUI()
 
-//全画面表示
-document.documentElement.requestFullscreen()
-
 </script>
 
 <style scoped>
+.PartyUI {
+  position: fixed;
+  top: 0vh;
+  right: 0vw;
+}
+
 .CurrentUI {
   position: fixed;
-  /* margin-left: 25%; */
   top: 1vh;
-  right: 2vw;
+  right: 6vw;
   animation: slideRight 0.5s ease-in-out;
 }
 
 .MapUI {
   position: fixed;
-  top:2vh;
-  left:1vw;
-  height: 30vh;
-  border-radius: 1vw;
+  top: 1vh;
+  left: 1vw;
   /* border: 0.3vw ridge #E2D8A6; */
 }
 
@@ -102,4 +105,10 @@ document.documentElement.requestFullscreen()
   pointer-events: none;
 }
 
+.IconFullscreen {
+  /* position: fixed; */
+  position: absolute;
+  right: 1vw;
+  top: 1vh;
+}
 </style>

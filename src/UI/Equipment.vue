@@ -150,13 +150,14 @@ const updateEquipment = (eqpbag_id: number, equippedBy: number | null) => {
 .EquipmentUI {
   /* background: rgba(49, 64, 52, 0.7); */
   background: rgba(59, 65, 60, 0.7);
-  background-image: url('/img/flame/flame032702.png');
+  /* background-image: url('/img/flame/flame032702.png'); */
+  background-image: url('/img/flame/flame6589435.png');
   background-size: 100% 100%;
-  font-family: 'Century';
+  font-family: serif;
   /* font-family: "Verily Serif Mono"; */
   color: #F2EDD5;
   font-size: 2.8vh;
-  padding: 1.3vh 0vw;
+  padding: 1vh 0vw;
   position: relative;
   height: 83vh;
   width: 25vw;
@@ -167,24 +168,26 @@ const updateEquipment = (eqpbag_id: number, equippedBy: number | null) => {
   text-align: center;
   list-style-type: none;
   color: #E2D8A6;
+  align-items:center;
   padding: 0vh 0.6vw;
-  /* height: 15vh; */
   font-size: 3.4vh;
-  /* font-family: "Vidaloka"; */
   font-family: "Verily Serif Mono";
 }
 
 .EquipmentTabItem {
   width: 33%;
+  /* border-right: 0.7vh double #3CD0E3; */
 }
 
 .selected-tab {
   background: #624CAB80;
+  border-radius:1vh;
+  border: 0.2vh solid #E2D8A6;
 }
 
 .underLine {
   margin: 0vh 0.5vw;
-  border-bottom: 0.5vh solid #3CD0E3;
+  border-bottom: 0.7vh double #3CD0E3;
 }
 
 .EquipmentTypeList {
@@ -194,10 +197,12 @@ const updateEquipment = (eqpbag_id: number, equippedBy: number | null) => {
   margin-top: 0.5vh;
   margin-left: 0.7vw;
   margin-right: 0.7vw;
-  /* width: 25vw; */
 }
 
 .EquipmentItem {
+  display: flex;
+  align-items: center; /* これにより縦位置が中央になります */
+  justify-content: start; 
   list-style-type: none;
   /* vertical-align: top; */
   height:5vh;
@@ -205,20 +210,24 @@ const updateEquipment = (eqpbag_id: number, equippedBy: number | null) => {
 
 .faceFlame {
   margin-left: 2.7vw;
+  /* margin-right: 2.7vw; */
 }
 
 .smallface {
   margin-left: 0.4vw;
+  /* margin-right: 0.4vw; */
   height: 5vh;
   vertical-align: bottom;
 }
 
 .itemName {
   padding-left: 0.5vw;
+  /* padding-right: 0.5vw; */
 }
 .buttonPosition {
-  float:right;
-  margin-right:1vw;
+  /* float:right; */
+  /* margin-right:1vw; */
+  margin-left:auto;
 }
 .equip {
   background: #0CCA4A;

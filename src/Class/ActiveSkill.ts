@@ -15,6 +15,7 @@ export interface SkillEffect {
 export default class ActiveSkill {
   skill_id: number;
   name: string;
+  use: number;
   info: string;
   attribute: number;
   interval: number;
@@ -26,6 +27,7 @@ export default class ActiveSkill {
   constructor(data: ActiveSkill) {
     this.skill_id = data.skill_id;
     this.name = data.name;
+    this.use = data.use;
     this.info = data.info;
     this.attribute = data.attribute;
     this.interval = data.interval;

@@ -75,7 +75,7 @@ const props = defineProps({
   background-image: url('/img/flame/flame032701.png');
   background-size: 100% 100%;
   color: #F2EDD5;
-  font-family: 'Century';
+  font-family: serif;
   /* font-family: "Verily Serif Mono"; */
   /* font-size: 1.4vw; */
   font-size: 2.8vh;

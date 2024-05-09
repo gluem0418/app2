@@ -33,7 +33,7 @@ import SkillUI from './Skill.vue';
 import Character from '@/Class/Character.ts';
 import Config from '@/config.ts';
 
-import switchBtn from '@/components/button/SwitchBtn.vue';
+import switchBtn from '@/components/flame/SwitchBtn.vue';
 import IconLeft from '@/components/icon/IconLeft.vue';
 import IconRight from '@/components/icon/IconRight.vue';
 import Confirmation from '@/components/information/Confirmation.vue';
@@ -95,7 +95,7 @@ let confirmationMessage: string
 let errorMessage : string
 // 確認メッセージを表示
 function addMember() {
-  if (statusStore.action != Config.actionAddMember) return;
+  if (statusStore.guildMenu != Config.menuAddMember) return;
   if (partyStore.characters.length == 4) {
     errorMessage = Config.msgAddPartyError
     showUIStore.errorMessage = true;
@@ -142,53 +142,54 @@ watch(() => props.character, () => {
 
 .CharaCardUI {
   position: absolute;
-  margin: 1.5vh 2.5vw;
+  margin: 1.5vh 2.6vw;
   animation: slideTop 0.5s ease-in-out;
 }
 
 .CharaStatusUI {
   position: absolute;
   top: 19vh;
-  left: 3.9vw;
+  left: 4vw;
   animation: slideTop 0.3s ease-in-out;
 }
 
 .imageFlame {
   position: absolute;
-  left: 24vw;
-  width: 50vw;
-  text-align: center;
-  animation: slideBottom 0.5s ease-in-out;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* height: 100vh; */
 }
 
 .charaimage {
-  margin-top: 2vh;
+  /* width: 50vw; */
+  animation: slideBottom 0.5s ease-in-out;
   height: 95vh;
 }
 
 .IconCharaBack {
   position: absolute;
   top: 45%;
-  left: 28%;
+  left: 27%;
 }
 
 .IconCharaNext {
   position: absolute;
   top: 45%;
-  left: 67%;
+  right: 29%;
 }
 
 .EquipmentUI {
   position: absolute;
   margin-top: 5vh;
-  right: 5vw;
+  right: 4vw;
   animation: slideTop 0.3s ease-in-out;
 }
 
 .SkillUI {
   position: absolute;
   margin-top: 5vh;
-  right: 5vw;
+  right: 4vw;
   animation: slideTop 0.3s ease-in-out;
 }
 

@@ -1,8 +1,10 @@
 <template>
   <div ref="dungeon"></div>
-  <div v-if="(statusStore.process == Config.processSearch) && !showUIStore.party && !showUIStore.character" class="crossKey">
+  <div
+    v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.party && !showUIStore.character && !showUIStore.item"
+    class="crossKey">
     <div class="upKey" @click="playerMove(Config.ArrowUp)"></div>
-    <div class="downKey" @click="playerMove(Config.ArrowDown)"></div>
+    <!-- <div class="downKey" @click="playerMove(Config.ArrowDown)"></div> -->
     <div class="leftKey" @click="playerMove(Config.TurnLeft)"></div>
     <div class="rightKey" @click="playerMove(Config.TurnRight)"></div>
     <ActionLog ref="actionLog" class="actionLog" />
@@ -13,40 +15,40 @@
 import { onMounted, ref } from 'vue';
 import * as THREE from 'three';
 
-import ActionLog from '@/components/information/ActionLog.vue';
+import ActionLog from '@/UI/ActionLog.vue';
+import { LogService } from '@/Process/LogService.ts';
 
 import Config from '@/config.ts';
 import { CreateDungeon, MapData, MapSet, initPoint, isWall } from './CreateDungeon.ts';
 import { randomNum } from '@/Process/Common.ts';
 
-// 素材テスト
-// import img_wall01 from '/img/back/tesukiwashi-pattern-06.jpg';
-// import img_floor01 from '/img/back/tatami02.jpg';
-// 素材インポート
-// 壁
-import imgWall01 from '/img/back/wall/water03.jpg';
-import imgWall02 from '/img/back/wall/mable-black-p.jpg';
-import imgWall03 from '/img/back/wall/wood-deck-02.jpg';
-import imgWall04 from '/img/back/wall/stone-tile02-p.jpg';
-import imgWall05 from '/img/back/wall/brick1.jpg';
-import imgWall06 from '/img/back/wall/tesukiwashi06.jpg';
+import imgWall01 from '/img/dungeon/wall/forest1.jpg';
+
+import imgWall11 from '/img/dungeon/wall/water03.jpg';
+import imgWall02 from '/img/dungeon/wall/mable-black-p.jpg';
+import imgWall03 from '/img/dungeon/wall/wood-deck-02.jpg';
+import imgWall04 from '/img/dungeon/wall/stone-tile02-p.jpg';
+import imgWall05 from '/img/dungeon/wall/brick1.jpg';
+import imgWall06 from '/img/dungeon/wall/tesukiwashi06.jpg';
 const alyImgWall = new Array(
   imgWall01, imgWall02, imgWall03, imgWall04, imgWall05, imgWall06)
 // 床
+import imgFloor01 from '/img/dungeon/floor/forest1.jpg';
+
 // import imgFloor01 from '/img/back/floor/water03.jpg';
-import imgFloor02 from '/img/back/floor/Wonder-Marble.jpg';
-import imgFloor03 from '/img/back/floor/wood-deck-03.jpg';
-import imgFloor04 from '/img/back/floor/rockland3.jpg';
-import imgFloor05 from '/img/back/floor/rockland2.jpg';
-import imgFloor06 from '/img/back/floor/tatami02.jpg';
+import imgFloor02 from '/img/dungeon/floor/Wonder-Marble.jpg';
+import imgFloor03 from '/img/dungeon/floor/wood-deck-03.jpg';
+import imgFloor04 from '/img/dungeon/floor/rockland3.jpg';
+import imgFloor05 from '/img/dungeon/floor/rockland2.jpg';
+import imgFloor06 from '/img/dungeon/floor/tatami02.jpg';
 const alyImgFloor = new Array(
   imgWall01, imgFloor02, imgFloor03, imgFloor04, imgFloor05, imgFloor06)
 
 // 天井
 // import img_ceil01 from '/img/back/floor/ceil01.png';
 // ドア
-import imgLeftDoor1 from '/img/back/door/leftdoor1.jpg';
-import imgRightDoor1 from '/img/back/door/rightdoor1.jpg';
+import imgLeftDoor1 from '/img/dungeon/door/leftdoor1.jpg';
+import imgRightDoor1 from '/img/dungeon/door/rightdoor1.jpg';
 
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
@@ -60,6 +62,15 @@ const positionStore = usePositionStore();
 import { useShowUI } from '@/stores/ShowUI.ts';
 const showUIStore = useShowUI()
 
+//音楽管理
+import { useAudioStore } from '@/stores/Audio';
+const audioStore = useAudioStore()
+
+//ログ追加処理
+const actionLog = ref(null);
+const logService = new LogService();
+const addNewLog = (log: string, kind: number) => logService.addNewLog(log, kind);
+
 const dungeon = ref<HTMLElement | null>(null);
 
 let scene = new THREE.Scene()
@@ -69,7 +80,9 @@ let light: THREE.PointLight;
 let targetPosition = new THREE.Vector3(); // カメラの目標位置
 let targetRotation = 0; // カメラの目標回転角度
 let encounter = 0; // エンカウントの確率を管理する変数
-let indexTexture: number;
+let imgWall: string
+let imgFloor: string
+let imgCeil: string
 
 // Door型の定義
 interface Door {
@@ -89,6 +102,8 @@ onMounted(() => {
   // console.log(MapSet)
   //シーン初期化
   initScene()
+  // ダンジョン毎の処理
+  whichDungeon()
   //ダンジョン描写
   SceneDungeon()
   // キーボードの矢印キーにイベントリスナーを追加
@@ -114,43 +129,57 @@ function initScene() {
   targetPosition.copy(positionStore.playerPosition);
   // カメラの位置をプレイヤーの位置と同期
   camera.position.copy(positionStore.playerPosition);
-  addNewLog(Config.logEnterDungeon)
-  // 上空カメラ
-  // camera.position.set(500, 500, 0);
-  // camera.lookAt(450, 100, 0);
-  //光源を追加
+  addNewLog(Config.logEnterDungeon,0)
   //全体光源
   // const light = new THREE.AmbientLight(0xFFFFFF, 1.0);  
   //ポイント光源
-  // const lightParams = {point: 0xFBFDFF};
-  const lightParams = { point: 0xFBF5CB };
-  light = new THREE.PointLight(lightParams.point, 20, 150, 1.0);
+  const lightParams = { point: 0xFBFDFF };
+  // const lightParams = { point: 0xFBF5CB };
+  light = new THREE.PointLight(lightParams.point, 12, 100, 1.0);
   light.position.copy(positionStore.playerPosition);
   scene.add(light);
 }
+// ダンジョン毎の処理
+function whichDungeon() {
+  switch (statusStore.whichDungeon) {
+    case Config.nameDungeon1:
+      imgWall = imgWall01
+      imgFloor = imgFloor01
+      imgCeil = imgWall01
+      statusStore.musicDungeon = Config.mscDungeon1
+      break
+    default:
+  }
+  audioStore.playBgm(statusStore.musicDungeon) // ここで音楽を再生
+}
+
 // ダンジョンを描画
 function SceneDungeon() {
   // テクスチャをランダムに選択
-  indexTexture = Math.floor(Math.random() * alyImgWall.length);
+  // indexTexture = Math.floor(Math.random() * alyImgWall.length);
   const loadPic = new THREE.TextureLoader();
   // 壁
   const wGeometry = new THREE.PlaneGeometry(Config.BlockSize, Config.BlockHeight);
-  const wTexture = loadPic.load(alyImgWall[indexTexture]);
+  // const wTexture = loadPic.load(alyImgWall[indexTexture]);
+  const wTexture = loadPic.load(imgWall);
   const wMaterial = new THREE.MeshPhongMaterial({ map: wTexture, side: THREE.DoubleSide, bumpMap: wTexture, bumpScale: 0.2 });
   // 扉
-  const dGeometry = new THREE.PlaneGeometry(Config.BlockSize / 2, Config.BlockHeight);
+  // const dGeometry = new THREE.PlaneGeometry(Config.BlockSize / 2, Config.BlockHeight);
+  const dGeometry = new THREE.PlaneGeometry(Config.BlockSize / 2, Config.BlockHeight / 1.5);
   const dTextureLeft = loadPic.load(imgLeftDoor1);
   const dTextureRight = loadPic.load(imgRightDoor1);
   const dMaterialLeft = new THREE.MeshPhongMaterial({ map: dTextureLeft, side: THREE.DoubleSide, bumpMap: dTextureLeft, bumpScale: 0.2 });
   const dMaterialRight = new THREE.MeshPhongMaterial({ map: dTextureRight, side: THREE.DoubleSide, bumpMap: dTextureRight, bumpScale: 0.2 });
+  const wdGeometry = new THREE.PlaneGeometry(Config.BlockSize, Config.BlockHeight / 3); //扉の上の壁
   // 床
   const fGeometry = new THREE.PlaneGeometry(Config.BlockSize, Config.BlockSize);
-  const fTexture = loadPic.load(alyImgFloor[indexTexture]);
+  // const fTexture = loadPic.load(alyImgFloor[indexTexture]);
+  const fTexture = loadPic.load(imgFloor);
   const fMaterial = new THREE.MeshPhongMaterial({ map: fTexture, side: THREE.DoubleSide, bumpMap: fTexture, bumpScale: 0.2 });
   // 天井
-  // var uGeometry = new THREE.PlaneGeometry(BLOCK_SIZE, BLOCK_SIZE);
-  // const cTexture = loadPic.load(img_ceil01);
-  // const cMaterial = new THREE.MeshPhongMaterial({ map: cTexture, side: THREE.DoubleSide, bumpMap: cTexture, bumpScale: 0.2 });
+  // var cGeometry = new THREE.PlaneGeometry(Config.BlockSize, Config.BlockHeight);
+  const cTexture = loadPic.load(imgCeil);
+  const cMaterial = new THREE.MeshPhongMaterial({ map: cTexture, side: THREE.DoubleSide, bumpMap: cTexture, bumpScale: 0.2 });
 
 
   for (let i = 0; i < MapData.length; i++) {
@@ -165,86 +194,89 @@ function SceneDungeon() {
         scene.add(planeFloor);
 
         // 天井はマップが出来てから設置
-        // const planeCeil = new THREE.Mesh(fGeometry, cMaterial);
-        // planeCeil.position.set(Config.BlockSize * j, Config.BlockHeight, Config.BlockSize * i);
-        // planeCeil.rotation.x = 90 * Math.PI / 180;
-        // scene.add(planeCeil);
+        const planeCeil = new THREE.Mesh(fGeometry, cMaterial);
+        planeCeil.position.set(Config.BlockSize * j, Config.BlockHeight, Config.BlockSize * i);
+        planeCeil.rotation.x = 90 * Math.PI / 180;
+        scene.add(planeCeil);
 
         // 通路や部屋の上下左右で壁がある場合に壁を描画
         if (isWall(i - 1, j)) {
           const planeWall = new THREE.Mesh(wGeometry, wMaterial);
           planeWall.position.set(Config.BlockSize * j, Config.BlockHeight / 2, Config.BlockSize * (i - 0.5));
           scene.add(planeWall);
-          // walls.push(planeWall);
         }
         if (isWall(i + 1, j)) {
           const planeWall = new THREE.Mesh(wGeometry, wMaterial);
           planeWall.position.set(Config.BlockSize * j, Config.BlockHeight / 2, Config.BlockSize * (i + 0.5));
           scene.add(planeWall);
-          // walls.push(planeWall);
         }
         if (isWall(i, j - 1)) {
           const planeWall = new THREE.Mesh(wGeometry, wMaterial);
           planeWall.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 2, Config.BlockSize * i);
           planeWall.rotation.y = 90 * Math.PI / 180;
           scene.add(planeWall);
-          // walls.push(planeWall);
         }
         if (isWall(i, j + 1)) {
           const planeWall = new THREE.Mesh(wGeometry, wMaterial);
           planeWall.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 2, Config.BlockSize * i);
           planeWall.rotation.y = 90 * Math.PI / 180;
           scene.add(planeWall);
-          // walls.push(planeWall);
         }
 
         // 通路と部屋の境目に扉を描画
         const planeLeftDoor = new THREE.Mesh(dGeometry, dMaterialLeft);
         const planeRightDoor = new THREE.Mesh(dGeometry, dMaterialRight);
+        const planeWallDoor = new THREE.Mesh(wdGeometry, wMaterial);
         switch (MapSet[i][j]) {
           case Config.SetDoorUp:
             //この地点か一つ上の左右が壁の場合に描画
-            // if ((isWall(i, j + 1) && isWall(i, j - 1)) || (isWall(i - 1, j + 1) && isWall(i - 1, j - 1))) {
-            planeLeftDoor.position.set(Config.BlockSize * j - (Config.BlockSize / 4), Config.BlockHeight / 2, Config.BlockSize * (i - 0.5));
+            planeLeftDoor.position.set(Config.BlockSize * j - (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i - 0.5));
             scene.add(planeLeftDoor);
-            planeRightDoor.position.set(Config.BlockSize * j + (Config.BlockSize / 4), Config.BlockHeight / 2, Config.BlockSize * (i - 0.5));
+            planeRightDoor.position.set(Config.BlockSize * j + (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i - 0.5));
             scene.add(planeRightDoor);
             pushDoor(planeLeftDoor, planeRightDoor)
-            // }
+            //扉の上の壁
+            planeWallDoor.position.set(Config.BlockSize * j, Config.BlockHeight / 1.2, Config.BlockSize * (i - 0.5));
+            scene.add(planeWallDoor);
             break
           case Config.SetDoorUnder:
             //この地点か一つ下の左右が壁の場合に描画
-            // if ((isWall(i, j + 1) && isWall(i, j - 1)) || (isWall(i + 1, j + 1) && isWall(i + 1, j - 1))) {
-            planeLeftDoor.position.set(Config.BlockSize * j - (Config.BlockSize / 4), Config.BlockHeight / 2, Config.BlockSize * (i + 0.5));
+            planeLeftDoor.position.set(Config.BlockSize * j - (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i + 0.5));
             scene.add(planeLeftDoor);
-            planeRightDoor.position.set(Config.BlockSize * j + (Config.BlockSize / 4), Config.BlockHeight / 2, Config.BlockSize * (i + 0.5));
+            planeRightDoor.position.set(Config.BlockSize * j + (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i + 0.5));
             scene.add(planeRightDoor);
             pushDoor(planeLeftDoor, planeRightDoor)
-            // }
+            //扉の上の壁
+            planeWallDoor.position.set(Config.BlockSize * j, Config.BlockHeight / 1.2, Config.BlockSize * (i + 0.5));
+            scene.add(planeWallDoor);
             break
           case Config.SetDoorLeft:
             // この地点か一つ左の上下が壁の場合に描画
-            // if ((isWall(i + 1, j) && isWall(i - 1, j)) || (isWall(i + 1, j - 1) && isWall(i - 1, j - 1))) {
-            planeLeftDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 2, Config.BlockSize * i + (Config.BlockSize / 4));
+            planeLeftDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 3, Config.BlockSize * i + (Config.BlockSize / 4));
             planeLeftDoor.rotation.y = 90 * Math.PI / 180;
             scene.add(planeLeftDoor);
-            planeRightDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 2, Config.BlockSize * i - (Config.BlockSize / 4));
+            planeRightDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 3, Config.BlockSize * i - (Config.BlockSize / 4));
             planeRightDoor.rotation.y = 90 * Math.PI / 180;
             scene.add(planeRightDoor);
             pushDoor(planeLeftDoor, planeRightDoor)
-            // }
+            //扉の上の壁
+            planeWallDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 1.2, Config.BlockSize * i);
+            planeWallDoor.rotation.y = 90 * Math.PI / 180;
+            scene.add(planeWallDoor);
             break
           case Config.SetDoorRight:
             //この地点か一つ右の上下が壁の場合に描画
-            // if ((isWall(i + 1, j) && isWall(i - 1, j)) || (isWall(i + 1, j + 1) && isWall(i - 1, j + 1))) {
-            planeLeftDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 2, Config.BlockSize * i + (Config.BlockSize / 4));
+            planeLeftDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 3, Config.BlockSize * i + (Config.BlockSize / 4));
             planeLeftDoor.rotation.y = 90 * Math.PI / 180;
             scene.add(planeLeftDoor);
-            planeRightDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 2, Config.BlockSize * i - (Config.BlockSize / 4));
+            planeRightDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 3, Config.BlockSize * i - (Config.BlockSize / 4));
             planeRightDoor.rotation.y = 90 * Math.PI / 180;
             scene.add(planeRightDoor);
             pushDoor(planeLeftDoor, planeRightDoor)
-            // }
+            //扉の上の壁
+            planeWallDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 1.2, Config.BlockSize * i);
+            planeWallDoor.rotation.y = 90 * Math.PI / 180;
+            scene.add(planeWallDoor);
             break
           default:
         }
@@ -265,7 +297,7 @@ function pushDoor(leftDoor: THREE.Mesh, rightDoor: THREE.Mesh) {
 
 // マウスクリックイベントを設定
 const handleClick = (event: MouseEvent) => {
-  if (statusStore.process == Config.processBattle) return;
+  if (statusStore.processDungeon == Config.processBattle) return;
   // Raycasterのインスタンスを作成
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
@@ -317,8 +349,8 @@ function playerMove(eventKey: string) {
   console.log('playerMove', eventKey)
 
   //パーティorキャラクターui表示時
-  if (showUIStore.party || showUIStore.character) return;
-  if (statusStore.process == Config.processBattle) return;
+  if (showUIStore.party || showUIStore.character || showUIStore.item) return;
+  if (statusStore.processDungeon == Config.processBattle) return;
   if (!camera) return
 
   const direction = new THREE.Vector3()
@@ -357,7 +389,7 @@ function playerMove(eventKey: string) {
       targetRotation -= Math.PI / 2; // 目標回転角度を更新
       break
     default:
-     return
+      return
   }
   //位置が同じときはリターン
   if (newPosition == positionStore.playerPosition) {
@@ -404,9 +436,9 @@ function playerMove(eventKey: string) {
 }
 // エンカウント処理
 function triggerEncounter() {
-  addNewLog(Config.logMonsterEncounter)
+  addNewLog(Config.logMonsterEncounter,0)
   showUIStore.map = false
-  statusStore.process = Config.processBattle
+  statusStore.processDungeon = Config.processBattle
 }
 
 const gameLoop = () => {
@@ -425,27 +457,22 @@ const gameLoop = () => {
 }
 
 //ログ表示用
-const actionLog = ref<InstanceType<typeof ActionLog> | null>(null);
-const addNewLog = (log: string) => {
-  if (actionLog.value) {
-    actionLog.value.addLog(log,0);
-  }
-};
+// const actionLog = ref<InstanceType<typeof ActionLog> | null>(null);
+// const addNewLog = (log: string) => {
+//   if (actionLog.value) {
+//     actionLog.value.addLog(log, 0);
+//   }
+// };
 
 </script>
 
 <style scoped>
-/* .dungeon {
-  width: 100vw;
-  height: 100vh;
-} */
-
 .upKey {
   position: absolute;
   top: 0;
   left: 33.5vw;
   width: 33vw;
-  height: 50vh;
+  height: 100vh;
   /* border: 0.2vw solid #624CAB; */
 }
 

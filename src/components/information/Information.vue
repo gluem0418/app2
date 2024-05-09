@@ -35,7 +35,7 @@ const emit = defineEmits(['hideError']);
   background-image: url('/img/flame/flame0322.png');
   background-size: 100% 100%;
   /* font-family: "Trade Winds"; */
-  font-family: 'Century';
+  font-family: serif;
   /* color: #F34213; */
   color: #E3CD3B;
   font-size: 4vh;
@@ -49,5 +49,6 @@ const emit = defineEmits(['hideError']);
 
 .message {
   text-align:center;
+  padding: 4vh 3vw;
 }
 </style>

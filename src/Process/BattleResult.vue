@@ -41,6 +41,9 @@ const showUIStore = useShowUI()
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
 const statusStore = useStatusStore()
+//音楽管理
+import { useAudioStore } from '@/stores/Audio';
+const audioStore = useAudioStore()
 
 const props = defineProps({
   getExp: { type: Number },
@@ -49,7 +52,9 @@ const props = defineProps({
 
 function clickResult() {
   showUIStore.map = true
-  statusStore.process = Config.processSearch
+  statusStore.processDungeon = Config.processSearch
+  audioStore.playBgm(statusStore.musicDungeon) // ここで音楽を再生
+
 }
 
 </script>
@@ -67,7 +72,8 @@ function clickResult() {
   background-image: url('/img/flame/flame030302.png');
   background-size: 100% 100%;
   color: #E2D8A6;
-  font-family: "Mystery Quest";
+  font-family: "Trade Winds";
+  /* font-family: "Mystery Quest"; */
   font-size: 8vh;
   height: 14vh;
   width: 35vw;
@@ -80,13 +86,15 @@ function clickResult() {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 4vh;
-  background-image: url('/img/flame/flame030105.png');
+  top: 6.5vh;
+  background: rgba(59, 65, 60, 0.7);
+  /* background-image: url('/img/flame/flame030105.png'); */
+  background-image: url('/img/flame/flame0322.png');
   background-size: 100% 100%;
   color: #F2EDD5;
-  font-family: "Mystery Quest";
+  /* font-family: "Mystery Quest"; */
   font-size: 5vh;
-  height: 95vh;
+  height: 90vh;
   width: 90vw;
 }
 

@@ -67,22 +67,11 @@ const changeCharacter = (selectType: string) => {
 </script>
   
 <style scoped>
-.guildFloor {
-  background-image: url('/img/back/town/guildfloor.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  height: 100vh;
-  width: 100vw;
-  /* font-family: "Verily Serif Mono"; */
-  font-family: 'Century';
-  font-size: 2vw;
-  color: #E2D8A6;
-}
 .AddMember {
   height: 100vh;
   width: 100vw;
   background: #3B413C80;
-  font-family: 'Century';
+  font-family: serif;
   font-size: 2vw;
   color: #E2D8A6;
 }

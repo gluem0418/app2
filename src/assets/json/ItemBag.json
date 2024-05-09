@@ -1,0 +1,32 @@
+[
+  {
+    "item_id": 1,
+    "use": 2,
+    "number": 1
+  },
+  {
+    "item_id": 2,
+    "use": 2,
+    "number": 1
+  },
+  {
+    "item_id": 1001,
+    "use": 0,
+    "number": 5
+  },
+  {
+    "item_id": 1002,
+    "use": 0,
+    "number": 1
+  },
+  {
+    "item_id": 2001,
+    "use": 1,
+    "number": 3
+  },
+  {
+    "item_id": 2002,
+    "use": 1,
+    "number": 1
+  }
+]

@@ -5,13 +5,11 @@ import vuetify from './plugins/vuetify'
 import { loadFonts } from './plugins/webfontloader'
 import './style.css'
 
-loadFonts()
-
 const pinia = createPinia();
+loadFonts()
 
 createApp(App)
   .use(vuetify)
-  // .use(createPinia())
   .use(pinia)
   .mount('#app')
 

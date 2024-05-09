@@ -1,37 +1,52 @@
 <template>
-  <div class="background">
+  <div v-if="!isGameStart" class="background" @click="startOpening">
+    <div class="enter">ENTER THE CLICK</div>
+  </div>
+  <div v-else class="background">
     <div class="title">{{ Config.title }}</div>
     <SelectBtn class="btnCard" id="btn2" :inside="Config.newgame" @click="newgame()"></SelectBtn>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 
-import useFullscreen from '@/Process/UseFullscreen';
-// const { isFullscreen, enterFullscreen, exitFullscreen } = useFullscreen();
-const { enterFullscreen } = useFullscreen();
-import SelectBtn from '@/components/button/GreenBtn.vue';
+import SelectBtn from '@/components/flame/GreenBtn.vue';
 import Config from '@/config.ts';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
 const statusStore = useStatusStore()
 
+//音楽管理
+import { useAudioStore } from '@/stores/Audio';
+const audioStore = useAudioStore()
+
+const isGameStart = ref(false);
+
 //ロード時
 onMounted(() => {
-
   if (window.innerHeight > window.innerWidth) {
     window.onload = () => {
-      alert(Config.msgInGame)
+      alert(Config.msgInGame1)
     }
+  }
+  //music start
+  window.onload = () => {
+    alert(Config.msgInGame2)
   }
 });
 
 //イベント送信
+function startOpening() {
+  isGameStart.value = true;
+  audioStore.playBgm(Config.mscTitle) // ここで音楽を再生
+}
+
+//イベント送信
 function newgame() {
-  enterFullscreen()
+  // enterFullscreen()
   statusStore.status = Config.statusTown
-  statusStore.process = Config.statusTown
+  statusStore.processTown = Config.statusTown
 }
 
 </script>
@@ -47,18 +62,19 @@ function newgame() {
 }
 
 .title {
+  font-family: "Fredericka The Great";
   color: #BFAD8A;
-  font-size: 10vw;
+  font-size: 12vw;
   padding-top: 4%;
 }
 
-.btnCard {
-  /* background-image: url('/img/flame/btn0203.png'); */
-  /* background-image: url('/img/button/selectBtn1.png');
-  background-size: 100% 100%; */
-  /* padding:4vh 4vw 3vh 4vw; */
-  /* color: #F2EDD5; */
-  /* font-size: 2vw; */
+.enter {
+  position: absolute;
+  color: #BFAD8A;
+  top: 50%;
+  left: 50%;
+  font-size: 5vw;
+  transform: translateY(-50%) translateX(-50%);
 }
 
 #btn1 {

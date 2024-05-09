@@ -1,7 +1,9 @@
 <template>
   <div class="TurnOrder">
     <div v-for="(order, index) in turnOrder" v-show="order.nowHP > 0" :key="index" class="turnOrderFlame"
-      :class="{ currentOrder: index == numOrder }" :style="{ backgroundImage: 'url(' + getFlameImage(order) + ')' }">
+      :class="{ currentOrder: index == numOrder }" :style="{
+        backgroundImage: 'url(' + getFlameImage(order) + ')',
+        zIndex: index == numOrder ? 1000 : turnOrder!.length - index}">
       <img :src="getOrderImage(order)" alt="" class="turnOrderImage">
     </div>
   </div>
@@ -36,31 +38,33 @@ const getOrderImage = (order: fighter) => {
 <style scoped>
 .TurnOrder {
   display: flex;
-  /* justify-content: flex-end; */
-  height: 16vh;
+  flex-direction: column;
+  align-items: center;
 }
 
 .turnOrderFlame {
   background-size: 100% 100%;
   background-repeat: no-repeat;
   width: 7vw;
+  height: 14vh;
+  margin-top: -6vh;
   text-align:center;
-  flex: 1 0 auto;
 }
 
 .currentOrder {
-  animation: blink 1s ease infinite alternate
+  animation: blink 1s ease infinite alternate;
 }
 
 @keyframes blink {
-  0% {
-  }
+  0% {}
+
   100% {
     background-color: #F2EDD5;
   }
 }
 
 .turnOrderImage {
-  padding-top:1vh;
-  height: 93%;
-}</style>
+  padding-top: 1.5vh;
+  height: 92%;
+}
+</style>

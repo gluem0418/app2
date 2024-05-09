@@ -88,11 +88,13 @@ const props = defineProps({
 <style scoped>
 .StatusUI {
   /* background: rgba(59, 65, 60, 0.50); */
-  background-image: url('/img/flame/flame130202.png');
+  /* background-image: url('/img/flame/flame130202.png'); */
+  background-image: url('/img/flame/flame05083.png');
   background-size: 100% 100%;
   color: #F2EDD5;
   /* font-family: "Book Antiqua"; */
-  font-family: 'Century';
+  /* font-family: "serif"; */
+  font-family: serif;
   /* font-family: "Verily Serif Mono"; */
   /* font-family: "Vidaloka"; */
   font-size: 2.8vh;

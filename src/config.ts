@@ -7,26 +7,37 @@ export default {
   //common
   textYes: 'YES',
   textNo: 'NO',
-  
+
   //log
   strLog1: 'GENERAL',
   strLog2: 'BATTLE',
-  
+
   //statusStore
   statusOpening: 'OPENING',
   statusTown: 'TOWN',
+  statusDungeon: 'DUNGEON',
+
+  processSearch: 'SEARCH',
+  processBattle: 'BATTLE',
+
   processGuild: 'GUILD',
-  actionAddMember: 'Add a Member',
-  actionRemoveMember: 'Remove Member',
-  processPub: 'PUB',
+  menuAddMember: 'Add a Member',
+  menuRemoveMember: 'Remove Member',
+
   processInn: 'INN',
+  processPub: 'PUB',
   processChurch: 'CHURCH',
   processSmith: 'SMITH',
   processEquipShop: 'EQUPMENT SHOP',
   processItemShop: 'ITEM SHOP',
-  statusDungeon: 'DUNGEON',
-  processSearch: 'SEARCH',
-  processBattle: 'BATTLE',
+
+  nameDungeon1: 'Forest of Envy',
+  nameDungeon2: 'Swamp of Gluttony',
+  nameDungeon3: 'Desert of Sloth',
+  nameDungeon4: 'Volcano of Wrath',
+  nameDungeon5: 'Cave of Greed',
+  nameDungeon6: 'Palace of Lust',
+  nameDungeon7: 'Tower of Pride',
 
   //キャラクター
   mainChaid: 1,
@@ -34,6 +45,24 @@ export default {
   clsHolyKnight: 'HolyKnight',
   clsPriest: 'Priest',
   clsArcher: 'Archer',
+  statusHP: 'HP',
+  statusMP: 'MP',
+  statusATK: 'ATK',
+  statusMGC: 'MGC',
+  statusDEF: 'DEF',
+  statusMDF: 'MDF',
+  statusDEX: 'DEX',
+  statusSPD: 'SPD',
+  statusnowHP: 'nowHP',
+  statusnowMP: 'nowMP',
+
+  //装備
+  wepSword: 'Sword',
+  wepAxe: 'Axe',
+  wepDagger: 'Dagger',
+  wepWand: 'Wand',
+  wepBow: 'Bow',
+  wepSpear: 'Spear',
 
   //マップ作成
   MapWidth: 100,
@@ -54,7 +83,7 @@ export default {
   RoomCountMax: 20,
 
   BlockSize: 10, //1ブロックあたりの長さ
-  BlockHeight: 15, //壁の高さ  
+  BlockHeight: 20, //壁の高さ  
   //道の集合点を増やしたいならこれを増やす
   meetPointCount: 2,
 
@@ -64,7 +93,7 @@ export default {
   MiniRoomColor: '#C2B8B2',
   MiniMoveColor: '#197BBD',
   MiniPlayerColor: '#CBEF43',
-  
+
   //移動キー
   ArrowUp: 'ArrowUp',
   ArrowDown: 'ArrowDown',
@@ -72,12 +101,12 @@ export default {
   ArrowRight: 'ArrowRight',
   TurnLeft: 'TurnLeft',
   TurnRight: 'TurnRight',
-  
+
   //エンカウント
   encountMin: 1,
   encountMax: 5,
-  encountLimit: 1,  //エンカウント発生ポイント
-  
+  encountLimit: 100,  //エンカウント発生ポイント
+
   //戦闘
   monNumMin: 1,
   monNumMax: 6,
@@ -95,22 +124,68 @@ export default {
   delayTime: 100,  //エフェクト表示の時間差
   awaitTime: 1500,  //戦闘開始、終了時の待ち時間
   nextTime: 500,  //行動終了後の待ち時間
-  strAttack: 'Attack',
-  strSkill: 'Skill',
-  strMagic: 'Magic',
-  strAtk: 'ATK',
-  strMgc: 'MGC',
+
+  actionAttack: 'Attack',
+  actionSkill: 'Skill',
+  actionMagic: 'Magic',
+  actionItem: 'Item',
+
   strMiss: 'MISS',
-  
-  /////////////////////////////////////
+
+  targetMyself: 'myself',
+  targetOneFriend: 'oneFriend',
+  targetAllFriends: 'allFriends',
+  targetRandomFriend: 'randomFriend',
+  targetOneEnemy: 'oneEnemy',
+  targetColumnEnemy: 'columnEnemy',
+  targetRowEnemy: 'rowEnemy',
+  targetAllEnemy: 'allEnemy',
+  targetRandomEnemy: 'randomEnemy',
+  targetAll: 'all',
+
+  effectAttack: 'attack',
+  effectHeal: 'heal',
+  effectBuff: 'buff',
+  effectDebuff: 'debuff',
+  effectCondition: 'condition',
+  effectSpecial: 'special',
+  effectDamage: 'damage',
+  effectRegeneration: 'regeneration',
+
+  // スキル
+  baseFixValue: 'FixValue',
+  baseFixRate: 'FixRate',
+
+  // アイテム
+  returnItemId: 1,
+  // アイテムバッグ
+  itemTabAll: 'All',
+  itemTab1: 'Normal',
+  itemTab2: 'Battle',
+  itemTab3: 'Special',
+  itemBtn1: 'USE',
+
+  // music
+  mscTitle: 'maou_bgm_orchestra18',
+  mscTown: 'maou_bgm_acoustic36',
+
+  mscDungeon1: 'maou_bgm_fantasy01',
+
+  mscBattle1: 'Bite_the_Bullet',
+  mscBattle2: 'maou_bgm_fantasy15',
+  mscBattle3: 'maou_bgm_orchestra12',
+  mscBattle4: 'Strike_the_Despair',
+  mscBattle5: 'Integral-one',
+
   //log
-  /////////////////////////////////////
   logEnterDungeon: 'Enter the dungeon',
   logMonsterEncounter: 'Monster Encounter',
-  /////////////////////////////////////
+
   //メッセージ
-  /////////////////////////////////////
-  msgInGame: 'Please turn the screen horizontally.',
+  msgInGame1: 'Please turn the screen horizontally.',
+  msgInGame2: 'Music plays in this game.',
+  msgEnterDungeon: 'Do you enter The ',
+
   msgAddParty1: 'Do you add ',
   msgAddParty2: ' to your party?',
   msgRemoveParty1: 'Do you remove ',

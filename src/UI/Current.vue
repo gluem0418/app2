@@ -3,23 +3,17 @@
     <div class="character" v-for="(character, index) in partyStore.characters" @click="clickTarget(character)"
       @mouseover="overTarget(character)"
       :class="{ currentCharacter: character == currentCharacter, targetCharacter: (targetCharacter?.includes(character)) }">
-      <!-- <div v-show="showCharacterEffect && showCharacterEffect[index] && targetCharacter?.includes(character)"> -->
       <div v-show="showCharacterEffect && showCharacterEffect[index]" class="characterEffect"
-        :class="{ effectGreen: toCharacterEffectType == 'heal', effectRed: toCharacterEffectType == 'damage' }">{{
+        :class="{ effectGreen: toCharacterEffectType == Config.effectHeal, effectRed: toCharacterEffectType == Config.effectDamage }">{{
           toCharacterEffect[index] }} </div>
       <img v-show="showCharacterAnime && showCharacterAnime[index]" :src="toCharacterAnime!" class="toCharacterAnime"
         alt="skill effect">
       <img class="characterface" :src="character.faceGraphicUrl">
-      <!-- <span class="progress-bar-hp">
-          <ProgressBarHp :nowHP="character.nowHP" :maxHP="character.totalStatus.HP" />
-        </span> -->
       <span class="progress-bar-hp">
         <ProgressBarHp :nowHP="character.nowHP" :maxHP="character.totalStatus.HP" />
       </span>
       <div class="progress-bar-mp">
         <ProgressBarMp :nowMP="character.nowMP" :maxMP="character.totalStatus.MP" />
-        <!-- <progress class="progress-mp" :value="character.nowMP" :max="character.totalStatus.MP"></progress>
-        <span class="nowmp">{{ character.nowMP }}/{{ character.totalStatus.MP }}</span> -->
       </div>
     </div>
   </div>
@@ -30,6 +24,8 @@ import { PropType, watch } from 'vue'
 import Character from '@/Class/Character.ts';
 import ProgressBarHp from '@/components/progress/ProgressBarHp.vue';
 import ProgressBarMp from '@/components/progress/ProgressBarMp.vue';
+
+import Config from '@/config.ts';
 
 const props = defineProps({
   currentCharacter: { type: Character },
@@ -48,7 +44,7 @@ const partyStore = usePartyStore()
 
 // キャラクターを選択中に呼び出す関数
 function overTarget(character: Character) {
-  if (props.selectionMode != 'oneFriend') return
+  if (props.selectionMode != Config.targetOneFriend) return
   //ターゲット設定
   if (!props.targetCharacter?.includes(character)) {
     selectCharacter('over', character)
@@ -56,16 +52,16 @@ function overTarget(character: Character) {
 }
 // キャラクターを選択中に呼び出す関数
 function clickTarget(character: Character) {
-  if (props.selectionMode == 'myself') {
+  if (props.selectionMode == Config.targetMyself) {
     selectCharacter('click')
-  } else if (props.selectionMode == 'oneFriend') {
+  } else if (props.selectionMode == Config.targetOneFriend) {
     //ターゲット設定
     if (props.targetCharacter?.includes(character)) {
       selectCharacter('click', character)
     } else {
       selectCharacter('over', character)
     }
-  } else if (props.selectionMode == 'allFriends') {
+  } else if (props.selectionMode == Config.targetAllFriends) {
     selectCharacter('click')
   }
 }

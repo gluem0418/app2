@@ -32,11 +32,12 @@
 			"ACC": 2001
 		},
 		"activeSkill": [
-			1,
-			2,
-			3,
-			4,
-			5
+			101,
+			102,
+			103,
+			104,
+			105,
+			106
 		],
 		"passiveCost": 40,
 		"passiveSkill": [
@@ -83,11 +84,11 @@
 			"ACC": 2101
 		},
 		"activeSkill": [
-			101,
-			102,
-			103,
-			104,
-			105
+			201,
+			202,
+			203,
+			204,
+			205
 		],
 		"passiveCost": 40,
 		"passiveSkill": [
@@ -134,11 +135,11 @@
 			"ACC": 2201
 		},
 		"activeSkill": [
-			201,
-			202,
-			203,
-			204,
-			205
+			301,
+			302,
+			303,
+			304,
+			305
 		],
 		"passiveCost": 40,
 		"passiveSkill": [
@@ -185,11 +186,11 @@
 			"ACC": 2001
 		},
 		"activeSkill": [
-			301,
-			302,
-			303,
-			304,
-			305
+			401,
+			402,
+			403,
+			404,
+			405
 		],
 		"passiveCost": 40,
 		"passiveSkill": [
@@ -236,11 +237,12 @@
 			"ACC": 2101
 		},
 		"activeSkill": [
-			401,
-			402,
-			3,
-			4,
-			5
+			501,
+			502,
+			503,
+			504,
+			505,
+			506
 		],
 		"passiveCost": 40,
 		"passiveSkill": [
@@ -257,7 +259,7 @@
 	{
 		"cha_id": 6,
 		"name": "Nyx",
-		"class": "Magician",
+		"class": "Witch",
 		"faceGraphicUrl": "img/character/chara6face.png",
 		"poseGraphicUrl": "img/character/chara6.png",
 		"backgroundUrl": "img/character/chara6back.jpg",
@@ -287,11 +289,11 @@
 			"ACC": 2301
 		},
 		"activeSkill": [
-			401,
-			402,
-			403,
-			404,
-			405
+			601,
+			602,
+			603,
+			604,
+			605
 		],
 		"passiveCost": 40,
 		"passiveSkill": [
@@ -338,11 +340,12 @@
 			"ACC": 2001
 		},
 		"activeSkill": [
-			21,
-			22,
-			23,
-			24,
-			25
+			701,
+			702,
+			703,
+			704,
+			705,
+			706
 		],
 		"passiveCost": 40,
 		"passiveSkill": [

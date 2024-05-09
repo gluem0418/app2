@@ -1,16 +1,16 @@
 <template>
   <!-- <div class="Guild"> -->
     <div class="information" >
-      <div class="flame" v-if="statusStore.action == ''">
+      <div class="flame" v-if="statusStore.guildMenu == ''">
         <div class="firstItem">Quest</div>
         <div class="secondItem">Accept a Quest</div>
         <div class="secondItem">Receive Rewards</div>
         <div class="firstItem" >About Member</div>
-        <div class="secondItem" @click="clickItem(Config.actionAddMember)"> {{ Config.actionAddMember }}</div>
-        <div class="secondItem" @click="clickItem(Config.actionRemoveMember)"> {{ Config.actionRemoveMember }}</div>
+        <div class="secondItem" @click="clickItem(Config.menuAddMember)"> {{ Config.menuAddMember }}</div>
+        <div class="secondItem" @click="clickItem(Config.menuRemoveMember)"> {{ Config.menuRemoveMember }}</div>
       </div>
-      <AddMember v-if="statusStore.action == Config.actionAddMember" class="into"></AddMember>
-      <RemoveMember v-if="statusStore.action == Config.actionRemoveMember" ></RemoveMember>
+      <AddMember v-if="statusStore.guildMenu == Config.menuAddMember" class="into"></AddMember>
+      <RemoveMember v-if="statusStore.guildMenu == Config.menuRemoveMember" ></RemoveMember>
     </div>
   <!-- </div> -->
 </template>
@@ -26,9 +26,9 @@ import { useStatusStore } from '@/stores/Status.ts';
 const statusStore = useStatusStore()
 //
 
-//メンバー追加
-function clickItem(action: string) {
-  statusStore.action = action
+// メニューで選択した画面を開く
+function clickItem(menu: string) {
+  statusStore.guildMenu = menu
 }
 
 </script>
@@ -40,7 +40,7 @@ function clickItem(action: string) {
   height: 100vh;
   width: 100vw;
   /* font-family: "Verily Serif Mono"; */
-  font-family: 'Century';
+  font-family: serif;
   font-size: 2vw;
   color: #E2D8A6;
 }

@@ -17,10 +17,10 @@ function clickBack() {
     showUIStore.message = false
   } else if (showUIStore.character) {
     showUIStore.character = false
-  } else if (statusStore.action) {
-    statusStore.action = ''
+  } else if (statusStore.guildMenu) {
+    statusStore.guildMenu = ''
   } else {
-    statusStore.process = Config.statusTown
+    statusStore.processTown = Config.statusTown
   }
 }
 

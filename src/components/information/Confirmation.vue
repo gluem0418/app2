@@ -10,8 +10,8 @@
   
 <script setup lang="ts">
 
-import YesBtn from '@/components/button/BlueBtn.vue';
-import NoBtn from '@/components/button/RedBtn.vue';
+import YesBtn from '@/components/flame/BlueBtn.vue';
+import NoBtn from '@/components/flame/RedBtn.vue';
 import Config from '@/config.ts';
 
 const props = defineProps({
@@ -45,7 +45,7 @@ const emit = defineEmits(['confirmationResponse']);
   background: #624CAB80;
   background-image: url('/img/flame/flame0322.png');
   background-size: 100% 100%;
-  font-family: 'Century';
+  font-family: serif;
   color: #E3CD3B;
   font-size: 4vh;
   height: 40vh;
@@ -54,7 +54,7 @@ const emit = defineEmits(['confirmationResponse']);
 }
 
 .message {
-  margin-top: 5vh;
+  padding: 4vh 3vw;
   text-align: center;
 }
 
