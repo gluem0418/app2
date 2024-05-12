@@ -87,9 +87,8 @@ const props = defineProps({
 
 <style scoped>
 .StatusUI {
-  /* background: rgba(59, 65, 60, 0.50); */
-  /* background-image: url('/img/flame/flame130202.png'); */
-  background-image: url('/img/flame/flame05083.png');
+  background: rgba(59, 65, 60, 0.50);
+  background-image: url('/img/flame/flame130203.png');
   background-size: 100% 100%;
   color: #F2EDD5;
   /* font-family: "Book Antiqua"; */

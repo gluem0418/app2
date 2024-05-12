@@ -79,40 +79,41 @@ const props = defineProps({
   /* font-family: "Verily Serif Mono"; */
   /* font-size: 1.4vw; */
   font-size: 2.8vh;
-  padding: 3vh 2vw;
+  padding-top: 4vh;
+  padding-left: 2.5vw;
   position: relative;
-  height: 67vh;
+  height: 70vh;
   width: 23vw;
 }
 
 .slashline {
   position: absolute;
   width: 100%;
-  top: 7vh;
+  top: 8vh;
   left:2.5vw;
 }
 .hitline {
   position: absolute;
   width: 100%;
-  top: 12vh;
+  top: 13vh;
   left:2.5vw;
 }
 .fireline {
   position: absolute;
   width: 100%;
-  top: 17vh;
+  top: 18vh;
   left:2.5vw;
 }
 .earthline {
   position: absolute;
   width: 100%;
-  top: 22vh;
+  top: 23vh;
   left:2.5vw;
 }
 .lightline {
   position: absolute;
   width: 100%;
-  top: 27vh;
+  top: 28vh;
   left:2.5vw;
 }
 

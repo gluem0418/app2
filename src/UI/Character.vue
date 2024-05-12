@@ -148,7 +148,7 @@ watch(() => props.character, () => {
 
 .CharaStatusUI {
   position: absolute;
-  top: 19vh;
+  top: 18vh;
   left: 4vw;
   animation: slideTop 0.3s ease-in-out;
 }

@@ -85,16 +85,17 @@ const props = defineProps({
   
 <style scoped>
 .CharaStatusUI {
-  background: rgba(59, 65, 60, 0.7);
-  /* background-image: url('/img/flame/flame032701.png'); */
-  background-image: url('/img/flame/flame05082.png');
+  background: rgba(59, 65, 60, 0.8);
+  background-image: url('/img/flame/flame032701.png');
   background-size: 100% 100%;
   color: #F2EDD5;
   font-family: serif;
   font-size: 2.8vh;
-  padding: 3vh 2vw;
+  /* padding: 3vh 2vw; */
+  padding-top: 4vh;
+  padding-left: 2.5vw;
   position: relative;
-  height: 67vh;
+  height: 70vh;
   width: 23vw;
 }
 
@@ -107,51 +108,51 @@ const props = defineProps({
 }
 
 .expline {
-  position: absolute;
+  /* position: absolute; */
   width: 100%;
-  top: 12vh;
+  /* top: 12vh; */
 }
 
 .atkline {
   position: absolute;
   width: 100%;
-  top: 17vh;
+  top: 18vh;
 }
 
 .defline {
   position: absolute;
   width: 100%;
-  top: 21vh;
+  top: 22vh;
 }
 
 .dexline {
   position: absolute;
   width: 100%;
-  top: 25vh;
+  top: 26vh;
 }
 
 .wepline {
   position: absolute;
   width: 100%;
-  top: 30vh;
+  top: 31vh;
 }
 
 .armline {
   position: absolute;
   width: 100%;
-  top: 34vh;
+  top: 35vh;
 }
 
 .accline {
   position: absolute;
   width: 100%;
-  top: 38vh;
+  top: 39vh;
 }
 
 .passiveSkill {
   position: absolute;
   width: 100%;
-  top: 43vh;
+  top: 44vh;
 }
 
 .nowhp {

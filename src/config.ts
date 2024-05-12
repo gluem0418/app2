@@ -89,9 +89,10 @@ export default {
 
   //ミニマップ
   MiniHeight: 300,
-  MiniWallColor: '#02040F',
-  MiniRoomColor: '#C2B8B2',
-  MiniMoveColor: '#197BBD',
+  // MiniWallColor: '#d4c08d',  
+  // MiniRoomColor: '#C2B8B2',
+  MiniRoomColor: '#3B413C',
+  MiniMoveColor: '#F2EDD5',
   MiniPlayerColor: '#CBEF43',
 
   //移動キー
@@ -105,7 +106,7 @@ export default {
   //エンカウント
   encountMin: 1,
   encountMax: 5,
-  encountLimit: 100,  //エンカウント発生ポイント
+  encountLimit: 1,  //エンカウント発生ポイント
 
   //戦闘
   monNumMin: 1,

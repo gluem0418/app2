@@ -27,14 +27,14 @@ const change = () => {
   color: #F2EDD5;
   font-size: 4vh;
   border-radius: 1.2vw;
-  border: 0.8vh ridge #3CD0E3;
+  border: 0.8vh ridge #84dae9;
   width:12vw;
 }
 .first {
   background: #624CAB80;
   padding: 0.8vh 1vw;
   border-radius: 1vw;
-  border-right: 0.8vh ridge #3CD0E3;
+  border-right: 0.8vh ridge #84dae9;
 }
 
 .second {
@@ -42,7 +42,7 @@ const change = () => {
   background: #624CAB80;
   padding: 0vh 1vw;
   border-radius: 1vw;
-  border-left: 0.8vh ridge #3CD0E3;
+  border-left: 0.8vh ridge #84dae9;
 }
 
 </style>

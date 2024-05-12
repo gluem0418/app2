@@ -196,7 +196,7 @@ watch(() => props.character, () => {
 
 .underLine {
   margin: 0vh 0.5vw;
-  border-bottom: 0.7vh double #3CD0E3;
+  border-bottom: 0.7vh double #84dae9;
 }
 
 .skillList {

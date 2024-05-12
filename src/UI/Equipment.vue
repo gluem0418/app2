@@ -148,10 +148,8 @@ const updateEquipment = (eqpbag_id: number, equippedBy: number | null) => {
 
 <style scoped>
 .EquipmentUI {
-  /* background: rgba(49, 64, 52, 0.7); */
-  background: rgba(59, 65, 60, 0.7);
-  /* background-image: url('/img/flame/flame032702.png'); */
-  background-image: url('/img/flame/flame6589435.png');
+  background: rgba(59, 65, 60, 0.8);
+  background-image: url('/img/flame/flame032702.png');
   background-size: 100% 100%;
   font-family: serif;
   /* font-family: "Verily Serif Mono"; */
@@ -187,7 +185,8 @@ const updateEquipment = (eqpbag_id: number, equippedBy: number | null) => {
 
 .underLine {
   margin: 0vh 0.5vw;
-  border-bottom: 0.7vh double #3CD0E3;
+  /* border-bottom: 0.7vh double #3CD0E3; */
+  border-bottom: 0.7vh double #84dae9;
 }
 
 .EquipmentTypeList {

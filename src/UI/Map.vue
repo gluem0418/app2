@@ -47,15 +47,15 @@ const initMapUI = () => {
   for (let i = 0; i < MapData!.length; i++) {
     for (let j = 0; j < MapData![i].length; j++) {
       switch (MapData![i][j]) {
-        case 0: // 壁
-          fullCtx.fillStyle = Config.MiniWallColor;
-          break;
+        // case 0: // 壁
+        //   fullCtx.fillStyle = Config.MiniWallColor;
+        //   break;
         case 1: // 部屋                
         case 2: // 通路
           fullCtx.fillStyle = Config.MiniRoomColor;
+          fullCtx.fillRect(j * 3, i * 3, 3, 3);
           break;
       }
-      fullCtx.fillRect(j * 3, i * 3, 3, 3);
     }
   }
   playerMove();
@@ -104,11 +104,11 @@ watch(() => positionStore.playerPosition, () => {
 
 <style scoped>
 .miniMapFlame {
-  background-image: url('/img/flame/flame05081.png');
+  background-image: url('/img/flame/flame050802.jpg');
   background-size: 100% 100%;
-  padding: 3.2vh 1.7vw;
-  width: 19.5vw;
-  height: 36.5vh;
+  padding: 3vh 1.5vw;
+  width: 19vw;
+  height: 36vh;
 }
 
 .miniMap {
@@ -128,17 +128,18 @@ watch(() => positionStore.playerPosition, () => {
   background-color: rgba(0, 0, 0, 0.4);
 }
 .fullMapFlame {
-  margin: 0.5vh 18vw;
-  background-image: url('/img/flame/flame05081.png');
+  margin: 2vh 15vw;
+  background-image: url('/img/flame/flame050802.jpg');
+  /* background-image: url('/img/flame/flame05081.png'); */
   background-size: 100% 100%;
-  padding: 8.5vh 5.1vw;
-  height: 97vh;
-  width: 60.5vw;
+  padding: 5vh 3vw;
+  height: 95vh;
+  width: 70vw;
 }
 
 .fullMap {
   /* border-radius: 1vw; */
-  height: 80vh;
-  width: 50vw;
+  height: 90vh;
+  width: 60vw;
 }
 </style>

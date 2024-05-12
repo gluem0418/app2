@@ -19,7 +19,7 @@ const props = defineProps({
   /* background-size: 100% 100%; */
   border-radius: 0.5vw;
   /* border: 0.8vh double #3CD0E3; */
-  border: 0.8vh ridge #3CD0E3;
+  border: 0.8vh ridge #84dae9;
   font-family: serif;
   color: #F2EDD5;
   font-size: 2.8vh;

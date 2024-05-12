@@ -70,6 +70,8 @@
       <SkillUI v-if="showSkillList" class="SkillUI" :character="currentCharacter" :processBattle="showSkillList"
         @useSkill='useSkill' />
 
+      <ItemBagUI v-if="showItemList" class="ItemBagUI"/>
+
       <div v-if="currentAction == Config.actionSkill && battleProcess == 'selectTarget'">
         <!-- <div class="attackName">{{ activeSkill.name }}</div> -->
         <SelectName class="attackName" :inside="activeSkill.name"></SelectName>
@@ -91,6 +93,7 @@ import BattleResult from './BattleResult.vue';
 import CurrentUI from '@/UI/Current.vue';
 import SkillUI from '@/UI//Skill.vue';
 import SkillInfo from '@/UI//SkillInfo.vue';
+import ItemBagUI from '@/UI/ItemBag.vue';
 import ActionLog from '@/UI/ActionLog.vue';
 import { LogService } from './LogService.ts';
 

@@ -203,12 +203,12 @@ const changeOrder = () => {
 
 .characters {
   margin-top: 3vh;
-  margin-left: 3vw;
+  margin-left: 4vw;
 }
 
 .character-card {
   display: inline-block;
-  width: 24vw;
+  width: 23vw;
 }
 
 .character-card.changing {
