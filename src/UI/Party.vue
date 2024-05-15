@@ -15,7 +15,8 @@
  
     <CharacterUI :character="selectedCharacter" :index="selectedIndex" v-show="showUIStore.character"
       @changeCharacter='changeCharacter' />
-    <ItemBagUI class="ItemBag" v-show="showUIStore.item" />
+    <!-- <ItemBagUI class="ItemBag" v-show="showUIStore.item" /> -->
+    <ItemUse class="ItemUse" v-show="showUIStore.item" />
     <IconBack class="IconBack" @click="clickBack" v-show="showUIStore.party || showUIStore.character" />
 
     <IconBag class="IconBag" @click="clickBag" v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.character" />
@@ -34,7 +35,7 @@ import { ref } from 'vue';
 
 import StatusUI from './Status.vue';
 import CharacterUI from './Character.vue';
-import ItemBagUI from './ItemBag.vue';
+import ItemUse from '@/Process/ItemUse.vue';
 // import CurrentUI from '@/UI/Current.vue';
 
 import Character from '@/Class/Character.ts';
@@ -218,7 +219,7 @@ const changeOrder = () => {
   animation: slideTop 0.5s ease-in-out;
 }
 
-.ItemBag {
+.ItemUse {
 
 }
 

@@ -22,9 +22,6 @@
 <script setup lang="ts">
 import { PropType, watch } from 'vue'
 import Character from '@/Class/Character.ts';
-import { SkillEffect } from '@/Class/ActiveSkill.ts';
-import { getCharacterIndex } from '@/Process/Common.ts';
-
 import ProgressBarHp from '@/components/progress/ProgressBarHp.vue';
 import ProgressBarMp from '@/components/progress/ProgressBarMp.vue';
 
@@ -33,25 +30,17 @@ import Config from '@/config.ts';
 const props = defineProps({
   currentCharacter: { type: Character },
   targetCharacter: { type: Array as () => Character[] },
-  startCharacterAnime: { type: Boolean },
-  startCharacterEffect: { type: Boolean },
-  toSkillEffect: Object as () => SkillEffect,
-
-
+  showCharacterEffect: { type: Array as () => Boolean[] },
   toCharacterEffect: { type: Array as PropType<(number | string | null)[]>, default: () => [] },
   toCharacterEffectType: { type: String },
-  // showCharacterAnime: { type: Array as () => Boolean[] },
-  // toCharacterAnime: { type: [String, null] as PropType<string | null>, default: null },
+  showCharacterAnime: { type: Array as () => Boolean[] },
+  toCharacterAnime: { type: [String, null] as PropType<string | null>, default: null },
   selectionMode: { type: String },
 });
 
 //パーティ情報
 import { usePartyStore } from '@/stores/Party.ts';
 const partyStore = usePartyStore()
-
-let toCharacterAnime : string | null = null
-let showCharacterAnime: boolean[] = [false]
-let showCharacterEffect: boolean[] = [false]
 
 // キャラクターを選択中に呼び出す関数
 function overTarget(character: Character) {
@@ -83,58 +72,17 @@ const selectCharacter = (selectType: string, character: Character | null = null)
   emit('selectCharacter', selectType, character)
 };
 
-//キャラクター向けのアニメーション表示
-function toCharacterSkillAnime(skillEffect: SkillEffect) {
-  console.log('skillEffect', skillEffect)
-  if (!props.targetCharacter) return
-  switch (skillEffect.target_type) {
-    case Config.targetMyself:
-    case Config.targetOneFriend:
-      let characterIndex = getCharacterIndex(props.targetCharacter[0])
-      toCharacterAnime = skillEffect.skill_anime
-      showCharacterAnime[characterIndex] = true // アニメーションを表示にする
-      setTimeout(() => {
-        showCharacterAnime[characterIndex] = false // アニメーションを非表示にする
-        toCharacterAnime = null // 
-        effectToCharacters(skillEffect.effect_type)
-      }, skillEffect.anime_time) // アニメーションをtoCharacterAnimeTimeの時間表示した後に非表示にする
-      break
-    default:
-  }
-}
-//キャラクター向けのエフェクトを表示
-let effectTime: number
-function effectToCharacters(effectType: string) {
-  let delay = Config.delayTime;
-  // toCharacterEffectType.value = effectType;
-  for (let i = 0; i < partyStore.characters.length; i++) {
-    console.log('applyEffectToCharacters', props.toCharacterEffect[i], effectType)
-    if (props.toCharacterEffect[i] == null) continue;
-    setTimeout(() => {
-      // toCharacterEffect.value[i] = effectDetails.value;
-      showCharacterEffect[i] = true;
-      setTimeout(() => {
-        showCharacterEffect[i] = false
-        // toCharacterEffect.value[i] = null
-      }, Config.effectTime);
-    }, delay);
-    delay += Config.delayTime;
-    effectTime = Config.effectTime + delay
-  }
-}
-
-watch(() => props.startCharacterAnime, () => {
-  if (props.startCharacterAnime && props.toSkillEffect) { 
-    toCharacterSkillAnime(props.toSkillEffect)
-  }
-  console.log('startCharacterAnime', props.toSkillEffect)
+watch(() => props.showCharacterEffect, () => {
+  console.log('showCharacterEffect', props.showCharacterEffect)
 })
-
-watch(() => props.startCharacterEffect, () => {
-  if (props.startCharacterEffect && props.toSkillEffect) { 
-    effectToCharacters(props.toSkillEffect.effect_type)
-  }
-  console.log('startCharacterEffect', props.toSkillEffect)
+watch(() => props.toCharacterEffect, () => {
+  console.log('toCharacterEffect', props.toCharacterEffect)
+})
+watch(() => props.toCharacterEffectType, () => {
+  console.log('toCharacterEffectType', props.toCharacterEffectType)
+})
+watch(() => props.selectionMode, () => {
+  console.log('selectionMode', props.selectionMode)
 })
 
 </script>

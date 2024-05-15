@@ -1,5 +1,6 @@
 import Character from '@/Class/Character.ts';
 import { SkillEffect } from '@/Class/ActiveSkill.ts';
+import { getCharacterIndex } from '@/Process/Common.ts';
 import Config from '@/config.ts';
 import { LogService } from './LogService.ts';
 import { usePartyStore } from '@/stores/Party.ts';
@@ -16,9 +17,9 @@ export function characterAssist(skillEffect: SkillEffect, skillName: string, tar
   let toCharacterEffect: (string | number | null)[] = new Array(partyStore.characters.length).fill(null);
 
   //キャラクター配列からindex取得
-  const getCharacterIndex = (character: Character) => {
-    return partyStore.characters.findIndex(c => c === character);
-  }
+  // const getCharacterIndex = (character: Character) => {
+  //   return partyStore.characters.findIndex(c => c === character);
+  // }
 
   console.log('characterAssist', skillName, skillEffect)
   let assistValue: number = 0

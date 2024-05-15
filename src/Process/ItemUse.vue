@@ -1,5 +1,5 @@
 <template>
-  <div class="ItemBagUI">
+  <div class="ItemUseUI">
 
     <!-- <CurrentUI class="CurrentUI" v-if="statusStore.processDungeon == Config.processSearch" /> -->
     <CurrentUI class="CurrentUI" v-if="statusStore.processDungeon == Config.processSearch"
@@ -7,31 +7,7 @@
       :toCharacterEffectType="toCharacterEffectType" :showCharacterAnime="showCharacterAnime"
       :toCharacterAnime="toCharacterAnime" :selectionMode="selectionMode" @selectCharacter='selectCharacter' />
 
-    <div class="itemBag">
-      <div class="selectItem">
-        <ul class="tabSelect">
-          <li v-for="(tabName, tabKey) in itemTab" :key="tabKey" class="tab" @click="selectedTab = tabName"
-            :class="{ 'selected-tab': selectedTab === tabName }">
-            {{ tabName }}
-          </li>
-        </ul>
-        <ul class="itemBox">
-          <li v-for="items in filteredItems" :key="items.item_id" class="itemList" @click=selectItem(items)
-            :class="{ 'selected-tab': selectedItem === items }">
-            <span class="itemName">{{ items.item.name }}</span>
-
-            <span
-              v-if="selectedItem === items && ((statusStore.processDungeon == Config.processSearch && items.item.use !== 1))"
-              class='buttonPosition'>
-              <span @click="clickItem(items)" class='button-equip'>{{ Config.itemBtn1 }}</span>
-            </span>
-
-            <span class="itemNumber">{{ items.number }}</span>
-          </li>
-        </ul>
-      </div>
-      <SkillInfo v-if="selectedItem" class="skillInfo" :skillInfo="selectedItem.item.info" />
-    </div>
+    <ItemBagUI class="itemBag" @useItem='useItem' />
 
     <!-- GIF表示用のモーダルウィンドウ -->
     <transition name="fade">
@@ -45,13 +21,13 @@
 
 <script setup lang="ts">
 
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 
-import SkillInfo from '@/UI//SkillInfo.vue';
 import CurrentUI from '@/UI/Current.vue';
+import ItemBagUI from '@/UI/ItemBag.vue';
 
 import Character from '@/Class/Character.ts';
-// import Item, { Items } from '@/Class/Item.ts';
+import Item from '@/Class/Item.ts';
 import Config from '@/config.ts';
 
 import { characterAssist } from '@/Process/CharacterAssist.ts';
@@ -84,60 +60,25 @@ const toCharacterEffect = ref<(string | number | null)[]>(new Array(partyStore.c
 const toCharacterEffectType = ref<string>()
 const selectionMode = ref('');
 
-const itemTab = {
-  tabAll: Config.itemTabAll,
-  tab1: Config.itemTab1,
-  tab2: Config.itemTab2,
-  tab3: Config.itemTab3
-};
-
-const selectedTab = ref(Config.itemTabAll);
-// フィルタリングされたアイテムリストを計算する
-const filteredItems = computed(() => {
-  selectedItem.value = null
-  switch (selectedTab.value) {
-    case Config.itemTab1:
-      return itemBagStore.itemBag.filter(item => item.use === 0);
-    case Config.itemTab2:
-      return itemBagStore.itemBag.filter(item => item.use === 1);
-    case Config.itemTab3:
-      return itemBagStore.itemBag.filter(item => item.use === 2);
-    default:
-      return itemBagStore.itemBag;
-  }
-});
-
-// 選択したアイテム
-const selectedItem = ref<ItemBag | null>(null);
-const selectItem = (itemBag: ItemBag) => {
-  if (props.processBattle && selectedItem.value == itemBag) {
-    useItem(itemBag)
-  }
-  selectedItem.value = itemBag;
-};
-
-// 戦闘アイテム決定
-const emit = defineEmits(["useItem"])
-const useItem = (items: ItemBag) => {
-  emit('useItem', items.item)
-};
-
 // 通常時アイテム使用
 const skillAnime = ref<string>('')
 const animeTime = ref<number>(0)
 const showItemAnime = ref<string | null>('')
 
 //アイテム使用決定
-async function clickItem(items: ItemBag) {
+const selectedItem = ref<Item | null>(null);
+async function useItem(item: Item) {
+  console.log('useItem',item)
+  selectedItem.value = item
 
   //Special Item
-  if (items.item.use == 2) {
-    switch (items.item_id) {
+  if (item.use == 2) {
+    switch (item.item_id) {
       //帰還用アイテム
       case Config.returnItemId:
         showItemAnime.value = Config.targetAll;
-        skillAnime.value = items.item.skill_effect[0].skill_anime
-        animeTime.value = items.item.skill_effect[0].anime_time
+        skillAnime.value = item.skill_effect[0].skill_anime
+        animeTime.value = item.skill_effect[0].anime_time
         break
       default:
     }
@@ -145,11 +86,11 @@ async function clickItem(items: ItemBag) {
   }
 
   //skillEffectあり
-  if (items.item.skill_effect.length !== 0) {
+  if (item.skill_effect.length !== 0) {
     //味方対象アイテム
-    if (items.item.skill_effect[0].target == 1) {
+    if (item.skill_effect[0].target == 1) {
       // ターゲットの選択を待つ(味方対象)
-      selectionMode.value = items.item.skill_effect[0].target_type
+      selectionMode.value = item.skill_effect[0].target_type
       if (selectionMode.value == Config.targetAllFriends) {
         targetCharacter.value = partyStore.characters.filter(character => character.nowHP > 0)
       } else {
@@ -159,14 +100,16 @@ async function clickItem(items: ItemBag) {
       await waitForTargetSelection();
     }
     //ターゲット選択後
-    for (const skillEffect of items.item.skill_effect) {
+    for (const skillEffect of item.skill_effect) {
       // animeTime = skillEffect.anime_time
       // effectTime = 0
       // actionTimes = 0
       //1回目と対象タイプが異なる
 
       if (skillEffect.target == 1) {
-        characterAssist(skillEffect, items.item.name)
+        toCharacterEffect.value = characterAssist(skillEffect, item.name, targetCharacter.value)
+
+        // characterAssist(skillEffect, item.name)
 
       }
       //アニメーション表示
@@ -221,9 +164,10 @@ const useNormalItem = () => {
 </script>
 
 <style scoped>
-.ItemBagUI {
+.ItemUseUI {
   width: 100vw;
   height: 100vh;
+  background: #3B413C80;
   font-family: serif;
   color: #F2EDD5;
   font-size: 2.8vh;
@@ -231,7 +175,8 @@ const useNormalItem = () => {
 }
 
 .CurrentUI {
-  position: fixed;
+  position: absolute;
+  /* position: fixed; */
   top: 1vh;
   right: 6vw;
   animation: slideRight 0.5s ease-in-out;
@@ -243,73 +188,6 @@ const useNormalItem = () => {
   top: 15vh;
 }
 
-.selectItem {
-  display: flex;
-}
-
-.tabSelect {
-  background: rgba(59, 65, 60, 0.7);
-  text-align: center;
-  height: 30vh;
-  width: 12vw;
-  border-radius: 2vh;
-  border: 0.6vh ridge #E2D8A6;
-}
-
-.tab {
-  list-style-type: none;
-  color: #E2D8A6;
-  align-items: center;
-  padding: 1vh 0.5vw;
-  font-size: 3.4vh;
-  font-family: "Verily Serif Mono";
-}
-
-.selected-tab {
-  background: #624CAB80;
-  border-radius: 1vh;
-  border: 0.2vh solid #E2D8A6;
-}
-
-.itemBox {
-  background: rgba(59, 65, 60, 0.7);
-  background-image: url('/img/flame/flame032703.png');
-  background-size: 100% 100%;
-  padding: 2.5vh 0.7vw;
-  height: 60vh;
-  width: 25vw;
-  list-style-type: none;
-}
-
-.itemList {
-  /* display: flex; */
-  /* align-items: center; */
-  /* justify-content: start; */
-  list-style-type: none;
-  padding: 0vh 1.5vw;
-  /* vertical-align: top; */
-  height: 5vh;
-}
-
-.itemNumber {
-  float: right;
-}
-
-
-.buttonPosition {
-  position: absolute;
-  right: 3vw;
-  margin-top: -0.8vh;
-}
-
-.button-equip {
-  background: #3CD0E3;
-}
-
-
-.skillInfo {
-  margin-left: 12vw;
-}
 
 .fade-enter-active,
 .fade-leave-active {
@@ -320,6 +198,7 @@ const useNormalItem = () => {
 .fade-leave-to {
   opacity: 0;
 }
+
 .gif-modal {
   position: fixed;
   top: 0;

@@ -1,3 +1,6 @@
+import { usePartyStore } from '@/stores/Party.ts';
+import Character from '@/Class/Character.ts';
+
 //////////////////////////////////////
 //共通処理
 /////////////////////////////////////
@@ -13,10 +16,16 @@ export const randomNuma = (min: number, max: number) => {
 
 //0からmax-1までのランダムな値を返す
 export const random = (max: number) => {
-  return  Math.floor(Math.random() * max);
+  return Math.floor(Math.random() * max);
 }
 
 // 非同期関数としてタイマーを実装
 export const timer = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+//キャラクター配列からindex取得
+export const getCharacterIndex = (character: Character) => {
+  const partyStore = usePartyStore()
+  return partyStore.characters.findIndex(c => c === character);
 }

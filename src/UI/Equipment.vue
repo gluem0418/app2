@@ -52,10 +52,6 @@ const props = defineProps({
   character: { type: Character },
 });
 
-//パーティ情報
-// import { usePartyStore } from '@/stores/Party.ts';
-// const partyStore = usePartyStore()
-
 //equipmentBagを作成
 import { useEquipBagStore } from '@/stores/EquipBag.ts';
 const equipBagStore = useEquipBagStore()
