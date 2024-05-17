@@ -1,5 +1,80 @@
 [
   {
+    "skill_id": 1,
+    "name": "Slash Attack",
+    "use": 1,
+    "info": "A Normal Slash.",
+    "attribute": 1,
+    "interval": 0,
+    "consume_type": "MP",
+    "consume_amount": 0,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "success_rate": 1,
+        "effect_amount": 1.0,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/normal/slash.gif",
+        "anime_time": 500
+      }
+    ]
+  },
+  {
+    "skill_id": 2,
+    "name": "Pierce Attack",
+    "use": 1,
+    "info": "A Normal Pierce.",
+    "attribute": 1,
+    "interval": 0,
+    "consume_type": "MP",
+    "consume_amount": 0,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "success_rate": 1,
+        "effect_amount": 1.0,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/normal/pierce.gif",
+        "anime_time": 500
+      }
+    ]
+  },
+  {
+    "skill_id": 3,
+    "name": "Hit Attack",
+    "use": 1,
+    "info": "A Normal Hit",
+    "attribute": 1,
+    "interval": 0,
+    "consume_type": "MP",
+    "consume_amount": 0,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "success_rate": 1,
+        "effect_amount": 1.0,
+        "target": 2,
+        "target_type": "oneEnemy",
+        "skill_anime": "effect/normal/hit.gif",
+        "anime_time": 500
+      }
+    ]
+  },
+  {
     "skill_id": 101,
     "name": "Zan",
     "use": 1,

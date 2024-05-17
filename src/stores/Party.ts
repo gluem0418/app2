@@ -6,7 +6,7 @@ import { characterList } from '@/Class/Character.ts';
 import { MapData } from '@/Process/CreateDungeon.ts';
 
 let partyData = {
-  characters: [1, 5, 6, 3],
+  characters: [1, 2, 3, 6],
   gold: 100000,
   location: [570, 180],
   home: [500, 200],

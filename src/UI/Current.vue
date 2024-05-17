@@ -3,11 +3,12 @@
     <div class="character" v-for="(character, index) in partyStore.characters" @click="clickTarget(character)"
       @mouseover="overTarget(character)"
       :class="{ currentCharacter: character == currentCharacter, targetCharacter: (targetCharacter?.includes(character)) }">
-      <div v-show="showCharacterEffect && showCharacterEffect[index]" class="characterEffect"
-        :class="{ effectGreen: toCharacterEffectType == Config.effectHeal, effectRed: toCharacterEffectType == Config.effectDamage }">{{
-          toCharacterEffect[index] }} </div>
-      <img v-show="showCharacterAnime && showCharacterAnime[index]" :src="toCharacterAnime!" class="toCharacterAnime"
-        alt="skill effect">
+      <img v-if="showCharacterAnime && showCharacterAnime[index]" :src="toCharacterAnime!" class="toCharacterAnime"
+        @load="loadSkillAnime(index)" alt="skill effect">
+      <div v-if="showCharacterEffect && showCharacterEffect[index]" class="characterEffect"
+        :class="{ effectGreen: toCharacterEffectType == Config.effectHeal, effectRed: toCharacterEffectType == Config.effectDamage }">
+        {{ toCharacterEffect[index] }}
+      </div>
       <img class="characterface" :src="character.faceGraphicUrl">
       <span class="progress-bar-hp">
         <ProgressBarHp :nowHP="character.nowHP" :maxHP="character.totalStatus.HP" />
@@ -20,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, watch } from 'vue'
+import { ref, PropType, watch } from 'vue'
 import Character from '@/Class/Character.ts';
 import { SkillEffect } from '@/Class/ActiveSkill.ts';
 import { getCharacterIndex } from '@/Process/Common.ts';
@@ -30,18 +31,17 @@ import ProgressBarMp from '@/components/progress/ProgressBarMp.vue';
 
 import Config from '@/config.ts';
 
+//monsterスキル表示
+import monsterClaw from '/effect/monster/claw1.gif';
+
 const props = defineProps({
   currentCharacter: { type: Character },
   targetCharacter: { type: Array as () => Character[] },
   startCharacterAnime: { type: Boolean },
   startCharacterEffect: { type: Boolean },
   toSkillEffect: Object as () => SkillEffect,
-
-
   toCharacterEffect: { type: Array as PropType<(number | string | null)[]>, default: () => [] },
   toCharacterEffectType: { type: String },
-  // showCharacterAnime: { type: Array as () => Boolean[] },
-  // toCharacterAnime: { type: [String, null] as PropType<string | null>, default: null },
   selectionMode: { type: String },
 });
 
@@ -49,9 +49,9 @@ const props = defineProps({
 import { usePartyStore } from '@/stores/Party.ts';
 const partyStore = usePartyStore()
 
-let toCharacterAnime : string | null = null
-let showCharacterAnime: boolean[] = [false]
-let showCharacterEffect: boolean[] = [false]
+const toCharacterAnime = ref<string | null>(null)
+const showCharacterAnime = ref<boolean[]>(new Array(partyStore.characters.length).fill(false));;
+const showCharacterEffect = ref<boolean[]>(new Array(partyStore.characters.length).fill(false));
 
 // キャラクターを選択中に呼び出す関数
 function overTarget(character: Character) {
@@ -84,57 +84,78 @@ const selectCharacter = (selectType: string, character: Character | null = null)
 };
 
 //キャラクター向けのアニメーション表示
-function toCharacterSkillAnime(skillEffect: SkillEffect) {
-  console.log('skillEffect', skillEffect)
-  if (!props.targetCharacter) return
-  switch (skillEffect.target_type) {
-    case Config.targetMyself:
-    case Config.targetOneFriend:
-      let characterIndex = getCharacterIndex(props.targetCharacter[0])
-      toCharacterAnime = skillEffect.skill_anime
-      showCharacterAnime[characterIndex] = true // アニメーションを表示にする
-      setTimeout(() => {
-        showCharacterAnime[characterIndex] = false // アニメーションを非表示にする
-        toCharacterAnime = null // 
-        effectToCharacters(skillEffect.effect_type)
-      }, skillEffect.anime_time) // アニメーションをtoCharacterAnimeTimeの時間表示した後に非表示にする
-      break
-    default:
-  }
+// function toCharacterSkillAnime(skillEffect: SkillEffect) {
+function characterAnime(index: number, skillAnime: string) {
+  console.log('skillEffect', props.toSkillEffect)
+  // if (!props.targetCharacter) return
+  // switch (skillEffect.target_type) {
+  //   case Config.targetMyself:
+  //   case Config.targetOneFriend:
+  // let characterIndex = getCharacterIndex(props.targetCharacter[0])
+  toCharacterAnime.value = skillAnime
+  showCharacterAnime.value[index] = true // アニメーションを表示にする
+  //     break
+  //   default:
+  // }
 }
+//キャラクター向けの攻撃アニメーション表示
+// function toCharacterAttackAnime() {
+//   if (!props.targetCharacter) return
+//   let characterIndex = getCharacterIndex(props.targetCharacter[0])
+//   toCharacterAnime.value = monsterClaw
+//   showCharacterAnime.value[characterIndex] = true //アニメーションを表示
+// }
+
+// スキルロード後
+let startTime: number
+const loadSkillAnime = (index: number = 0) => {
+  let animeTime = props.toCharacterEffectType == Config.effectDamage ? Config.monsterAttackTime : props.toSkillEffect?.anime_time
+  startTime = performance.now()
+  setTimeout(() => {
+    console.log('loadSkillAnimeEnd', performance.now() - startTime)
+    showCharacterAnime.value[index] = false
+    toCharacterAnime.value = null;
+    // effectToCharacters(index)
+  }, animeTime)
+}
+
 //キャラクター向けのエフェクトを表示
-let effectTime: number
-function effectToCharacters(effectType: string) {
-  let delay = Config.delayTime;
-  // toCharacterEffectType.value = effectType;
-  for (let i = 0; i < partyStore.characters.length; i++) {
-    console.log('applyEffectToCharacters', props.toCharacterEffect[i], effectType)
-    if (props.toCharacterEffect[i] == null) continue;
-    setTimeout(() => {
-      // toCharacterEffect.value[i] = effectDetails.value;
-      showCharacterEffect[i] = true;
-      setTimeout(() => {
-        showCharacterEffect[i] = false
-        // toCharacterEffect.value[i] = null
-      }, Config.effectTime);
-    }, delay);
-    delay += Config.delayTime;
-    effectTime = Config.effectTime + delay
-  }
+function effectToCharacters(index: number) {
+  if (props.toCharacterEffect[index] == null) return;
+  showCharacterEffect.value[index] = true;
+  setTimeout(() => {
+    console.log('effectToCharactersEnd', performance.now() - startTime)
+    showCharacterEffect.value[index] = false
+  }, Config.effectTime);
 }
 
 watch(() => props.startCharacterAnime, () => {
-  if (props.startCharacterAnime && props.toSkillEffect) { 
-    toCharacterSkillAnime(props.toSkillEffect)
+  if (!props.startCharacterAnime) return
+  if (!props.targetCharacter) return
+
+  let characterIndex = getCharacterIndex(props.targetCharacter[0])
+
+  console.log('startCharacterAnime', props.toCharacterEffectType)
+  if (props.toCharacterEffectType == Config.effectDamage) {
+    //モンスター通常攻撃
+    characterAnime(characterIndex, monsterClaw)
+    // toCharacterAttackAnime()
+  } else {
+    //キャラクター向けスキル
+    characterAnime(characterIndex, props.toSkillEffect!.skill_anime)
   }
-  console.log('startCharacterAnime', props.toSkillEffect)
 })
 
 watch(() => props.startCharacterEffect, () => {
-  if (props.startCharacterEffect && props.toSkillEffect) { 
-    effectToCharacters(props.toSkillEffect.effect_type)
+  if (!props.startCharacterEffect || !props.toCharacterEffect) return
+  let delay = Config.delayTime;
+  for (let i = 0; i < partyStore.characters.length; i++) {
+    if (props.toCharacterEffect[i] == null) continue;
+    setTimeout(() => {
+      effectToCharacters(i)
+    }, delay);
+    delay += Config.delayTime;
   }
-  console.log('startCharacterEffect', props.toSkillEffect)
 })
 
 </script>

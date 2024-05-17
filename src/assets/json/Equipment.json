@@ -8,7 +8,8 @@
     "status": {
       "ATK": 10,
       "HitRate": 90
-    }
+    },
+    "activeSkill": 1
   },
   {
     "eqp_id": 102,
@@ -19,7 +20,8 @@
     "status": {
       "ATK": 15,
       "HitRate": 90
-    }
+    },
+    "activeSkill": 1
   },
   {
     "eqp_id": 103,
@@ -31,7 +33,8 @@
       "ATK": 12,
       "DEX": 3,
       "HitRate": 90
-    }
+    },
+    "activeSkill": 1
   },
   {
     "eqp_id": 110,
@@ -43,7 +46,8 @@
       "ATK": 100,
       "HitRate": 90,
       "Earth": 50
-    }
+    },
+    "activeSkill": 1
   },
   {
     "eqp_id": 201,
@@ -55,7 +59,8 @@
       "ATK": 5,
       "DEX": 5,
       "HitRate": 95
-    }
+    },
+    "activeSkill": 1
   },
   {
     "eqp_id": 301,
@@ -66,7 +71,8 @@
     "status": {
       "ATK": 12,
       "HitRate": 90
-    }
+    },
+    "activeSkill": 2
   },
   {
     "eqp_id": 401,
@@ -78,7 +84,8 @@
       "ATK": 5,
       "DEX": 5,
       "HitRate": 90
-    }
+    },
+    "activeSkill": 2
   },
   {
     "eqp_id": 402,
@@ -91,7 +98,8 @@
       "DEX": 50,
       "HitRate": 100,
       "Wind": 50
-    }
+    },
+    "activeSkill": 2
   },
   {
     "eqp_id": 501,
@@ -103,7 +111,8 @@
       "ATK": 5,
       "MGC": 5,
       "HitRate": 85
-    }
+    },
+    "activeSkill": 3
   },
   {
     "eqp_id": 502,
@@ -114,7 +123,8 @@
     "status": {
       "MGC": 10,
       "HitRate": 85
-    }
+    },
+    "activeSkill": 3
   },
   {
     "eqp_id": 510,
@@ -126,7 +136,8 @@
       "MGC": 100,
       "HitRate": 85,
       "Dark": 50
-    }
+    },
+    "activeSkill": 3
   },
   {
     "eqp_id": 601,
@@ -137,7 +148,8 @@
     "status": {
       "ATK": 15,
       "HitRate": 80
-    }
+    },
+    "activeSkill": 1
   },
   {
     "eqp_id": 1001,
@@ -149,7 +161,8 @@
       "DEF": 5,
       "MDF": 5,
       "SPD": -5
-    }
+    },
+    "activeSkill": 2
   },
   {
     "eqp_id": 1002,
@@ -161,7 +174,8 @@
       "DEF": 10,
       "MDF": 5,
       "SPD": -10
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 1003,
@@ -172,7 +186,8 @@
     "status": {
       "DEF": 5,
       "MDF": 5
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 1020,
@@ -186,7 +201,8 @@
       "Slash": 20,
       "Hit": 20,
       "Stab": 20
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 1101,
@@ -197,7 +213,8 @@
     "status": {
       "DEF": 7,
       "MDF": 3
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 1110,
@@ -209,7 +226,8 @@
       "DEF": 70,
       "MDF": 30,
       "Earth": 50
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 1201,
@@ -220,7 +238,8 @@
     "status": {
       "DEF": 3,
       "MDF": 7
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 1210,
@@ -232,7 +251,8 @@
       "DEF": 40,
       "MDF": 60,
       "Light": 100
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 1301,
@@ -243,7 +263,8 @@
     "status": {
       "DEF": 4,
       "MDF": 4
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 1321,
@@ -257,7 +278,8 @@
       "DEX": 30,
       "SPD": 10,
       "Dark": 50
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 2001,
@@ -267,7 +289,8 @@
     "name": "Bangle",
     "status": {
       "ATK": 5
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 2101,
@@ -277,7 +300,8 @@
     "name": "Ring",
     "status": {
       "DEF": 5
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 2151,
@@ -289,7 +313,8 @@
       "ATK": 50,
       "MDF": -50,
       "Dark": 100
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 2201,
@@ -299,7 +324,8 @@
     "name": "Neckless",
     "status": {
       "MDF": 5
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 2301,
@@ -309,7 +335,8 @@
     "name": "Amulet",
     "status": {
       "MGC": 5
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 2451,
@@ -330,7 +357,8 @@
       "Water": 30,
       "Earth": 30,
       "Wind": 30
-    }
+    },
+    "activeSkill": 0
   },
   {
     "eqp_id": 2551,
@@ -344,6 +372,7 @@
       "DEF": 20,
       "MDF": 50,
       "Light": 100
-    }
+    },
+    "activeSkill": 0
   }
 ]
