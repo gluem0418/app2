@@ -30,13 +30,6 @@
       </div>
     </div>
 
-    <!-- <div class="monsterInfo" v-if="selectMonster">
-      <div class="monsterName">{{ selectMonster.name }}</div>
-      <div class="progress-bar-hp">
-        <ProgressBarHp :nowHP="selectMonster.nowHP" :maxHP="selectMonster.HP" />
-      </div>
-    </div> -->
-
     <!-- 複数スキル -->
     <img v-if="showAreaSkill == Config.targetRowEnemy" :src="skillAnime" class=skillRowEffect
       :style="{ top: skillTop + 'vh' }" alt="skill effect" @load="loadSkillAnime()">
@@ -50,9 +43,9 @@
 
     <!-- character  -->
     <CurrentUI class="CurrentUI" :currentCharacter="currentCharacter" :targetCharacter="targetCharacter"
-      :showCharacterEffect="showCharacterEffect" :toCharacterEffect="toCharacterEffect"
-      :toCharacterEffectType="toCharacterEffectType" :showCharacterAnime="showCharacterAnime"
-      :toCharacterAnime="toCharacterAnime" :selectionMode="selectionMode" @selectCharacter='selectCharacter' />
+      :startCharacterAnime="startCharacterAnime" :startCharacterEffect="startCharacterEffect"
+      :toSkillEffect="toSkillEffect" :toCharacterEffect="toCharacterEffect" :toCharacterEffectType="toCharacterEffectType"
+      :selectionMode="selectionMode" @selectCharacter='selectCharacter' />
 
     <!-- <div class="monsterInfo" v-if="battleProcess == 'selectTarget' && selectMonster"> -->
     <ActionLog ref="actionLog" class="actionLog" />
@@ -70,16 +63,17 @@
       <SkillUI v-if="showSkillList" class="SkillUI" :character="currentCharacter" :processBattle="showSkillList"
         @useSkill='useSkill' />
 
-      <ItemBagUI v-if="showItemList" class="ItemBagUI"/>
+      <ItemBagUI v-if="showItemList" class="ItemBagUI" />
 
-      <div v-if="currentAction == Config.actionSkill && battleProcess == 'selectTarget'">
+      <!-- <div v-if="currentAction == Config.actionSkill && battleProcess == 'selectTarget'"> -->
+      <div v-if="battleProcess == 'selectTarget'">
         <!-- <div class="attackName">{{ activeSkill.name }}</div> -->
         <SelectName class="attackName" :inside="activeSkill.name"></SelectName>
         <SkillInfo class="skillInfo" :skillInfo="activeSkill.info" />
       </div>
       <!-- <div v-if="currentAction == Config.strAttack" class="attackName">Normal Attack</div> -->
-      <SelectName v-if="currentAction == Config.actionAttack" class="attackName" :inside="Config.actionAttack">
-      </SelectName>
+      <!-- <SelectName v-if="currentAction == Config.actionAttack" class="attackName" :inside="Config.actionAttack">
+      </SelectName> -->
 
     </div>
 
@@ -104,7 +98,7 @@ import ActiveSkill from '@/Class/ActiveSkill.ts';
 import { SkillEffect } from '@/Class/ActiveSkill.ts';
 
 import Config from '@/config.ts';
-import { timer, randomNum, random } from '@/Process/Common.ts';
+import { timer, randomNum, random, getCharacterIndex } from '@/Process/Common.ts';
 
 //components import
 import ProgressBarHp from '@/components/progress/ProgressBarHp.vue';
@@ -116,12 +110,9 @@ import SelectName from '@/components/flame/Flame1.vue';
 import IconBag from '@/components/icon/IconBag.vue';
 
 //normal attack import
-import normalSlash from '/effect/normal/slash.gif';
-import normalShot from '/effect/normal/shot.gif';
-import normalHit from '/effect/normal/hit.gif';
-
-//monsterスキル表示
-import monsterClaw from '/effect/monster/claw1.gif';
+// import normalSlash from '/effect/normal/slash.gif';
+// import normalShot from '/effect/normal/pierce.gif';
+// import normalHit from '/effect/normal/hit.gif';
 
 //パーティ情報
 import { usePartyStore } from '@/stores/Party.ts';
@@ -130,7 +121,7 @@ const partyStore = usePartyStore()
 import { useAudioStore } from '@/stores/Audio';
 const audioStore = useAudioStore()
 
-import { characterAssist } from '@/Process/CharacterAssist.ts';
+import { characterAssist, characterHeal } from '@/Process/CharacterAssist.ts';
 
 //戦闘用のクラス
 type fighter = Character | Monster
@@ -157,11 +148,16 @@ const selectMonster = ref<Monster | undefined>(undefined)
 ///////////////////////////////////////////////////////////
 const currentCharacter = ref<Character>()   //行動キャラ
 const targetCharacter = ref<Character[]>([])   //攻撃対象キャラ
-const showCharacterAnime = ref<boolean[]>(new Array(partyStore.characters.length).fill(false));;
-const toCharacterAnime = ref<string | null>(null)
-const showCharacterEffect = ref<boolean[]>(new Array(partyStore.characters.length).fill(false));
+const startCharacterAnime = ref<boolean>(false);
+const startCharacterEffect = ref<boolean>(false);
+const toSkillEffect = ref<SkillEffect>();
 const toCharacterEffect = ref<(string | number | null)[]>(new Array(partyStore.characters.length).fill(null));
 const toCharacterEffectType = ref<string>()
+const selectionMode = ref('');
+// const startMonsterAttack = ref<boolean>(false);
+// const showCharacterAnime = ref<boolean[]>(new Array(partyStore.characters.length).fill(false));;
+// const toCharacterAnime = ref<string | null>(null)
+// const showCharacterEffect = ref<boolean[]>(new Array(partyStore.characters.length).fill(false));
 ///////////////////////////////////////////////////////////
 // BattleResult表示用
 ///////////////////////////////////////////////////////////
@@ -196,9 +192,9 @@ const alyBattleMusic = new Array(
 // 共通関数
 ///////////////////////////////////////////////////////////
 //キャラクター配列からindex取得
-const getCharacterIndex = (character: Character) => {
-  return partyStore.characters.findIndex(c => c === character);
-}
+// const getCharacterIndex = (character: Character) => {
+//   return partyStore.characters.findIndex(c => c === character);
+// }
 //monsteGridから最小のindex取得
 // const getMinGridIndex = () => {
 //   return monsterGrid.value.findIndex(monster => monster !== null);
@@ -252,9 +248,16 @@ function setMonster() {
   // 出現モンスターを作成
   const numMonsters = randomNum(Config.monNumMin, Config.monNumMax)
   for (let i = 0; i < numMonsters; i++) {
-    const newMonster = new Monster(monsterList[random(monsterList.length)]);
+    let randomIndex = random(monsterList.length)
+    // const newMonster: Monster = new Monster(monsterList[random(monsterList.length)]);
+    const newMonster: Monster = new Monster({
+      ...monsterList[randomIndex]
+    });
+
+    newMonster.activeSkill =  monsterList[randomIndex].activeSkill    
     selectedMonsters.push(newMonster);
   }
+  console.log("setMonster_selectedMonsters", selectedMonsters)
 
   // モンスター配置場所を決定
   let positions: number[] = [];
@@ -271,7 +274,6 @@ function setMonster() {
     selectedMonsters[index].order = position;
     monsterGrid.value[position] = selectedMonsters[index];
   });
-  console.log(selectedMonsters)
 }
 let numTurn = 1
 // ターン開始時に呼び出される関数
@@ -365,10 +367,13 @@ function clickIcon(iconId: string) {
     currentAction = iconId;
     switch (iconId) {
       case Config.actionAttack:
-        selectionMode.value = Config.targetOneEnemy
-        selectMonster.value = monsterGrid.value[getMaxGridIndex()]
-        setTarget(getMaxGridIndex())
-        battleProcess.value = 'selectTarget'
+        if (currentCharacter.value && currentCharacter.value.equipment.WEP!.activeSkill) {
+          useSkill(currentCharacter.value.equipment.WEP!.activeSkill)
+        }
+        // selectionMode.value = Config.targetOneEnemy
+        // selectMonster.value = monsterGrid.value[getMaxGridIndex()]
+        // setTarget(getMaxGridIndex())
+        // battleProcess.value = 'selectTarget'
         break
       case Config.actionSkill:
       case Config.actionMagic:
@@ -390,7 +395,6 @@ function clickIcon(iconId: string) {
   }
 }
 // activeSkill選択時
-const selectionMode = ref('');
 // let activeSkill: ActiveSkill | undefined
 let activeSkill: ActiveSkill
 const useSkill = (skill: ActiveSkill) => {
@@ -513,108 +517,84 @@ function clickTarget(index: number, cell: Monster) {
     setTarget(index)
   }
 }
-
-// モンスターの行動を処理する関数
-async function monsterTurn(monster: Monster) {
-  battleProcess.value = "monsterTurn"
-  await monsterAction(monster, selectMonsterAction()!);
-}
-// モンスターの攻撃対象を決定
-const selectMonsterAction = () => {
-  // HPが0以上のキャラクターのみが攻撃を受けることができる
-  const aliveCharacters = partyStore.characters.filter(character => character.nowHP > 0);
-
-  // キャラクターが選ばれる確率を計算
-  const totalHate = aliveCharacters.reduce((sum, character) => sum + character.totalStatus.Hate, 0);
-  const probabilities = aliveCharacters.map(character => character.totalStatus.Hate / totalHate);
-
-  // 確率に基づいてキャラクターを選択
-  const rand = Math.random();
-  let sum = 0;
-  for (let i = 0; i < probabilities.length; i++) {
-    sum += probabilities[i];
-    if (rand < sum) {
-      return aliveCharacters[i];
-    }
-  }
-}
 //キャラクター行動
 let animeTime: number
 let effectTime: number
 let actionTimes: number
-
+let targetNow: number
 async function characterAction(character: Character) {
   let gridIndex: number
   let monster: Monster
-  // monsterEffect.value = []
-  if (currentAction == Config.actionAttack) {
-    //
-    addNewLog(character.name + "'s " + Config.actionAttack, 1)
-    //通常攻撃
-    monster = targetMonster.value[0]
-    gridIndex = monster.order!
-    toMonsterEffect.value[gridIndex] = []
-    characterAttack(character, monster, gridIndex)
-    //アニメーション表示
-    animeTime = Config.normalAttackTime
-    normalAttackAnime(character)
-    await timer(Config.normalAttackTime + Config.effectTime);  //
-  } else {
-    //スキル
-    addNewLog(character.name + "'s " + activeSkill.name, 1)
-    //
-    for (const skillEffect of activeSkill.skill_effect) {
-      animeTime = skillEffect.anime_time
-      effectTime = 0
-      actionTimes = 0
-      //1回目と対象タイプが異なる
-      if (selectionMode.value != skillEffect.target_type) {
+  addNewLog(character.name + "'s " + activeSkill.name, 1)
+  //
+  for (const skillEffect of activeSkill.skill_effect) {
+    targetNow = skillEffect.target
+    animeTime = skillEffect.anime_time
+    effectTime = 0
+    actionTimes = 0
+    //1回目と対象タイプが異なる
+    if (selectionMode.value != skillEffect.target_type) {
 
-        //対象タイプ毎に対象を設定
-        setTarget2nd(skillEffect.target_type, character)
+      //対象タイプ毎に対象を設定
+      setTarget2nd(skillEffect.target_type, character)
+    }
+    selectionMode.value = skillEffect.target_type
+
+    //味方対象スキル
+    if (skillEffect.target == 1) {
+      toCharacterEffect.value = characterAssist(skillEffect, activeSkill.name, targetCharacter.value[0], character)
+      //アニメーションあり
+      if (skillEffect.skill_anime) {
+        toCharacterSkill(skillEffect)
       }
-      selectionMode.value = skillEffect.target_type
+      //エフェクトあり
+      if (toCharacterEffect.value.some(effect => effect !== null)) {
+        console.log('characterAction_toCharacterEffect.value', toCharacterEffect.value);
 
-      //味方対象スキル
-      if (skillEffect.target == 1) {
-        toCharacterEffect.value = characterAssist(skillEffect, activeSkill.name, targetCharacter.value, character)
-        toCharacterSkillAnime(skillEffect)
+        if (toSkillEffect.value?.effect_type == Config.effectHeal) {
+          startCharacterEffect.value = true
+        }
 
-      } else if (skillEffect.target == 2) {
-        //敵対象スキル
-        toMonsterEffect.value = Array.from({ length: 6 }, () => []);
-        if (skillEffect.target_type == Config.targetRandomEnemy) {
+        effectTime = Config.effectTime;
+      }
+
+
+    } else if (skillEffect.target == 2) {
+      //敵対象スキル
+      toMonsterEffect.value = Array.from({ length: 6 }, () => []);
+      if (skillEffect.target_type == Config.targetRandomEnemy) {
+        //攻撃回数の攻撃
+        for (let time = 1; time <= skillEffect.effect_times; time++) {
+          //monsterからランダムに対象を設定
+          monster = targetMonster.value[random(targetMonster.value.length)]
+          gridIndex = monster.order!
+          // toMonsterEffect.value[gridIndex] = []
+          characterAttack(character, monster, gridIndex, skillEffect)
+          actionTimes += 1
+        }
+      } else {
+        //ターゲットの数
+        for (let monster of targetMonster.value) {
+          gridIndex = monster.order!
+          // toMonsterEffect.value[gridIndex] = []
           //攻撃回数の攻撃
           for (let time = 1; time <= skillEffect.effect_times; time++) {
-            //monsterからランダムに対象を設定
-            monster = targetMonster.value[random(targetMonster.value.length)]
-            gridIndex = monster.order!
-            // toMonsterEffect.value[gridIndex] = []
             characterAttack(character, monster, gridIndex, skillEffect)
             actionTimes += 1
           }
-        } else {
-          //ターゲットの数
-          for (let monster of targetMonster.value) {
-            gridIndex = monster.order!
-            // toMonsterEffect.value[gridIndex] = []
-            //攻撃回数の攻撃
-            for (let time = 1; time <= skillEffect.effect_times; time++) {
-              characterAttack(character, monster, gridIndex, skillEffect)
-              actionTimes += 1
-            }
-          }
         }
-        //アニメーション表示
-        skillAttackAnime(skillEffect)
       }
+      //アニメーション表示
+      skillAttackAnime(skillEffect)
       effectTime = Config.effectTime + actionTimes * Config.delayTime
-      await timer(animeTime + effectTime);
     }
+    await timer(animeTime + effectTime);
   }
+  // }
   //HPが0のモンスターをgridから削除
   for (let monster of targetMonster.value) {
     if (monster.nowHP == 0) {
+      console.log('characterAction_monster.nowHP == 0', monster);
       monsterGrid.value = monsterGrid.value.map(cell => cell === monster ? null : cell);
     }
   }
@@ -713,127 +693,7 @@ function calcCrit(rate: number, SPD: number): boolean {
   // ランダムな値が命中率（0から1の範囲）以下であれば命中、そうでなければミス
   return randomValue <= hitRate / 100; // 命中率を100で割って0から1の範囲にする
 }
-// キャラクター向けの補助処理
-// function characterAssist(skillEffect: SkillEffect, skillName: string, character?: Character) {
-//   console.log('characterAssist',skillName,skillEffect)
-//   let assistValue: number = 0
-//   //効果量の算出
-//   if (skillEffect.base_status == Config.baseFixValue || skillEffect.base_status == Config.baseFixRate) {
-//     assistValue = skillEffect.effect_amount
-//   } else {
-//     assistValue = character!.totalStatus[skillEffect.base_status] * skillEffect.effect_amount
-//   }
-//   //effect_type毎の処理
-//   switch (skillEffect.effect_type) {
-//     //回復
-//     case Config.effectHeal:
-//       switch (skillEffect.target_type) {
-//         case Config.targetMyself:
-//         case Config.targetOneFriend:
-//           // if (!targetCharacter.value) return;
-//           characterHeal(targetCharacter.value[0], assistValue, skillEffect.effect_kind)
-//           break
-//         case Config.targetAllFriends:
-//           for (let chara of partyStore.characters) {
-//             characterHeal(chara, assistValue, skillEffect.effect_kind)
-//           }
-//           break
-//         case Config.targetRandomFriend:
-//           break
-//         default:
-//       }
-//       break
-//     //バフ
-//     case Config.effectBuff:
-//       switch (skillEffect.target_type) {
-//         case Config.targetMyself:
-//         case Config.targetOneFriend:
-//           if (!targetCharacter.value) return;
-//           targetCharacter.value[0].addBuff(skillName, skillEffect.effect_kind, assistValue, skillEffect.effect_times)
-//           targetCharacter.value[0].calculateTotalStatus()
-//           break
-//         case Config.targetAllFriends:
-//           for (let chara of partyStore.characters) {
-//             chara.addBuff(skillName, skillEffect.effect_kind, assistValue, skillEffect.effect_times)
-//             chara.calculateTotalStatus()
-//           }
-//           break
-//         case Config.targetRandomFriend:
-//           break
-//         default:
-//       }
-//       break
-//     //状態追加
-//     case Config.effectCondition:
-//       switch (skillEffect.target_type) {
-//         case Config.targetMyself:
-//         case Config.targetOneFriend:
-//           // if (!targetCharacter.value) return;
-//           targetCharacter.value[0].addCondition(skillName, skillEffect.effect_kind, assistValue, skillEffect.effect_times)
-//           break
-//         case Config.targetAllFriends:
-//           for (let chara of partyStore.characters) {
-//             chara.addCondition(skillName, skillEffect.effect_kind, assistValue, skillEffect.effect_times)
-//           }
-//           break
-//         case Config.targetRandomFriend:
-//           break
-//         default:
-//       }
-//       break
-//     default:
-//   }
-//   //味方向けのアニメーション
-//   toCharacterSkillAnime(skillEffect)
-//   // toCharacterSkillAnime('assist', skillEffect, assistValue, )
-// }
-//回復処理
-function characterHeal(character: Character, assistValue: number, effect_kind: string) {
-  console.log('characterHeal', character, effect_kind, assistValue)
-  if (effect_kind == Config.statusnowHP) {
-    character.nowHP = character.nowHP + assistValue > character.totalStatus.HP ? character.totalStatus.HP : character.nowHP + assistValue
-  } else if (effect_kind == Config.statusnowMP) {
-    character.nowMP = character.nowMP + assistValue > character.totalStatus.MP ? character.totalStatus.MP : character.nowMP + assistValue
-  }
-  toCharacterEffect.value[getCharacterIndex(character)] = assistValue
-  actionTimes += 1
-  //
-  addNewLog("> Recovers " + character.name + "'s " + effect_kind + " by " + assistValue, 1)
-}
 
-//通常攻撃のアニメーション
-function normalAttackAnime(character: Character) {
-  //attack animation
-  if (character.equipment.WEP) {
-    switch (character.equipment.WEP.kind) {
-      case Config.wepSword:
-      case Config.wepAxe:
-      case Config.wepDagger:
-        skillAnime.value = normalSlash
-        break
-      case Config.wepWand:
-        skillAnime.value = normalHit
-        break
-      case Config.wepBow:
-      case Config.wepSpear:
-        skillAnime.value = normalShot
-        break
-      default:
-    }
-  } else {
-    skillAnime.value = normalHit
-  }
-  //skill show position
-  let cellIndex = targetMonster.value[0].order!
-  showOneSkill.value[cellIndex] = true
-  //
-  // setTimeout(() => {
-  //   showAreaSkill.value = '';
-  //   showOneSkill.value[cellIndex] = false
-  //   //エフェクト表示
-  //   showMonsterEffect()
-  // }, Config.normalAttackTime);
-}
 //スキル攻撃のアニメーション
 function skillAttackAnime(skillEffect: SkillEffect) {
   // if (skillEffect.skill_anime == '') return
@@ -866,13 +726,6 @@ function skillAttackAnime(skillEffect: SkillEffect) {
       default:
     }
   }
-  //
-  // setTimeout(() => {
-  //   showAreaSkill.value = '';
-  //   showOneSkill.value[cellIndex] = false
-  //   //モンスターのエフェクト表示
-  //   showMonsterEffect()
-  // }, animeTime);
 }
 
 // スキルロード後
@@ -880,58 +733,47 @@ const loadSkillAnime = (index: number = 0) => {
   setTimeout(() => {
     showAreaSkill.value = '';
     showOneSkill.value[index] = false
-    //モンスターのエフェクト表示
-    showMonsterEffect()
+    if (targetNow == 1) {
+      //パーティ全体対象のスキル
+      // if (toSkillEffect.value?.effect_type == Config.effectHeal) {
+      //   startCharacterEffect.value = true
+      // }
+      //以降の処理はCurrent.vueで
+    } else if (targetNow == 2) {
+      //モンスターのエフェクト表示
+      showMonsterEffect()
+    }
   }, animeTime);
+  // startCharacterEffect.value = false
 }
 
 //キャラクター向けのアニメーション表示
-function toCharacterSkillAnime(skillEffect: SkillEffect) {
-  console.log('skillEffect', skillEffect)
+function toCharacterSkill(skillEffect: SkillEffect) {
+
+  toSkillEffect.value = skillEffect
+  toCharacterEffectType.value = skillEffect.effect_type
   switch (skillEffect.target_type) {
     case Config.targetMyself:
     case Config.targetOneFriend:
-      let characterIndex = getCharacterIndex(targetCharacter.value[0])
-      toCharacterAnime.value = skillEffect.skill_anime
-      showCharacterAnime.value[characterIndex] = true // アニメーションを表示にする
-      setTimeout(() => {
-        showCharacterAnime.value[characterIndex] = false // アニメーションを非表示にする
-        toCharacterAnime.value = null // 
-        applyEffectToCharacters(skillEffect.effect_type)
-      }, animeTime) // アニメーションをtoCharacterAnimeTimeの時間表示した後に非表示にする
+      startCharacterAnime.value = true
+      //以降の処理はCurrent.vueで
       break
     case Config.targetAllFriends:
       showAreaSkill.value = Config.targetAll
       skillAnime.value = skillEffect.skill_anime
-      setTimeout(() => {
-        skillAnime.value = '';
-        showAreaSkill.value = '';
-        applyEffectToCharacters(skillEffect.effect_type)
-      }, animeTime);
+      // setTimeout(() => {
+      //   skillAnime.value = '';
+      //   showAreaSkill.value = '';
+      //   applyEffectToCharacters(skillEffect.effect_type)
+      // }, animeTime);
       break
     case Config.targetRandomFriend:
       break
     default:
   }
-}
-//キャラクター向けのエフェクトを表示
-function applyEffectToCharacters(effectType: string) {
-  let delay = Config.delayTime;
-  toCharacterEffectType.value = effectType;
-  for (let i = 0; i < partyStore.characters.length; i++) {
-    console.log('applyEffectToCharacters', toCharacterEffect.value[i], toCharacterEffectType.value)
-    if (toCharacterEffect.value[i] == null) continue;
-    setTimeout(() => {
-      // toCharacterEffect.value[i] = effectDetails.value;
-      showCharacterEffect.value[i] = true;
-      setTimeout(() => {
-        showCharacterEffect.value[i] = false
-        toCharacterEffect.value[i] = null
-      }, Config.effectTime);
-    }, delay);
-    delay += Config.delayTime;
-    effectTime = Config.effectTime + delay
-  }
+  setTimeout(() => {
+    startCharacterAnime.value = false
+  }, animeTime);
 }
 //モンスター対象のエフェクト表示
 function showMonsterEffect() {
@@ -961,6 +803,68 @@ function showMonsterEffect() {
   //   }
   // }
 }
+// モンスターの行動を処理する関数
+function monsterTurn(monster: Monster) {
+  battleProcess.value = "monsterTurn"
+  //使用スキル決定
+  let indexSkill: number
+  indexSkill = Math.floor(Math.random() * monster.activeSkill.length);
+  activeSkill = monster.activeSkill[indexSkill]
+  //ターゲット決定
+  selectionMode.value = activeSkill.skill_effect[0].target_type
+  targetCharacter.value = [];
+  targetMonster.value = []
+  switch (selectionMode.value) {
+    case Config.targetMyself:
+      targetMonster.value.push(monster);
+      break
+    case Config.targetOneFriend:
+      targetCharacter.value.push(selectMonsterAction()!)
+      break
+    case Config.targetAllFriends:
+      targetCharacter.value = partyStore.characters.filter(character => character.nowHP > 0)
+      break
+    case Config.targetRandomFriend:
+      break
+    case Config.targetOneEnemy:
+      targetMonster.value.push(monster);
+      break
+    case Config.targetColumnEnemy:
+      targetColumn(monster.order!)
+      break
+    case Config.targetRowEnemy:
+      targetRow(monster.order!)
+      break
+    case Config.targetAllEnemy:
+      targetMonster.value = monsterGrid.value.filter(monster => monster !== null);
+      break
+    case Config.targetRandomEnemy:
+      targetMonster.value = monsterGrid.value.filter(monster => monster !== null);
+      break
+    default:
+  }
+  monsterAction(monster, selectMonsterAction()!);
+}
+// モンスターの攻撃対象を決定
+const selectMonsterAction = () => {
+  // HPが0以上のキャラクターのみが攻撃を受けることができる
+  const aliveCharacters = partyStore.characters.filter(character => character.nowHP > 0);
+
+  // キャラクターが選ばれる確率を計算
+  const totalHate = aliveCharacters.reduce((sum, character) => sum + character.totalStatus.Hate, 0);
+  const probabilities = aliveCharacters.map(character => character.totalStatus.Hate / totalHate);
+
+  // 確率に基づいてキャラクターを選択
+  const rand = Math.random();
+  let sum = 0;
+  for (let i = 0; i < probabilities.length; i++) {
+    sum += probabilities[i];
+    if (rand < sum) {
+      return aliveCharacters[i];
+    }
+  }
+}
+
 //モンスターの行動
 async function monsterAction(monster: Monster, character: Character) {
   // await timer(1000);  //
@@ -968,22 +872,29 @@ async function monsterAction(monster: Monster, character: Character) {
   monsterAttack(monster, character)
 
   //アニメーション
-  let characterIndex = getCharacterIndex(character)
+  // let characterIndex = getCharacterIndex(character)
   // targetCharacter.value = character
   targetCharacter.value = []
   targetCharacter.value.push(character)
-  toCharacterAnime.value = monsterClaw
-  showCharacterAnime.value[characterIndex] = true // アニメーションを表示
-  setTimeout(() => {
-    showCharacterAnime.value[characterIndex] = false // アニメーションを非表示
-    toCharacterAnime.value = null // アニメーションを非表示にする
-    applyEffectToCharacters(Config.effectDamage)
-  }, Config.monsterAttackTime) // アニメーションをtoCharacterAnimeTimeの時間表示した後に非表示にする
+
+  //モンスター攻撃
+  toCharacterEffectType.value = Config.effectDamage
+  startCharacterAnime.value = true
+  //以降はCurrent.vueで
+
+  // toCharacterAnime.value = monsterClaw
+  // showCharacterAnime.value[characterIndex] = true // アニメーションを表示
+  // setTimeout(() => {
+  //   showCharacterAnime.value[characterIndex] = false // アニメーションを非表示
+  //   toCharacterAnime.value = null // アニメーションを非表示にする
+  //   applyEffectToCharacters(Config.effectDamage)
+  // }, Config.monsterAttackTime) // アニメーションをtoCharacterAnimeTimeの時間表示した後に非表示にする
 
   if (character.nowHP == 0) {
     // character HP0どうする？        
   }
   await timer(Config.monsterAttackTime + Config.effectTime);  //
+  startCharacterAnime.value = false
 }
 // モンスターの攻撃処理
 function monsterAttack(monster: Monster, character: Character) {
@@ -1023,9 +934,15 @@ function endTurn() {
     for (let condition of chara.conditions) {
       switch (condition.status) {
         case Config.effectRegeneration:
+          // toCharacterEffect.value = characterAssist(skillEffect, activeSkill.name, targetCharacter.value, character)
           characterHeal(chara, condition.value, Config.statusnowHP)
+          toCharacterEffect.value[getCharacterIndex(chara)] = condition.value
+          //キャラクターのエフェクト表示
+          toCharacterEffectType.value = Config.effectHeal
+          startCharacterEffect.value = true
+          //以降の処理はCurrent.vueで
           // targetCharacter.value = chara
-          applyEffectToCharacters(Config.effectHeal)
+          // applyEffectToCharacters(Config.effectHeal)
           // debug st
           console.log(Config.effectRegeneration, condition)
           // debug ed
@@ -1224,35 +1141,48 @@ function endTurn() {
   width: 13vw;
 }
 
-.startTurn {
-  position: absolute;
-  top: 25%;
-  left: 5%;
-  font-family: "Mystery Quest";
-  color: #F34213;
-  font-size: 30vh;
-  clip-path: inset(0 100% 0 0);
-  animation: textfadein 1.0s 0s both;
-}
-
+.startTurn,
 .endBattle {
   position: absolute;
   top: 25%;
-  left: 5%;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: "Mystery Quest";
   color: #F34213;
   font-size: 30vh;
-  clip-path: inset(0 100% 0 0);
-  animation: textfadein 1.0s 0s both;
+  white-space: nowrap;
+  animation: slideInOut 1.5s linear forwards;
 }
 
-@keyframes textfadein {
+@keyframes slideInOut {
   0% {
-    clip-path: inset(0 100% 0 0);
+    transform: translateX(-110%);
+    opacity: 0;
+  }
+
+  10% {
+    transform: translateX(-90%);
+    opacity: 1;
+  }
+
+  30% {
+    transform: translateX(-50%);
+    opacity: 1;
+  }
+
+  70% {
+    transform: translateX(-50%);
+    opacity: 1;
+  }
+
+  90% {
+    transform: translateX(-10%);
+    opacity: 1;
   }
 
   100% {
-    clip-path: inset(0);
+    transform: translateX(10%);
+    opacity: 0;
   }
 }
 

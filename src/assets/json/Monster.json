@@ -14,7 +14,10 @@
 		"DEX":10,
 		"SPD":10,
 		"GOLD":10,
-		"EXP":10
+		"EXP":10,
+		"activeSkill": [
+			1001
+		]
 	},
 	{
 		"mon_id": 2,
@@ -31,7 +34,10 @@
 		"DEX":10,
 		"SPD":10,
 		"GOLD":10,
-		"EXP":10
+		"EXP":10,
+		"activeSkill": [
+			1001
+		]
 	},
 	{
 		"mon_id": 3,
@@ -48,7 +54,10 @@
 		"DEX":10,
 		"SPD":10,
 		"GOLD":10,
-		"EXP":10
+		"EXP":10,
+		"activeSkill": [
+			1001
+		]
 	},
 	{
 		"mon_id": 4,
@@ -65,7 +74,10 @@
 		"DEX":10,
 		"SPD":10,
 		"GOLD":10,
-		"EXP":10
+		"EXP":10,
+		"activeSkill": [
+			1001
+		]
 	},
 	{
 		"mon_id": 5,
@@ -82,7 +94,10 @@
 		"DEX":10,
 		"SPD":10,
 		"GOLD":10,
-		"EXP":10
+		"EXP":10,
+		"activeSkill": [
+			1001
+		]
 	},
 	{
 		"mon_id": 6,
@@ -99,7 +114,10 @@
 		"DEX":10,
 		"SPD":10,
 		"GOLD":10,
-		"EXP":10
+		"EXP":10,
+		"activeSkill": [
+			1001
+		]
 	},
 	{
 		"mon_id": 7,
@@ -116,7 +134,10 @@
 		"DEX":10,
 		"SPD":10,
 		"GOLD":10,
-		"EXP":10
+		"EXP":10,
+		"activeSkill": [
+			1001
+		]
 	},
 	{
 		"mon_id": 8,
@@ -133,7 +154,10 @@
 		"DEX":10,
 		"SPD":10,
 		"GOLD":10,
-		"EXP":10
+		"EXP":10,
+		"activeSkill": [
+			1001
+		]
 	},
 	{
 		"mon_id": 9,
@@ -150,7 +174,10 @@
 		"DEX":50,
 		"SPD":50,
 		"GOLD":100,
-		"EXP":300
+		"EXP":300,
+		"activeSkill": [
+			1001
+		]
 	},
 	{
 		"mon_id": 10,
@@ -167,6 +194,9 @@
 		"DEX":100,
 		"SPD":50,
 		"GOLD":1000,
-		"EXP":1000
+		"EXP":1000,
+		"activeSkill": [
+			1001
+		]
 	}
 ]

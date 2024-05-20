@@ -20,7 +20,7 @@
         "target": 2,
         "target_type": "oneEnemy",
         "skill_anime": "effect/normal/slash.gif",
-        "anime_time": 500
+        "anime_time": 400
       }
     ]
   },
@@ -45,7 +45,7 @@
         "target": 2,
         "target_type": "oneEnemy",
         "skill_anime": "effect/normal/pierce.gif",
-        "anime_time": 500
+        "anime_time": 400
       }
     ]
   },
@@ -70,7 +70,7 @@
         "target": 2,
         "target_type": "oneEnemy",
         "skill_anime": "effect/normal/hit.gif",
-        "anime_time": 500
+        "anime_time": 400
       }
     ]
   },
@@ -1056,6 +1056,31 @@
         "target_type": "randomEnemy",
         "skill_anime": "effect/skill/assassin/high_speed_slash.gif",
         "anime_time": 1600
+      }
+    ]
+  },
+  {
+    "skill_id": 1001,
+    "name": "Claw Attack",
+    "use": 1,
+    "info": "A Normal Claw.",
+    "attribute": 1,
+    "interval": 0,
+    "consume_type": "MP",
+    "consume_amount": 0,
+    "effect_number": 1,
+    "skill_effect": [
+      {
+        "effect_type": "attack",
+        "effect_kind": "nowHP",
+        "effect_times": 1,
+        "base_status": "ATK",
+        "success_rate": 1,
+        "effect_amount": 1.0,
+        "target": 1,
+        "target_type": "oneFriend",
+        "skill_anime": "effect/monster/claw1.gif",
+        "anime_time": 500
       }
     ]
   }
