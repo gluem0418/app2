@@ -1,8 +1,8 @@
-<template>
++<template>
   <div v-if="character" class="SkillUI">
     <div class="skillSelect">
       <ul class="skillType">
-        <li v-if="processBattle">{{ SkillType.ac }}</li>
+        <li v-if="inUseSkill">{{ SkillType.ac }}</li>
         <li v-else v-for="skType in skillType" :key="skType" @click="selectSkillType(skType)"
           :class="{ 'selected-tab': skType === selectedSkillType }">
           {{ skType }}
@@ -54,7 +54,7 @@
         </ul>
       </div>
     </div>
-    <SkillInfo v-if="selectedSkill" class="skillInfo" :skillInfo="selectedSkill.info" />
+    <SkillInfo v-if="selectedSkill" :skillInfo="selectedSkill.info" :class="{ 'skillInfo': inUseSkill === false, 'skillUse': inUseSkill === true }"/>
   </div>
 </template>
 
@@ -71,7 +71,7 @@ import ErrorMessage from '@/components/information/Information.vue';
 
 const props = defineProps({
   character: { type: Character },
-  processBattle: { type: Boolean }
+  inUseSkill: { type: Boolean }
 });
 
 //スキルタイプ定義
@@ -85,7 +85,7 @@ const showError = ref(false);
 const errorMessage = Config.msgSkillCostError
 
 const selectedSkillType = ref<SkillType | undefined>(undefined);
-if (props.processBattle == true) {
+if (props.inUseSkill == true) {
   selectedSkillType.value = SkillType.ac
 } else {
   selectedSkillType.value = SkillType.pa
@@ -97,7 +97,8 @@ const selectSkillType = (type: SkillType) => {
 // 選択したスキル
 const selectedSkill = ref<PassiveSkill | ActiveSkill | null>(null);
 const selectSkill = (skill: PassiveSkill | ActiveSkill) => {
-  if (props.processBattle && skill instanceof ActiveSkill && selectedSkill.value == skill) {
+  console.log('selectSkill_inUseSkill', props.inUseSkill)
+  if (props.inUseSkill && skill instanceof ActiveSkill && selectedSkill.value == skill) {
     useSkill(skill)
   }
   selectedSkill.value = skill;
@@ -159,8 +160,6 @@ watch(() => props.character, () => {
   color: #F2EDD5;
   font-size: 2.8vh;
   position: relative;
-  /* height: 53vh;
-  width: 25vw; */
 }
 
 .skillSelect {
@@ -208,13 +207,9 @@ watch(() => props.character, () => {
 }
 
 .skillItem {
-  /* display: flex; */
   vertical-align: middle;
-  /* align-items: center; */
-  /* これにより縦位置が中央になります */
   justify-content: start;
   list-style-type: none;
-  /* vertical-align: top; */
   height: 5vh;
 }
 
@@ -231,11 +226,8 @@ watch(() => props.character, () => {
 }
 
 .consumeType {
-  /* position: absolute; */
   float: right;
   margin-right: 1vh;
-  /* right: 4vw; */
-  /* justify-content: flex-end; */
   font-family: "Verily Serif Mono";
   color: #E2D8A6;
 }
@@ -268,4 +260,10 @@ watch(() => props.character, () => {
   font-family: "Verily Serif Mono";
   color: #E2D8A6;
 }
+.skillUse {
+  position: absolute;
+  top:6vh;
+  margin-left: 26vw;
+}
+
 </style>

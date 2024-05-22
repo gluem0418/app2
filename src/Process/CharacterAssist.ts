@@ -6,17 +6,12 @@ import { LogService } from './LogService.ts';
 import { usePartyStore } from '@/stores/Party.ts';
 
 // キャラクター向けの補助処理
-export function characterAssist(skillEffect: SkillEffect, skillName: string, targetCharacter: Character, character?: Character): (string | number | null)[] {
+export function characterAssist(skillEffect: SkillEffect, skillName: string, targetCharacter: Character[], character?: Character): (string | number | null)[] {
 
   //パーティ情報
   const partyStore = usePartyStore()
 
   let toCharacterEffect: (string | number | null)[] = new Array(partyStore.characters.length).fill(null);
-
-  //キャラクター配列からindex取得
-  // const getCharacterIndex = (character: Character) => {
-  //   return partyStore.characters.findIndex(c => c === character);
-  // }
 
   console.log('characterAssist', skillName, skillEffect)
   let assistValue: number = 0
@@ -34,11 +29,11 @@ export function characterAssist(skillEffect: SkillEffect, skillName: string, tar
         case Config.targetMyself:
         case Config.targetOneFriend:
           // if (!targetCharacter.value) return;
-          characterHeal(targetCharacter, assistValue, skillEffect.effect_kind)
-          toCharacterEffect[getCharacterIndex(targetCharacter)] = assistValue
+          characterHeal(targetCharacter[0], assistValue, skillEffect.effect_kind)
+          toCharacterEffect[getCharacterIndex(targetCharacter[0])] = assistValue
           break
         case Config.targetAllFriends:
-          for (let chara of partyStore.characters) {
+          for (let chara of targetCharacter) {
             characterHeal(chara, assistValue, skillEffect.effect_kind)
             toCharacterEffect[getCharacterIndex(chara)] = assistValue
           }
@@ -54,11 +49,11 @@ export function characterAssist(skillEffect: SkillEffect, skillName: string, tar
         case Config.targetMyself:
         case Config.targetOneFriend:
           if (!targetCharacter) break;
-          targetCharacter.addBuff(skillName, skillEffect.effect_kind, assistValue, skillEffect.effect_times)
-          targetCharacter.calculateTotalStatus()
+          targetCharacter[0].addBuff(skillName, skillEffect.effect_kind, assistValue, skillEffect.effect_times)
+          targetCharacter[0].calculateTotalStatus()
           break
         case Config.targetAllFriends:
-          for (let chara of partyStore.characters) {
+          for (let chara of targetCharacter) {
             chara.addBuff(skillName, skillEffect.effect_kind, assistValue, skillEffect.effect_times)
             chara.calculateTotalStatus()
           }
@@ -74,10 +69,10 @@ export function characterAssist(skillEffect: SkillEffect, skillName: string, tar
         case Config.targetMyself:
         case Config.targetOneFriend:
           // if (!targetCharacter.value) return;
-          targetCharacter.addCondition(skillName, skillEffect.effect_kind, assistValue, skillEffect.effect_times)
+          targetCharacter[0].addCondition(skillName, skillEffect.effect_kind, assistValue, skillEffect.effect_times)
           break
         case Config.targetAllFriends:
-          for (let chara of partyStore.characters) {
+          for (let chara of targetCharacter) {
             chara.addCondition(skillName, skillEffect.effect_kind, assistValue, skillEffect.effect_times)
           }
           break

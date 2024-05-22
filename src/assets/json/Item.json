@@ -63,9 +63,9 @@
   },
   {
     "item_id": 1002,
-    "name": "Normal Item2",
+    "name": "Healing Herb All",
     "use": 0,
-    "info": "Recover 50 HP of one friend.",
+    "info": "Recover 50 HP of all friends.",
     "attribute": 11,
     "consume": 1,
     "purchase_amount": 100,
@@ -80,7 +80,7 @@
         "success_rate": 100,
         "effect_amount": 50,
         "target": 1,
-        "target_type": "oneFriend",
+        "target_type": "allFriends",
         "skill_anime": "",
         "anime_time": 500
       }

@@ -52,11 +52,14 @@
     <!-- icon  -->
     <div v-if="battleProcess == 'characterTurn' || battleProcess == 'selectTarget'">
       <IconAttack id="IconAttack" class="IconAttack" @click="clickIcon(Config.actionAttack)" :style="styles.AttackBtn" />
-      <IconSkill id="IconAttack" class="IconSkill" @click="clickIcon(Config.actionSkill)" :style="styles.SkillBtn" />
+      <IconSkill v-if="characterType == Config.actionSkill" id="IconAttack" class="IconSkill"
+        @click="clickIcon(Config.actionSkill)" :style="styles.SkillBtn" />
+      <IconMagic v-else id="IconAttack" class="IconSkill" @click="clickIcon(Config.actionSkill)"
+        :style="styles.SkillBtn" />
 
       <IconBag id="IconAttack" class="IconBag" @click="clickIcon(Config.actionItem)" :style="styles.ItemBtn" />
 
-      <SkillUI v-if="showSkillList" class="SkillUI" :character="currentCharacter" :inUseSkill="showSkillList"
+      <SkillUI v-if="showSkillList" class="SkillUI" :character="currentCharacter" :processBattle="showSkillList"
         @useSkill='useSkill' />
 
       <ItemBagUI v-if="showItemList" class="ItemBagUI" />
@@ -82,8 +85,6 @@ import CurrentUI from '@/UI/Current.vue';
 import SkillUI from '@/UI//Skill.vue';
 import SkillInfo from '@/UI//SkillInfo.vue';
 import ItemBagUI from '@/UI/ItemBag.vue';
-import useCharacterSkill from './useCharacterSkill.ts';
-
 import ActionLog from '@/UI/ActionLog.vue';
 import { LogService } from './LogService.ts';
 
@@ -101,9 +102,14 @@ import ProgressBarHp from '@/components/progress/ProgressBarHp.vue';
 import ImgEncount from '@/components/etc/ImgEncount.vue';
 import IconAttack from '@/components/icon/IconAttack.vue';
 import IconSkill from '@/components/icon/IconSkill.vue';
-// import IconMagic from '@/components/icon/IconMagic.vue';
+import IconMagic from '@/components/icon/IconMagic.vue';
 import SelectName from '@/components/flame/Flame1.vue';
 import IconBag from '@/components/icon/IconBag.vue';
+
+//normal attack import
+// import normalSlash from '/effect/normal/slash.gif';
+// import normalShot from '/effect/normal/pierce.gif';
+// import normalHit from '/effect/normal/hit.gif';
 
 //パーティ情報
 import { usePartyStore } from '@/stores/Party.ts';
@@ -129,7 +135,7 @@ const targetMonster = ref<Monster[]>([]) //対象モンスター
 //スキル表示用
 const skillAnime = ref<string>('')
 const showOneSkill = ref<boolean[]>([]);
-const showAreaSkill = ref<string | null>(null)
+const showAreaSkill = ref<string>('')
 const skillTop = ref<number>(0)
 const skillLeft = ref<number>(0)
 //選択中のモンスター情報
@@ -157,23 +163,13 @@ const turnOrder = ref<Current[]>([])
 const numOrder = ref<number>(0)
 const battleProcess = ref<string | null>('encount');
 let resolveSelectPromise: Function | null = null;
-// const characterType = ref<string>('') //物理タイプと魔法タイプでのアイコン切り替え
+const characterType = ref<string>('') //物理タイプと魔法タイプでのアイコン切り替え
 const styles = reactive<Record<string, CSSProperties>>({
   AttackBtn: {},
   SkillBtn: {},
   ItemBtn: {}
 });
-//カスタムフック
-//キャラクター向けスキル
-const { toCharacterSkill, showCharacterEffect } = useCharacterSkill(
-  startCharacterAnime,
-  startCharacterEffect,
-  toSkillEffect,
-  toCharacterEffect,
-  toCharacterEffectType,
-  skillAnime,
-  showAreaSkill
-)
+
 ///////////////////////////////////////////////////////////
 // 音楽関連の設定
 ///////////////////////////////////////////////////////////
@@ -184,9 +180,14 @@ const alyBattleMusic = new Array(
   Config.mscBattle4,
   Config.mscBattle5
 )
+
 ///////////////////////////////////////////////////////////
 // 共通関数
 ///////////////////////////////////////////////////////////
+//キャラクター配列からindex取得
+// const getCharacterIndex = (character: Character) => {
+//   return partyStore.characters.findIndex(c => c === character);
+// }
 //monsteGridから最小のindex取得
 // const getMinGridIndex = () => {
 //   return monsterGrid.value.findIndex(monster => monster !== null);
@@ -328,11 +329,11 @@ async function startTurn() {
 // キャラクターの行動を処理する非同期関数
 async function characterTurn(character: Character) {
   battleProcess.value = "characterTurn"
-  // if (character.class == Config.clsPriest) {
-  //   characterType.value = Config.actionMagic
-  // } else {
-  //   characterType.value = Config.actionSkill
-  // }
+  if (character.class == Config.clsPriest) {
+    characterType.value = Config.actionMagic
+  } else {
+    characterType.value = Config.actionSkill
+  }
   // ターゲットの選択を待つ
   await waitForTargetSelection();
   battleProcess.value = ""
@@ -363,7 +364,7 @@ function clickIcon(iconId: string) {
         }
         break
       case Config.actionSkill:
-      // case Config.actionMagic:
+      case Config.actionMagic:
         showSkillList.value = true
         break
       case Config.actionItem:
@@ -723,30 +724,30 @@ const loadSkillAnime = (index: number = 0) => {
 }
 
 //キャラクター向けのアニメーション表示
-// function toCharacterSkill(skillEffect: SkillEffect) {
+function toCharacterSkill(skillEffect: SkillEffect) {
 
-//   toSkillEffect.value = skillEffect
-//   switch (skillEffect.target_type) {
-//     case Config.targetMyself:
-//     case Config.targetOneFriend:
-//       startCharacterAnime.value = true
-//       //以降の処理はCurrent.vueで
-//       break
-//     case Config.targetRandomFriend:
-//     case Config.targetAllFriends:
-//       showAreaSkill.value = Config.targetAll
-//       skillAnime.value = skillEffect.skill_anime
-//       break
-//     default:
-//   }
-//   setTimeout(() => {
-//     startCharacterAnime.value = false
-//     //キャラクター向けのエフェクトありの場合
-//     if (toCharacterEffect.value.some(effect => effect !== null)) {
-//       showCharacterEffect(skillEffect)
-//     }
-//   }, animeTime);
-// }
+  toSkillEffect.value = skillEffect
+  switch (skillEffect.target_type) {
+    case Config.targetMyself:
+    case Config.targetOneFriend:
+      startCharacterAnime.value = true
+      //以降の処理はCurrent.vueで
+      break
+    case Config.targetRandomFriend:
+    case Config.targetAllFriends:
+      showAreaSkill.value = Config.targetAll
+      skillAnime.value = skillEffect.skill_anime
+      break
+    default:
+  }
+  setTimeout(() => {
+    startCharacterAnime.value = false
+    //キャラクター向けのエフェクトありの場合
+    if (toCharacterEffect.value.some(effect => effect !== null)) {
+      showCharacterEffect(skillEffect)
+    }
+  }, animeTime);
+}
 //モンスター対象のエフェクト表示
 function showMonsterEffect() {
 
@@ -768,15 +769,15 @@ function showMonsterEffect() {
   }
 }
 
-// function showCharacterEffect(skillEffect: SkillEffect) {
-//   console.log('showCharacterEffect_toCharacterEffect.value', toCharacterEffect.value);
-//   startCharacterEffect.value = true
-//   toCharacterEffectType.value = skillEffect.effect_type
-//   effectTime = Config.effectTime;
-//   setTimeout(() => {
-//     startCharacterEffect.value = false
-//   }, Config.effectTime);
-// }
+function showCharacterEffect(skillEffect: SkillEffect) {
+  console.log('showCharacterEffect_toCharacterEffect.value', toCharacterEffect.value);
+  startCharacterEffect.value = true
+  toCharacterEffectType.value = skillEffect.effect_type
+  effectTime = Config.effectTime;
+  setTimeout(() => {
+    startCharacterEffect.value = false
+  }, Config.effectTime);
+}
 
 // モンスターの行動を処理する関数
 function monsterTurn(monster: Monster) {
@@ -1144,11 +1145,10 @@ function endTurn() {
 
 .SkillUI {
   position: absolute;
-  top: 10vh;
-  left: 37vw;
+  top: 3vh;
+  right: 12vw;
   animation: slideTop 0.3s ease-in-out;
 }
-
 .ItemBagUI {
   position: absolute;
   top: 3vh;
@@ -1158,7 +1158,7 @@ function endTurn() {
 
 .skillInfo {
   position: absolute;
-  top: 3vh;
+  top: 2vh;
   right: 12vw;
   animation: slideBottom 0.3s ease-in-out;
 }

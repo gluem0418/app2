@@ -6,7 +6,7 @@
       <img v-if="showCharacterAnime && showCharacterAnime[index]" :src="toCharacterAnime!" class="toCharacterAnime"
         @load="loadSkillAnime(index)" alt="skill effect">
       <div v-if="showCharacterEffect && showCharacterEffect[index]" class="characterEffect"
-        :class="{ effectGreen: toCharacterEffectType == Config.effectHeal, effectRed: toCharacterEffectType == Config.effectDamage }">
+        :class="{ effectGreen: toCharacterEffectType == Config.effectHeal, effectRed: toCharacterEffectType == Config.effectAttack }">
         {{ toCharacterEffect[index] }}
       </div>
       <img class="characterface" :src="character.faceGraphicUrl">
@@ -30,9 +30,6 @@ import ProgressBarHp from '@/components/progress/ProgressBarHp.vue';
 import ProgressBarMp from '@/components/progress/ProgressBarMp.vue';
 
 import Config from '@/config.ts';
-
-//monsterスキル表示
-import monsterClaw from '/effect/monster/claw1.gif';
 
 const props = defineProps({
   currentCharacter: { type: Character },
@@ -83,40 +80,13 @@ const selectCharacter = (selectType: string, character: Character | null = null)
   emit('selectCharacter', selectType, character)
 };
 
-//キャラクター向けのアニメーション表示
-// function toCharacterSkillAnime(skillEffect: SkillEffect) {
-function characterAnime(index: number, skillAnime: string) {
-  console.log('skillEffect', props.toSkillEffect)
-  // if (!props.targetCharacter) return
-  // switch (skillEffect.target_type) {
-  //   case Config.targetMyself:
-  //   case Config.targetOneFriend:
-  // let characterIndex = getCharacterIndex(props.targetCharacter[0])
-  toCharacterAnime.value = skillAnime
-  showCharacterAnime.value[index] = true // アニメーションを表示にする
-  //     break
-  //   default:
-  // }
-}
-//キャラクター向けの攻撃アニメーション表示
-// function toCharacterAttackAnime() {
-//   if (!props.targetCharacter) return
-//   let characterIndex = getCharacterIndex(props.targetCharacter[0])
-//   toCharacterAnime.value = monsterClaw
-//   showCharacterAnime.value[characterIndex] = true //アニメーションを表示
-// }
-
 // スキルロード後
-let startTime: number
 const loadSkillAnime = (index: number = 0) => {
-  let animeTime = props.toCharacterEffectType == Config.effectDamage ? Config.monsterAttackTime : props.toSkillEffect?.anime_time
-  startTime = performance.now()
+  if (!props.toSkillEffect) return
   setTimeout(() => {
-    console.log('loadSkillAnimeEnd', performance.now() - startTime)
     showCharacterAnime.value[index] = false
     toCharacterAnime.value = null;
-    // effectToCharacters(index)
-  }, animeTime)
+  }, props.toSkillEffect.anime_time)
 }
 
 //キャラクター向けのエフェクトを表示
@@ -124,7 +94,6 @@ function effectToCharacters(index: number) {
   if (props.toCharacterEffect[index] == null) return;
   showCharacterEffect.value[index] = true;
   setTimeout(() => {
-    console.log('effectToCharactersEnd', performance.now() - startTime)
     showCharacterEffect.value[index] = false
   }, Config.effectTime);
 }
@@ -132,18 +101,11 @@ function effectToCharacters(index: number) {
 watch(() => props.startCharacterAnime, () => {
   if (!props.startCharacterAnime) return
   if (!props.targetCharacter) return
-
-  let characterIndex = getCharacterIndex(props.targetCharacter[0])
-
-  console.log('startCharacterAnime', props.toCharacterEffectType)
-  if (props.toCharacterEffectType == Config.effectDamage) {
-    //モンスター通常攻撃
-    characterAnime(characterIndex, monsterClaw)
-    // toCharacterAttackAnime()
-  } else {
-    //キャラクター向けスキル
-    characterAnime(characterIndex, props.toSkillEffect!.skill_anime)
-  }
+  if (!props.toSkillEffect) return
+  console.log('startCharacterAnime', props.toSkillEffect)
+  //キャラクター向けスキルのアニメーション表示
+  toCharacterAnime.value =  props.toSkillEffect.skill_anime
+  showCharacterAnime.value[getCharacterIndex(props.targetCharacter[0])] = true
 })
 
 watch(() => props.startCharacterEffect, () => {

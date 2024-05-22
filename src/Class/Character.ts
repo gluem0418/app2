@@ -29,8 +29,6 @@ export default class Character {
   conditions: { name: string, status: string, value: number, duration: number }[] = [];
   nowHP: number;
   nowMP: number;
-  // HitRate: number;
-  // CritRate: number;
   activeSkill: ActiveSkill[];
   passiveCost: number;
   passiveSkill: PassiveSkill[];
@@ -61,7 +59,7 @@ export default class Character {
       Hate: 1 - index * 0.1,
       //
       Slash: data.Slash,
-      Stab: data.Stab,
+      Pierce: data.Pierce,
       Hit: data.Hit,
       Fire: data.Fire,
       Water: data.Water,

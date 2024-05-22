@@ -12,16 +12,20 @@
         </div>
       </div>
     </div>
- 
+
     <CharacterUI :character="selectedCharacter" :index="selectedIndex" v-show="showUIStore.character"
       @changeCharacter='changeCharacter' />
     <!-- <ItemBagUI class="ItemBag" v-show="showUIStore.item" /> -->
-    <ItemUse class="ItemUse" v-show="showUIStore.item" />
+    <Preparation class="Preparation" v-show="showUIStore.item || showUIStore.skill" />
     <IconBack class="IconBack" @click="clickBack" v-show="showUIStore.party || showUIStore.character" />
 
-    <IconBag class="IconBag" @click="clickBag" v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.character" />
-
     <IconChange class="IconChange" @click="changeOrder" v-show="showUIStore.party" :class="{ 'changing': changing }" />
+
+    <div v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.character">
+      <IconSkill class="IconSkill" @click="clickIcon(Config.actionSkill)" />
+      <IconBag class="IconBag" @click="clickIcon(Config.actionItem)" />
+    </div>
+
     <IconParty class="IconParty" @click="clickParty" v-if="statusStore.guildMenu != Config.menuRemoveMember" />
 
     <Confirmation v-show="showUIStore.message" :message="confirmationMessage"
@@ -35,7 +39,7 @@ import { ref } from 'vue';
 
 import StatusUI from './Status.vue';
 import CharacterUI from './Character.vue';
-import ItemUse from '@/Process/ItemUse.vue';
+import Preparation from '@/Process/Preparation.vue';
 // import CurrentUI from '@/UI/Current.vue';
 
 import Character from '@/Class/Character.ts';
@@ -43,6 +47,7 @@ import IconBack from '@/components/icon/IconBack.vue';
 import IconBag from '@/components/icon/IconBag.vue';
 import IconParty from '@/components/icon/IconParty.vue';
 import IconChange from '@/components/icon/IconChange.vue';
+import IconSkill from '@/components/icon/IconSkill.vue';
 import Confirmation from '@/components/information/Confirmation.vue';
 import Information from '@/components/information/Information.vue';
 
@@ -82,13 +87,18 @@ const characterBack = () => {
 
 };
 //かばんアイコン
-const clickBag = () => {
-  showUIStore.item = !showUIStore.item;
-  showUIStore.current = !showUIStore.item
-  // if (showUIStore.item) {
-  //   showUIStore.current = true;
-  // }
-  showUIStore.party = false;
+const clickIcon = (kind :string) => {
+  if (kind == Config.actionItem) {
+    showUIStore.item = !showUIStore.item
+    showUIStore.skill = false
+    showUIStore.map = !showUIStore.item
+  } else {
+    showUIStore.skill = !showUIStore.skill
+    showUIStore.item = false
+    showUIStore.map = !showUIStore.skill
+  }
+  showUIStore.current = true
+  showUIStore.party = false
 };
 
 //パーティーアイコンを押して表示切替
@@ -215,12 +225,9 @@ const changeOrder = () => {
 .character-card.changing {
   animation: blink 0.5s linear infinite;
 }
+
 .StatusUI {
   animation: slideTop 0.5s ease-in-out;
-}
-
-.ItemUse {
-
 }
 
 .charaflame {

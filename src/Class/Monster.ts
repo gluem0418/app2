@@ -9,16 +9,10 @@ export default class Monster {
   name: string;
   GraphicUrl: string;
   LV: number;
-  HP: number;
-  MP: number;
-  ATK: number;
-  MGC: number;
-  DEF: number;
-  MDF: number;
-  DEX: number;
-  SPD: number;
-  HitRate: number;
-  CritRate: number;
+  baseStatus: { [key: string]: number };
+  totalStatus: { [key: string]: number };
+  buffs: { name: string, status: string, value: number, duration: number }[] = [];
+  conditions: { name: string, status: string, value: number, duration: number }[] = [];
   nowHP: number;
   nowMP: number;
   GOLD: number;
@@ -26,28 +20,51 @@ export default class Monster {
   activeSkill: ActiveSkill[];
   order: number | undefined;
 
-  constructor(monsterData: any) {
-    this.mon_id = monsterData.mon_id
-    this.mon_type = monsterData.mon_type
-    this.name = monsterData.name;
-    this.GraphicUrl = monsterData.GraphicUrl;
-    this.LV = monsterData.LV
-    this.HP = monsterData.HP
-    this.MP = monsterData.MP
-    this.ATK = monsterData.ATK
-    this.MGC = monsterData.MGC
-    this.DEF = monsterData.DEF
-    this.MDF = monsterData.MDF
-    this.DEX = monsterData.DEX
-    this.SPD = monsterData.SPD
-    this.HitRate = Config.monsterHitRate + Math.floor(this.DEX / 10)
-    this.CritRate = Math.floor(this.DEX / 8)
-    this.nowHP = monsterData.HP
-    this.nowMP = monsterData.MP
-    this.GOLD = monsterData.GOLD
-    this.EXP = monsterData.EXP
-    this.activeSkill = monsterData.activeSkill.map((id: number) => activeSkills.find(skill => skill.skill_id === id));
+  constructor(data: any) {
+    this.mon_id = data.mon_id
+    this.mon_type = data.mon_type
+    this.name = data.name;
+    this.GraphicUrl = data.GraphicUrl;
+    this.LV = data.LV
+    this.baseStatus = {
+      HP: data.HP,
+      MP: data.MP,
+      ATK: data.ATK,
+      MGC: data.MGC,
+      DEF: data.DEF,
+      MDF: data.MDF,
+      DEX: data.DEX,
+      SPD: data.SPD,
+      HitRate: 0,
+      CritRate: 0,
+      Slash: data.Slash,
+      Pierce: data.Pierce,
+      Hit: data.Hit,
+      Fire: data.Fire,
+      Water: data.Water,
+      Earth: data.Earth,
+      Wind: data.Wind,
+      Light: data.Light,
+      Dark: data.Dark,
+    };
+    this.totalStatus = this.calculateTotalStatus();
+    this.nowHP = data.HP
+    this.nowMP = data.MP
+    this.GOLD = data.GOLD
+    this.EXP = data.EXP
+    this.activeSkill = data.activeSkill.map((id: number) => activeSkills.find(skill => skill.skill_id === id));
     this.order = undefined;
+  }
+
+  calculateTotalStatus() {
+    let totalStatus = { ...this.baseStatus };
+    totalStatus.HitRate = Config.monsterHitRate + Math.floor(totalStatus.DEX / 10)
+    totalStatus.CritRate = Math.floor(totalStatus.DEX / 8)
+    // バフによるステータスの増加を計算
+    for (let buff of this.buffs.values()) {
+      totalStatus[buff.status] += buff.value;
+    }
+    return totalStatus;
   }
 
 }

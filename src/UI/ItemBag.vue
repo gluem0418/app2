@@ -12,13 +12,6 @@
         <li v-for="items in filteredItems" :key="items.item_id" class="itemList" @click=selectItem(items)
           :class="{ 'selected-tab': selectedItem === items }">
           <span class="itemName">{{ items.item.name }}</span>
-
-          <!-- <span
-              v-if="selectedItem === items && ((statusStore.processDungeon == Config.processSearch && items.item.use !== 1))"
-              class='buttonPosition'>
-              <span @click="clickItem(items)" class='button-equip'>{{ Config.itemBtn1 }}</span>
-            </span> -->
-
           <span class="itemNumber">{{ items.number }}</span>
         </li>
       </ul>
@@ -32,7 +25,6 @@
 import { ref, computed } from 'vue';
 
 import SkillInfo from '@/UI//SkillInfo.vue';
-// import Item, { Items } from '@/Class/Item.ts';
 import Config from '@/config.ts';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
