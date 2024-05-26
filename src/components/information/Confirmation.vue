@@ -42,7 +42,8 @@ const emit = defineEmits(['confirmationResponse']);
   top: 50%;
   left: 50%;
   transform: translateY(-50%) translateX(-50%);
-  background: #624CAB80;
+  /* background: #624CAB80; */
+  background: rgba(59, 65, 60, 0.8);
   background-image: url('/img/flame/flame0322.png');
   background-size: 100% 100%;
   font-family: serif;

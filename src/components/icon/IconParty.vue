@@ -9,6 +9,6 @@ import img from "/icon/party.png"
 </script>
 <style scoped>
 .Icon {
-  height: 12vh;
+  height: 13vh;
 }
 </style>

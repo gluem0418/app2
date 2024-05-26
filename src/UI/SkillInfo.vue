@@ -23,7 +23,7 @@ const props = defineProps({
   font-family: serif;
   color: #F2EDD5;
   font-size: 2.8vh;
-  padding: 1vh 1vw;
+  padding: 0.5vh 0.5vw;
   /* position: relative; */
   height: 23vh;
   width: 25vw;

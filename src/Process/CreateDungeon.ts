@@ -35,6 +35,7 @@ export function CreateDungeon() {
     meetPointX[i] = randomNum(Config.MapWidth / 4, Config.MapWidth * 3 / 4);
     meetPointY[i] = randomNum(Config.MapHeight / 4, Config.MapHeight * 3 / 4);
     MapData[meetPointY[i]][meetPointX[i]] = Config.MapRoad;
+    console.log('meetPoint', meetPointY[i], meetPointX[i])
   }
   //部屋生成
   for (let i = 0; i < roomCount; i++) {
@@ -51,7 +52,7 @@ export function CreateDungeon() {
   }
   //通路生成
   //中継ポイントでの接続でダンジョンを接続
-  //中継ポイントが3つ以上だと、繋がらない確率が上がる。
+  let meetPointIndex: number = 0
   for (let i = 0; i < roomCount; i++) {
     if (rooms[i].Overlap == false) {
       let StartPointX = randomNum(rooms[i].PointX, rooms[i].PointX + rooms[i].Width);
@@ -60,7 +61,13 @@ export function CreateDungeon() {
         initPoint.X = StartPointX;
         initPoint.Y = StartPointY;
       }
-      CreateRoad(StartPointX, StartPointY, meetPointX[randomNum(0, meetPointX.length - 1)], meetPointY[randomNum(0, meetPointY.length - 1)]);
+      // let randomIndex = randomNum(0, meetPointX.length - 1)
+      CreateRoad(StartPointX, StartPointY, meetPointX[meetPointIndex], meetPointY[meetPointIndex]);
+      meetPointIndex += 1
+      console.log('meetPointX.length', meetPointX.length)
+      if (meetPointIndex == meetPointX.length) {
+        meetPointIndex = 0
+      }
     }
   }
   //扉セット
@@ -124,8 +131,9 @@ function CreateRoom(roomHeight: number, roomWidth: number, roomPointX: number, r
   let isRoom = false;
   for (let i = 0; i < roomHeight; i++) {
     for (let j = 0; j < roomWidth; j++) {
-      if (MapData[roomPointY + i][roomPointX + j] == Config.MapRoom) {
-        isRoom = true;
+      // if (MapData[roomPointY + i][roomPointX + j] == Config.MapRoom) {
+      if (MapData[roomPointY + i][roomPointX + j] == Config.MapRoom || MapData[roomPointY + i][roomPointX + j] == Config.MapRoad) {
+          isRoom = true;
       } else {
         MapData[roomPointY + i][roomPointX + j] = Config.MapRoom;
       }

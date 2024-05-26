@@ -1,30 +1,35 @@
 <template>
   <div class="Preparation">
 
-    <ItemBagUI v-if="showUIStore.item && !selectedItem" class="itemBag" @useItem='useItem' />
-    <div v-if="showUIStore.skill && !selectedSkill" class="selectSkill">
+    <ItemBagUI v-if="showUIStore.item && !selectedItem" class="selectItem" @useItem='useItem' />
+    <div v-if="showUIStore.skill && !selectedItem" class="selectSkill">
       <ul class="characterSelect">
         <li v-for="character in partyStore.characters" class="characterFlame" @click="selectedCharacter = character"
           :class="{ 'selected-tab': selectedCharacter === character }">
           <img class="characterface" :src="character.faceGraphicUrl">
         </li>
       </ul>
+      <SkillUI v-if="selectedCharacter" class="SkillUI" :character="selectedCharacter" :inUseSkill=true
+        @useSkill='useItem' />
     </div>
 
-
-    <div v-else class="gif-modal" @click="clickCancel()">
+    <!-- <div v-if="selectedItem" class="gif-modal"> -->
+    <div v-if="selectedItem">
       <!-- character  -->
       <CurrentUI class="CurrentUI" :currentCharacter="currentCharacter" :targetCharacter="targetCharacter"
         :startCharacterAnime="startCharacterAnime" :startCharacterEffect="startCharacterEffect"
         :toSkillEffect="toSkillEffect" :toCharacterEffect="toCharacterEffect"
         :toCharacterEffectType="toCharacterEffectType" :selectionMode="selectionMode"
         @selectCharacter='selectCharacter' />
-
       <SelectName class="selectName" :inside="selectedItem.name"></SelectName>
       <SkillInfo class="skillInfo" :skillInfo="selectedItem.info" />
+      <!-- Special Item  -->
+      <OkBtn v-if="selectedItem.use == 2" class="OkBtn" :inside="Config.textOk" @click="clickOk(selectedItem)" />
+
+      <CancelBtn class="CancelBtn" :inside="Config.textCancel" @click="clickCancel()" />
     </div>
 
-    <!-- GIF表示用のモーダルウィンドウ -->
+    <!-- 全体スキル(GIF)表示用のモーダルウィンドウ -->
     <transition name="fade">
       <div v-if="(showAreaSkill == Config.targetAll) && skillAnime" class="gif-modal" @click="showAreaSkill = null">
         <img :src="skillAnime" alt="animation" @load="loadSkillAnime()" />
@@ -41,13 +46,18 @@ import { ref } from 'vue';
 import CurrentUI from '@/UI/Current.vue';
 import ItemBagUI from '@/UI/ItemBag.vue';
 import SkillInfo from '@/UI//SkillInfo.vue';
+import SkillUI from '@/UI/Skill.vue';
 import useCharacterSkill from './useCharacterSkill.ts';
 
 import Character from '@/Class/Character.ts';
 import Item from '@/Class/Item.ts';
+import ActiveSkill from '@/Class/ActiveSkill.ts';
 import { SkillEffect } from '@/Class/ActiveSkill.ts';
+import OkBtn from '@/components/flame/BlueBtn.vue';
+import CancelBtn from '@/components/flame/RedBtn.vue';
 
 import Config from '@/config.ts';
+import { timer } from '@/Process/Common.ts';
 
 import { characterAssist } from '@/Process/CharacterAssist.ts';
 import SelectName from '@/components/flame/Flame1.vue';
@@ -76,11 +86,11 @@ const toCharacterEffect = ref<(string | number | null)[]>(new Array(partyStore.c
 const toCharacterEffectType = ref<string>()
 const selectionMode = ref('');
 
-const selectedCharacter = ref<Character | undefined>(undefined);
+const selectedCharacter = ref<Character | undefined>(partyStore.characters[0]);
 
 // 通常時アイテム使用
 const skillAnime = ref<string>('')
-const animeTime = ref<number>(0)
+// const animeTime = ref<number>(0)
 const showAreaSkill = ref<string | null>(null)
 //カスタムフック
 //キャラクター向けスキル
@@ -95,83 +105,95 @@ const { toCharacterSkill, showCharacterEffect } = useCharacterSkill(
 )
 
 //アイテム使用決定
-const selectedItem = ref<Item | null>(null);
-async function useItem(item: Item) {
+const selectedItem = ref<Item | ActiveSkill | null>(null);
+let animeTime: number
+//ターゲット選択後
+async function useItem(item: Item | ActiveSkill) {
   console.log('useItem', item)
   selectedItem.value = item
   showUIStore.current = false
   //Special Item
-  if (item.use == 2) {
-    switch (item.item_id) {
-      //帰還用アイテム
-      case Config.returnItemId:
-        showAreaSkill.value = Config.targetAll;
-        skillAnime.value = item.skill_effect[0].skill_anime
-        animeTime.value = item.skill_effect[0].anime_time
-        break
-      default:
-    }
+  if (item instanceof Item && item.use == 2) {
     return
   }
 
   //skillEffectあり
   if (item.skill_effect.length !== 0) {
-    //味方対象アイテム
-    if (item.skill_effect[0].target == 1) {
-      // ターゲットの選択を待つ(味方対象)
-      selectionMode.value = item.skill_effect[0].target_type
-      targetCharacter.value = [];
-      switch (selectionMode.value) {
-        // case Config.targetMyself:
-        //   break
-        case Config.targetOneFriend:
-          targetCharacter.value.push(partyStore.characters[0]);
-          break
-        case Config.targetAllFriends:
-          targetCharacter.value = partyStore.characters.filter(character => character.nowHP > 0)
-          break
-        // case Config.targetRandomFriend:
-        //   break
-        default:
-      }
+    //初期ターゲット
+    setTarget(item)
+    //ターゲット決定待ち
+    await waitForTargetSelection();
+    //アイテム（スキル）使用
+    useAction(item);
+  }
+}
+function setTarget(item: Item | ActiveSkill) {
 
-      // battleProcess.value = 'selectTarget'
-      await waitForTargetSelection();
+  if (item.skill_effect[0].target == 1) {
+    // ターゲットの選択を待つ(味方対象)
+    selectionMode.value = item.skill_effect[0].target_type
+    targetCharacter.value = [];
+    switch (selectionMode.value) {
+      // case Config.targetMyself:
+      //   break
+      case Config.targetOneFriend:
+        targetCharacter.value.push(partyStore.characters[0]);
+        break
+      case Config.targetAllFriends:
+        targetCharacter.value = partyStore.characters.filter(character => character.nowHP > 0)
+        break
+      // case Config.targetRandomFriend:
+      //   break
+      default:
     }
-    //ターゲット選択後
-    for (const skillEffect of item.skill_effect) {
-      // animeTime = skillEffect.anime_time
-      // effectTime = 0
-      // actionTimes = 0
-      //1回目と対象タイプが異なる
-      //味方対象スキル
-      if (skillEffect.target == 1) {
-        //キャラクターのスキル
+  }
+}
+
+async function useAction(item: Item | ActiveSkill) {
+
+  for (const skillEffect of item.skill_effect) {
+    animeTime = skillEffect.anime_time
+    //1回目と対象タイプが異なる
+
+    //味方対象スキル
+    if (skillEffect.target == 1) {
+      //キャラクターのスキル
+      if (item instanceof Item) {
         toCharacterEffect.value = characterAssist(skillEffect, item.name, targetCharacter.value)
-        //アニメーションあり
-        if (skillEffect.skill_anime) {
-          toCharacterSkill(skillEffect)
-        } else {
-          //アニメーションなしでエフェクトあり
-          if (toCharacterEffect.value.some(effect => effect !== null)) {
-            showCharacterEffect(skillEffect)
-          }
+      } else {
+        toCharacterEffect.value = characterAssist(skillEffect, item.name, targetCharacter.value, selectedCharacter.value)
+      }
+      //アニメーションあり
+      if (skillEffect.skill_anime) {
+        toCharacterSkill(skillEffect)
+      } else {
+        //アニメーションなしでエフェクトあり
+        if (toCharacterEffect.value.some(effect => effect !== null)) {
+          showCharacterEffect(skillEffect)
         }
       }
-
-      if (skillEffect.target == 1) {
-        toCharacterEffect.value = characterAssist(skillEffect, item.name, targetCharacter.value)
-
-        // characterAssist(skillEffect, item.name)
-
-      }
-      //アニメーション表示
-      // skillAttackAnime(skillEffect)
     }
+    await timer(animeTime + Config.effectTime);
+  }
+  //アイテム減少
+  if (item instanceof Item) {
+    itemBagStore.useItem(item.item_id)
+  }
+  //アイテム初期化
+  clickCancel()
+}
 
-    // effectTime = Config.effectTime + actionTimes * Config.delayTime
-    // await timer(animeTime + effectTime);
-
+function clickOk(item: Item | ActiveSkill) {
+  if (item instanceof Item && item.skill_effect) {
+    switch (item.item_id) {
+      //帰還用アイテム
+      case Config.returnItemId:
+        showAreaSkill.value = Config.targetAll;
+        skillAnime.value = item.skill_effect[0].skill_anime
+        animeTime = item.skill_effect[0].anime_time
+        break
+      default:
+    }
   }
 }
 
@@ -208,18 +230,19 @@ const selectCharacter = (selectType: string, character: Character) => {
 const loadSkillAnime = () => {
   setTimeout(() => {
     showAreaSkill.value = ''
-    useNormalItem()
-  }, animeTime.value);
+    if (selectedItem.value instanceof Item && selectedItem.value.item_id == Config.returnItemId) {
+      useReturnItem()
+    }
+  }, animeTime);
 }
 
 // アイテム使用
-const useNormalItem = () => {
-  if (!selectedItem.value) return
-  if (selectedItem.value.item_id == Config.returnItemId) {
-    statusStore.status = Config.statusTown
-    showUIStore.item = false
-    console.log('useNormalItem', selectedItem.value)
-  }
+const useReturnItem = () => {
+  statusStore.status = Config.statusTown
+  showUIStore.item = false
+  showUIStore.skill = false
+  showUIStore.map = true
+  console.log('useReturnItem', selectedItem.value)
 }
 
 </script>
@@ -237,22 +260,48 @@ const useNormalItem = () => {
 
 .CurrentUI {
   position: absolute;
-  /* position: fixed; */
   top: 1vh;
   right: 6vw;
   animation: slideRight 0.5s ease-in-out;
 }
 
-.itemBag {
+.selectItem {
   position: absolute;
-  left: 45vw;
-  top: 15vh;
+  left: 25vw;
+  top: 18vh;
+}
+
+.selectSkill {
+  position: absolute;
+  left: 30vw;
+  top: 18vh;
+}
+
+.characterSelect {
+  list-style-type: none;
+}
+
+.characterface {
+  width: 7vw;
+  border-radius: 1vw;
+}
+
+.SkillUI {
+  position: absolute;
+  top: 0vh;
+  left: 7.5vw;
+}
+
+.selected-tab {
+  background: #624CAB80;
+  border-radius: 1vh;
+  border: 0.2vh solid #E2D8A6;
 }
 
 .skillInfo {
   position: absolute;
-  top: 15vh;
-  right: 12vw;
+  top: 32vh;
+  left: 37vw;
   animation: slideBottom 0.3s ease-in-out;
 }
 
@@ -260,11 +309,21 @@ const useNormalItem = () => {
   position: absolute;
   color: #F2EDD5;
   font-family: "Trade Winds";
-  top: 15vh;
+  top: 18vh;
   left: 37vw;
   animation: slideLeft 0.3s ease-in-out;
 }
 
+.OkBtn {
+  position: absolute;
+  top: 22vh;
+  right: 22.7vw;
+}
+.CancelBtn {
+  position: absolute;
+  top: 35vh;
+  right: 20vw;
+}
 
 .fade-enter-active,
 .fade-leave-active {
@@ -286,6 +345,6 @@ const useNormalItem = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  /* z-index: 1000; */
 }
 </style>

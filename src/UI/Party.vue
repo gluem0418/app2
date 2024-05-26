@@ -105,6 +105,7 @@ const clickIcon = (kind :string) => {
 const clickParty = () => {
   changing.value = false;
   showUIStore.item = false;
+  showUIStore.skill = false;
   //パーティー非表示かつキャラクター非表示の場合、他UI非表示
   if (!showUIStore.party && !showUIStore.character) {
     showUIStore.map = false;
@@ -252,7 +253,7 @@ const changeOrder = () => {
 
 .IconChange {
   position: absolute;
-  right: 19vw;
+  right: 28vw;
   bottom: 1vh;
 }
 
@@ -260,6 +261,11 @@ const changeOrder = () => {
   animation: blink 0.5s linear infinite;
 }
 
+.IconSkill {
+  position: absolute;
+  right: 19vw;
+  bottom: 0.5vh;
+}
 .IconBag {
   position: absolute;
   right: 11vw;

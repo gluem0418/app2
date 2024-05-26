@@ -7,6 +7,8 @@ export default {
   //common
   textYes: 'YES',
   textNo: 'NO',
+  textOk: 'OK',
+  textCancel: 'CANCEL',
 
   //log
   strLog1: 'GENERAL',
@@ -65,8 +67,8 @@ export default {
   wepSpear: 'Spear',
 
   //マップ作成
-  MapWidth: 100,
-  MapHeight: 100,
+  MapWidth: 200,
+  MapHeight: 150,
   MapWall: 0,
   MapRoom: 1,
   MapRoad: 2,
@@ -75,17 +77,18 @@ export default {
   SetDoorUnder: 12,  //下にドア
   SetDoorLeft: 13,  //左にドア
   SetDoorRight: 14,  //右にドア
-  roomMinHeight: 5,
-  roomMaxHeight: 15,
-  roomMinWidth: 5,
-  roomMaxWidth: 15,
-  RoomCountMin: 10,
-  RoomCountMax: 20,
+  roomMinHeight: 10,
+  roomMaxHeight: 20,
+  roomMinWidth: 10,
+  roomMaxWidth: 20,
+  RoomCountMin: 15,
+  RoomCountMax: 25,
 
   BlockSize: 10, //1ブロックあたりの長さ
   BlockHeight: 20, //壁の高さ  
   //道の集合点を増やしたいならこれを増やす
-  meetPointCount: 2,
+  // meetPointCount: 2,
+  meetPointCount: 5,
 
   //ミニマップ
   MiniHeight: 300,
@@ -194,4 +197,6 @@ export default {
   msgAddPartyError: 'The party is full. Please remove someone.',
   msgRemovePartyError: 'This character cannot remove from party.',
   msgSkillCostError: 'Skill cost limit error test12345678901234567890',
+  msgHPLackError: 'Because lack of HP, you cannot use skill',
+  msgMPLackError: 'Because lack of MP, you cannot use skill'
 }

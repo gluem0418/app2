@@ -181,27 +181,27 @@ watch(() => props.character, () => {
 
 .EquipmentUI {
   position: absolute;
-  margin-top: 5vh;
+  margin-top: 3vh;
   right: 4vw;
   animation: slideTop 0.3s ease-in-out;
 }
 
 .SkillUI {
   position: absolute;
-  margin-top: 5vh;
+  margin-top: 3vh;
   right: 4vw;
   animation: slideTop 0.3s ease-in-out;
 }
 
 .ChangeStatus {
   position: absolute;
-  bottom: 3%;
+  bottom: 2vh;
   left: 17%;
 }
 
 .ChangeSkill {
   position: absolute;
-  bottom: 3%;
+  bottom: 2vh;
   right: 19%;
 }
 </style>

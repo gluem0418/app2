@@ -387,7 +387,7 @@
   {
     "skill_id": 301,
     "name": "Pray",
-    "use": 0,
+    "use": 1,
     "info": "A simple prayer that restores a small amount of MP to the user.",
     "attribute": 10,
     "interval": 1.0,

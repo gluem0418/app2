@@ -1,7 +1,7 @@
 <template>
   <div ref="dungeon"></div>
   <div
-    v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.party && !showUIStore.character && !showUIStore.item"
+    v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.party && !showUIStore.character && !showUIStore.item && !showUIStore.skill"
     class="crossKey">
     <div class="upKey" @click="playerMove(Config.ArrowUp)"></div>
     <!-- <div class="downKey" @click="playerMove(Config.ArrowDown)"></div> -->
@@ -98,7 +98,7 @@ onMounted(() => {
 
   //ダンジョン生成
   CreateDungeon()
-  // console.log(MapData)
+  console.log(MapData)
   // console.log(MapSet)
   //シーン初期化
   initScene()
@@ -129,7 +129,7 @@ function initScene() {
   targetPosition.copy(positionStore.playerPosition);
   // カメラの位置をプレイヤーの位置と同期
   camera.position.copy(positionStore.playerPosition);
-  addNewLog(Config.logEnterDungeon,0)
+  addNewLog(Config.logEnterDungeon, 0)
   //全体光源
   // const light = new THREE.AmbientLight(0xFFFFFF, 1.0);  
   //ポイント光源
@@ -349,7 +349,7 @@ function playerMove(eventKey: string) {
   console.log('playerMove', eventKey)
 
   //パーティorキャラクターui表示時
-  if (showUIStore.party || showUIStore.character || showUIStore.item) return;
+  if (showUIStore.party || showUIStore.character || showUIStore.item || showUIStore.skill) return;
   if (statusStore.processDungeon == Config.processBattle) return;
   if (!camera) return
 
@@ -436,7 +436,7 @@ function playerMove(eventKey: string) {
 }
 // エンカウント処理
 function triggerEncounter() {
-  addNewLog(Config.logMonsterEncounter,0)
+  addNewLog(Config.logMonsterEncounter, 0)
   showUIStore.map = false
   statusStore.processDungeon = Config.processBattle
 }

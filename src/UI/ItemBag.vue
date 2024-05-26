@@ -9,14 +9,17 @@
         </li>
       </ul>
       <ul class="itemBox">
-        <li v-for="items in filteredItems" :key="items.item_id" class="itemList" @click=selectItem(items)
-          :class="{ 'selected-tab': selectedItem === items }">
+        <li v-for="items in filteredItems" :key="items.item_id" class="itemList" @click=selectItem(items) :class="{
+          'selected-tab': selectedItem === items,
+          'useless': (statusStore.processDungeon == Config.processSearch && items.use == 1) ||
+            (statusStore.processDungeon == Config.processBattle && items.use == 2)
+        }">
           <span class="itemName">{{ items.item.name }}</span>
           <span class="itemNumber">{{ items.number }}</span>
         </li>
       </ul>
+      <SkillInfo v-if="selectedItem" class="skillInfo" :skillInfo="selectedItem.item.info" />
     </div>
-    <SkillInfo v-if="selectedItem" class="skillInfo" :skillInfo="selectedItem.item.info" />
   </div>
 </template>
 
@@ -115,31 +118,31 @@ const useItem = (items: ItemBag) => {
   border: 0.2vh solid #E2D8A6;
 }
 
+.useless {
+  color: #B2B292;
+}
 .itemBox {
   background: rgba(59, 65, 60, 0.7);
   background-image: url('/img/flame/flame032703.png');
   background-size: 100% 100%;
   padding: 2.5vh 0.7vw;
+  margin-left:0.5vw;
   height: 60vh;
   width: 25vw;
   list-style-type: none;
 }
 
 .itemList {
-  /* display: flex; */
-  /* align-items: center; */
-  /* justify-content: start; */
   list-style-type: none;
   padding: 0vh 1.5vw;
-  /* vertical-align: top; */
   height: 5vh;
 }
 
 .itemNumber {
   float: right;
 }
-.skillInfo {
-  margin-left: 12vw;
-}
 
+.skillInfo {
+  margin-left: 0.5vw;
+}
 </style>

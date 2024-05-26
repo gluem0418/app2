@@ -9,6 +9,6 @@ import img from "/icon/AttackOrb.png"
 </script>
 <style scoped>
 .Icon {
-  height: 15%;
+  height: 14vh;
 }
 </style>

@@ -153,7 +153,7 @@ const updateEquipment = (eqpbag_id: number, equippedBy: number | null) => {
   font-size: 2.8vh;
   padding: 1vh 0vw;
   position: relative;
-  height: 83vh;
+  height: 85vh;
   width: 25vw;
 }
 
@@ -186,7 +186,7 @@ const updateEquipment = (eqpbag_id: number, equippedBy: number | null) => {
 }
 
 .EquipmentTypeList {
-  height: 47vh;
+  height: 50vh;
   overflow-y: auto;
   color: #F2EDD5;
   margin-top: 0.5vh;

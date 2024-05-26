@@ -56,7 +56,7 @@
 
       <IconBag id="IconAttack" class="IconBag" @click="clickIcon(Config.actionItem)" :style="styles.ItemBtn" />
 
-      <SkillUI v-if="showSkillList" class="SkillUI" :character="currentCharacter" :inUseSkill="showSkillList"
+      <SkillUI v-if="showSkillList" class="SkillUI" :character="currentCharacter" :inUseSkill=true
         @useSkill='useSkill' />
 
       <ItemBagUI v-if="showItemList" class="ItemBagUI" />
@@ -500,6 +500,12 @@ let actionTimes: number
 let targetNow: number
 async function turnAction(current: Current) {
   addNewLog(current.name + "'s " + activeSkill.name, 1)
+  //HP MP消費
+  if (activeSkill.consume_type == Config.statusHP) {
+    current.nowHP -= activeSkill.consume_amount
+  } else {
+    current.nowMP -= activeSkill.consume_amount
+  }
   //
   for (const skillEffect of activeSkill.skill_effect) {
     targetNow = skillEffect.target
@@ -1138,8 +1144,8 @@ function endTurn() {
 
 .IconBag {
   position: absolute;
-  right: 3%;
-  bottom: 6%;
+  right: 3vw;
+  bottom: 4vh;
 }
 
 .SkillUI {
@@ -1151,8 +1157,8 @@ function endTurn() {
 
 .ItemBagUI {
   position: absolute;
-  top: 3vh;
-  right: 12vw;
+  top: 10vh;
+  left: 25vw;
   animation: slideTop 0.3s ease-in-out;
 }
 

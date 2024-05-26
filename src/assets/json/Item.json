@@ -56,7 +56,7 @@
         "effect_amount": 50,
         "target": 1,
         "target_type": "oneFriend",
-        "skill_anime": "",
+        "skill_anime": "effect/skill/samurai/kishouzan2.gif",
         "anime_time": 500
       }
     ]

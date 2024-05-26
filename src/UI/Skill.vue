@@ -1,4 +1,4 @@
-+<template>
+<template>
   <div v-if="character" class="SkillUI">
     <div class="skillSelect">
       <ul class="skillType">
@@ -44,8 +44,10 @@
       <div v-if="selectedSkillType == SkillType.ac">
         <ul class="skillList" density="compact">
           <li v-for="skill in character.activeSkill" :key="skill.skill_id" @click="selectSkill(skill)" class="skillItem"
-            :class="{ 'selected-tab': skill === selectedSkill }">
-
+            :class="{
+              'selected-tab': skill === selectedSkill,
+              'useless': (statusStore.processDungeon == Config.processSearch && skill.use == 1)
+            }">
             <span class="marginLeft1">{{ skill.name }}</span>
             <span class="costValue">{{ skill.consume_amount }}</span>
             <span class="consumeType">{{ skill.consume_type }}</span>
@@ -54,7 +56,8 @@
         </ul>
       </div>
     </div>
-    <SkillInfo v-if="selectedSkill" :skillInfo="selectedSkill.info" :class="{ 'skillInfo': inUseSkill === false, 'skillUse': inUseSkill === true }"/>
+    <SkillInfo v-if="selectedSkill" :skillInfo="selectedSkill.info"
+      :class="{ 'skillInfo': inUseSkill === false, 'skillUse': inUseSkill === true }" />
   </div>
 </template>
 
@@ -68,6 +71,9 @@ import SkillInfo from '@/UI//SkillInfo.vue';
 
 import Config from '@/config.ts';
 import ErrorMessage from '@/components/information/Information.vue';
+//状態管理
+import { useStatusStore } from '@/stores/Status.ts';
+const statusStore = useStatusStore()
 
 const props = defineProps({
   character: { type: Character },
@@ -82,7 +88,8 @@ enum SkillType {
 const skillType: SkillType[] = [SkillType.pa, SkillType.ac]
 
 const showError = ref(false);
-const errorMessage = Config.msgSkillCostError
+// const errorMessage = Config.msgSkillCostError
+const errorMessage = ref<string>('')
 
 const selectedSkillType = ref<SkillType | undefined>(undefined);
 if (props.inUseSkill == true) {
@@ -98,10 +105,19 @@ const selectSkillType = (type: SkillType) => {
 const selectedSkill = ref<PassiveSkill | ActiveSkill | null>(null);
 const selectSkill = (skill: PassiveSkill | ActiveSkill) => {
   console.log('selectSkill_inUseSkill', props.inUseSkill)
-  if (props.inUseSkill && skill instanceof ActiveSkill && selectedSkill.value == skill) {
-    useSkill(skill)
-  }
   selectedSkill.value = skill;
+  if (skill instanceof PassiveSkill) return
+  if (props.inUseSkill && selectedSkill.value == skill) {
+    if (statusStore.processDungeon == Config.processSearch && skill.use != 1) {
+      useSkill(skill)
+    } else if (statusStore.processDungeon == Config.processBattle && skill.use != 2) {
+      useSkill(skill)
+    }
+  }
+  // if (props.inUseSkill && skill instanceof ActiveSkill && selectedSkill.value == skill) {
+  //   useSkill(skill)
+  // }
+  // selectedSkill.value = skill;
 };
 
 const equipbutton = (equip: boolean) => {
@@ -124,6 +140,7 @@ const updateSkill = (skill: PassiveSkill) => {
       //スキル装着時、コストを確認
       if (Number(totalCost.value) + skill.skill_cost > props.character.passiveCost) {
         //コスト制限を超えたとき、エラーメッセージ 
+        errorMessage.value = Config.msgSkillCostError
         showError.value = true;
       } else {
         skill.equip = true;
@@ -132,9 +149,23 @@ const updateSkill = (skill: PassiveSkill) => {
   }
 };
 
-// 戦闘スキル決定
+// 使用スキル決定
 const emit = defineEmits(["useSkill"])
 const useSkill = (skill: ActiveSkill) => {
+  //HP MP消費量確認
+  if (skill.consume_type == Config.statusHP) {
+    if (skill.consume_amount > props.character!.nowHP) {
+      errorMessage.value = Config.msgHPLackError
+      showError.value = true;
+      return
+    }
+  } else {
+    if (skill.consume_amount > props.character!.nowMP) {
+      errorMessage.value = Config.msgMPLackError
+      showError.value = true;
+      return
+    }
+  }
   emit('useSkill', skill)
 };
 
@@ -167,7 +198,7 @@ watch(() => props.character, () => {
   background-image: url('/img/flame/flame032703.png');
   background-size: 100% 100%;
   padding: 1vh 0vw;
-  height: 60vh;
+  height: 62vh;
   width: 25vw;
 }
 
@@ -260,10 +291,14 @@ watch(() => props.character, () => {
   font-family: "Verily Serif Mono";
   color: #E2D8A6;
 }
+
 .skillUse {
   position: absolute;
-  top:6vh;
-  margin-left: 26vw;
+  top: 0vh;
+  margin-left: 25.5vw;
 }
 
+.useless {
+  color: #B2B292;
+}
 </style>

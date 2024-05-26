@@ -31,7 +31,8 @@ const emit = defineEmits(['hideError']);
   top: 50%; /*親要素を起点に上から50%*/
   left: 50%;  /*親要素を起点に左から50%*/
   transform: translateY(-50%) translateX(-50%); /*要素の大きさの半分ずつを戻す*/
-  background: #624CAB80;
+  /* background: #624CAB70; */
+  background: rgba(59, 65, 60, 0.8);
   background-image: url('/img/flame/flame0322.png');
   background-size: 100% 100%;
   /* font-family: "Trade Winds"; */
