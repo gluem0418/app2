@@ -14,12 +14,17 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import * as THREE from 'three';
+import { GLTF, GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+import Dungeon from '@/Class/Dungeon.ts';
+import { Dungeons } from '@/Class/Dungeon.ts';
 
 import ActionLog from '@/UI/ActionLog.vue';
 import { LogService } from '@/Process/LogService.ts';
 
 import Config from '@/config.ts';
-import { CreateDungeon, MapData, MapSet, initPoint, isWall } from './CreateDungeon.ts';
+import CreateDungeon from './CreateDungeon.ts';
+import { MapData, MapSet, initPoint, isWall } from './CreateDungeon.ts';
 import { randomNum } from '@/Process/Common.ts';
 
 import imgWall01 from '/img/dungeon/wall/forest1.jpg';
@@ -71,12 +76,14 @@ const actionLog = ref(null);
 const logService = new LogService();
 const addNewLog = (log: string, kind: number) => logService.addNewLog(log, kind);
 
+let mapInfo: Dungeon
 const dungeon = ref<HTMLElement | null>(null);
 
 let scene = new THREE.Scene()
 let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 let renderer = new THREE.WebGLRenderer();
-let light: THREE.PointLight;
+let pointLight: THREE.PointLight;
+let spotLight: THREE.SpotLight;
 let targetPosition = new THREE.Vector3(); // カメラの目標位置
 let targetRotation = 0; // カメラの目標回転角度
 let encounter = 0; // エンカウントの確率を管理する変数
@@ -94,10 +101,24 @@ interface Door {
 let doors: Door[] = [] //door object 格納用
 let doorId: number
 
+let gltfTreasure: GLTF
+let groupTreasure: THREE.Group
+let mixerTreasure: THREE.AnimationMixer
+//ポイント光源
+const lightParams = { point: 0xFBFDFF };
+//const lightParams = { point: 0xFBF5CB };
+
 onMounted(() => {
 
+  //ダンジョン情報取得
+  let wMapInfo = Dungeons.find(d => d.name === statusStore.whichDungeon);
+  if (wMapInfo) {
+    mapInfo = wMapInfo
+  } else {
+    return
+  }
   //ダンジョン生成
-  CreateDungeon()
+  CreateDungeon(mapInfo)
   console.log(MapData)
   // console.log(MapSet)
   //シーン初期化
@@ -114,14 +135,23 @@ onMounted(() => {
   gameLoop();
 
 });
+const clock = new THREE.Clock();
 
 const animate = function () {
   requestAnimationFrame(animate);
+  //3dモデルアニメーション
+  const delta = clock.getDelta();
+  if (mixerTreasure) mixerTreasure.update(delta);
+  //
   renderer.render(scene, camera);
 };
 
 function initScene() {
   renderer.setSize(window.innerWidth, window.innerHeight);
+  //3dモデル用の設定
+  // renderer.outputColorSpace = THREE.SRGBColorSpace;
+  // renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
   dungeon.value?.appendChild(renderer.domElement);
 
   // プレイヤーの初期位置を設定
@@ -132,25 +162,18 @@ function initScene() {
   addNewLog(Config.logEnterDungeon, 0)
   //全体光源
   // const light = new THREE.AmbientLight(0xFFFFFF, 1.0);  
-  //ポイント光源
-  const lightParams = { point: 0xFBFDFF };
-  // const lightParams = { point: 0xFBF5CB };
-  light = new THREE.PointLight(lightParams.point, 12, 100, 1.0);
-  light.position.copy(positionStore.playerPosition);
-  scene.add(light);
+  //PointLight(色, 光の強さ, 距離, 光の減衰率)
+  pointLight = new THREE.PointLight(lightParams.point, 10, 100, 0.5);
+  pointLight.position.copy(positionStore.playerPosition);
+  scene.add(pointLight);
+
 }
-// ダンジョン毎の処理
+// ダンジョンの情報セット
 function whichDungeon() {
-  switch (statusStore.whichDungeon) {
-    case Config.nameDungeon1:
-      imgWall = imgWall01
-      imgFloor = imgFloor01
-      imgCeil = imgWall01
-      statusStore.musicDungeon = Config.mscDungeon1
-      break
-    default:
-  }
-  audioStore.playBgm(statusStore.musicDungeon) // ここで音楽を再生
+  imgWall = mapInfo.wallUrl
+  imgFloor = mapInfo.floorUrl
+  imgCeil = mapInfo.ceilUrl
+  audioStore.playBgm(mapInfo.music)
 }
 
 // ダンジョンを描画
@@ -224,75 +247,100 @@ function SceneDungeon() {
         }
 
         // 通路と部屋の境目に扉を描画
-        const planeLeftDoor = new THREE.Mesh(dGeometry, dMaterialLeft);
-        const planeRightDoor = new THREE.Mesh(dGeometry, dMaterialRight);
-        const planeWallDoor = new THREE.Mesh(wdGeometry, wMaterial);
         switch (MapSet[i][j]) {
           case Config.SetDoorUp:
             //この地点か一つ上の左右が壁の場合に描画
-            planeLeftDoor.position.set(Config.BlockSize * j - (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i - 0.5));
-            scene.add(planeLeftDoor);
-            planeRightDoor.position.set(Config.BlockSize * j + (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i - 0.5));
-            scene.add(planeRightDoor);
-            pushDoor(planeLeftDoor, planeRightDoor)
-            //扉の上の壁
-            planeWallDoor.position.set(Config.BlockSize * j, Config.BlockHeight / 1.2, Config.BlockSize * (i - 0.5));
-            scene.add(planeWallDoor);
+            setDoor(i, j, 'Up')
             break
           case Config.SetDoorUnder:
             //この地点か一つ下の左右が壁の場合に描画
-            planeLeftDoor.position.set(Config.BlockSize * j - (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i + 0.5));
-            scene.add(planeLeftDoor);
-            planeRightDoor.position.set(Config.BlockSize * j + (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i + 0.5));
-            scene.add(planeRightDoor);
-            pushDoor(planeLeftDoor, planeRightDoor)
-            //扉の上の壁
-            planeWallDoor.position.set(Config.BlockSize * j, Config.BlockHeight / 1.2, Config.BlockSize * (i + 0.5));
-            scene.add(planeWallDoor);
+            setDoor(i, j, 'Under')
             break
           case Config.SetDoorLeft:
             // この地点か一つ左の上下が壁の場合に描画
-            planeLeftDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 3, Config.BlockSize * i + (Config.BlockSize / 4));
-            planeLeftDoor.rotation.y = 90 * Math.PI / 180;
-            scene.add(planeLeftDoor);
-            planeRightDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 3, Config.BlockSize * i - (Config.BlockSize / 4));
-            planeRightDoor.rotation.y = 90 * Math.PI / 180;
-            scene.add(planeRightDoor);
-            pushDoor(planeLeftDoor, planeRightDoor)
-            //扉の上の壁
-            planeWallDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 1.2, Config.BlockSize * i);
-            planeWallDoor.rotation.y = 90 * Math.PI / 180;
-            scene.add(planeWallDoor);
+            setDoor(i, j, 'Left')
             break
           case Config.SetDoorRight:
             //この地点か一つ右の上下が壁の場合に描画
-            planeLeftDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 3, Config.BlockSize * i + (Config.BlockSize / 4));
-            planeLeftDoor.rotation.y = 90 * Math.PI / 180;
-            scene.add(planeLeftDoor);
-            planeRightDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 3, Config.BlockSize * i - (Config.BlockSize / 4));
-            planeRightDoor.rotation.y = 90 * Math.PI / 180;
-            scene.add(planeRightDoor);
-            pushDoor(planeLeftDoor, planeRightDoor)
-            //扉の上の壁
-            planeWallDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 1.2, Config.BlockSize * i);
-            planeWallDoor.rotation.y = 90 * Math.PI / 180;
-            scene.add(planeWallDoor);
+            setDoor(i, j, 'Right')
+            break
+          case Config.SetTreasure:
+            //宝箱を配置
+            setTreasure(i, j)
             break
           default:
         }
       }
     }
   }
-}
+  //扉セット処理
+  function setDoor(i: number, j: number, position: string) {
+    const planeLeftDoor = new THREE.Mesh(dGeometry, dMaterialLeft);
+    const planeRightDoor = new THREE.Mesh(dGeometry, dMaterialRight);
+    const planeWallDoor = new THREE.Mesh(wdGeometry, wMaterial);
 
-function pushDoor(leftDoor: THREE.Mesh, rightDoor: THREE.Mesh) {
-  doors.push({
-    id: doorId, // 一意のIDを設定
-    leftDoor: leftDoor,
-    rightDoor: rightDoor,
-    isOpen: false
-  });
-  doorId += 1
+    switch (position) {
+      case 'Up':
+        planeLeftDoor.position.set(Config.BlockSize * j - (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i - 0.5));
+        planeRightDoor.position.set(Config.BlockSize * j + (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i - 0.5));
+        planeWallDoor.position.set(Config.BlockSize * j, Config.BlockHeight / 1.2, Config.BlockSize * (i - 0.5));
+        break
+      case 'Under':
+        planeLeftDoor.position.set(Config.BlockSize * j - (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i + 0.5));
+        planeRightDoor.position.set(Config.BlockSize * j + (Config.BlockSize / 4), Config.BlockHeight / 3, Config.BlockSize * (i + 0.5));
+        planeWallDoor.position.set(Config.BlockSize * j, Config.BlockHeight / 1.2, Config.BlockSize * (i + 0.5));
+        break
+      case 'Left':
+        planeLeftDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 3, Config.BlockSize * i + (Config.BlockSize / 4));
+        planeLeftDoor.rotation.y = 90 * Math.PI / 180;
+        planeRightDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 3, Config.BlockSize * i - (Config.BlockSize / 4));
+        planeRightDoor.rotation.y = 90 * Math.PI / 180;
+        planeWallDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 1.2, Config.BlockSize * i);
+        planeWallDoor.rotation.y = 90 * Math.PI / 180;
+        break
+      case 'Right':
+        planeLeftDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 3, Config.BlockSize * i + (Config.BlockSize / 4));
+        planeLeftDoor.rotation.y = 90 * Math.PI / 180;
+        planeRightDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 3, Config.BlockSize * i - (Config.BlockSize / 4));
+        planeRightDoor.rotation.y = 90 * Math.PI / 180;
+        planeWallDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 1.2, Config.BlockSize * i);
+        planeWallDoor.rotation.y = 90 * Math.PI / 180;
+        break
+      default:
+    }
+    scene.add(planeLeftDoor);
+    scene.add(planeRightDoor);
+    pushDoor(planeLeftDoor, planeRightDoor)
+    scene.add(planeWallDoor);
+  }
+  function pushDoor(leftDoor: THREE.Mesh, rightDoor: THREE.Mesh) {
+    doors.push({
+      id: doorId, // 一意のIDを設定
+      leftDoor: leftDoor,
+      rightDoor: rightDoor,
+      isOpen: false
+    });
+    doorId += 1
+  }
+  //宝箱セット処理
+  function setTreasure(i: number, j: number) {
+    //宝箱のロードと表示位置の設定
+    const gltfloader: GLTFLoader = new GLTFLoader();
+    gltfloader.load(Config.pathTreasure, (gltf: GLTF) => {
+      gltfTreasure = gltf;
+      groupTreasure = gltfTreasure.scene;
+      groupTreasure.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+      // gltfTreasure.scale.set(1.0, 1.0, 1.0); //大きさの調整
+      groupTreasure.scale.set(1.5, 1.5, 1.5); //大きさの調整
+      scene.add(groupTreasure);
+      mixerTreasure = new THREE.AnimationMixer(groupTreasure)
+    });
+
+    //SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
+    spotLight = new THREE.SpotLight(lightParams.point, 10, 20, Math.PI, 20, 1.0);
+    spotLight.position.set(Config.BlockSize * j, 0, Config.BlockSize * i)
+    scene.add(spotLight);
+  }
 }
 
 // マウスクリックイベントを設定
@@ -306,12 +354,29 @@ const handleClick = (event: MouseEvent) => {
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   // Raycasterを更新
   raycaster.setFromCamera(mouse, camera);
+
+  // 宝箱との交差を計算
+  const intersectsTreasure = raycaster.intersectObject(groupTreasure, true);
+
+  // 宝箱がクリックされた場合
+  if (intersectsTreasure.length > 0) {
+    console.log('handleClick_treasure')
+    // アニメーションを開始
+    const action = mixerTreasure.clipAction(gltfTreasure.animations[0]);
+    action.play();
+
+    // 2秒後にアニメーションを停止
+    setTimeout(() => {
+      action.paused = true
+    }, 2000)
+  }
+
   // 扉のオブジェクトとの交差を計算
-  const intersects = raycaster.intersectObjects(doors.flatMap(door => [door.leftDoor, door.rightDoor]));
+  const intersectsDoor = raycaster.intersectObjects(doors.flatMap(door => [door.leftDoor, door.rightDoor]));
   // 交差したオブジェクトがある場合
-  if (intersects.length > 0) {
+  if (intersectsDoor.length > 0) {
     // 最初に交差したオブジェクトを取得
-    const intersectedDoor = doors.find(door => door.leftDoor === intersects[0].object || door.rightDoor === intersects[0].object);
+    const intersectedDoor = doors.find(door => door.leftDoor === intersectsDoor[0].object || door.rightDoor === intersectsDoor[0].object);
     if (intersectedDoor) {
       // 扉が閉じている場合、扉を開く
       if (!intersectedDoor.isOpen) {
@@ -411,16 +476,27 @@ function playerMove(eventKey: string) {
     // Raycasterを更新
     raycaster.set(positionStore.playerPosition, direction);
     // 扉のオブジェクトとの交差を計算
-    const intersects = raycaster.intersectObjects(doors.flatMap(door => [door.leftDoor, door.rightDoor]));
+    const intersectsDoor = raycaster.intersectObjects(doors.flatMap(door => [door.leftDoor, door.rightDoor]));
     // 交差したオブジェクトがある場合
-    if (intersects.length > 0) {
+    if (intersectsDoor.length > 0) {
       // 最初に交差したオブジェクトを取得
-      const intersectedDoor = doors.find(door => door.leftDoor === intersects[0].object || door.rightDoor === intersects[0].object);
-      if (intersectedDoor && !intersectedDoor.isOpen && intersects[0].distance <= Config.BlockSize) {
+      const intersectedDoor = doors.find(door => door.leftDoor === intersectsDoor[0].object || door.rightDoor === intersectsDoor[0].object);
+      if (intersectedDoor && !intersectedDoor.isOpen && intersectsDoor[0].distance <= Config.BlockSize) {
         // 扉が閉じていて、一定の距離以内にある場合、移動を停止
         return;
       }
     }
+    // 宝箱との交差を計算
+    const intersectsTreasure = raycaster.intersectObject(groupTreasure, true);
+    // 交差したオブジェクトがある場合
+    if (intersectsTreasure.length > 0) {
+      // 最初に交差したオブジェクトを取得
+      if (intersectsTreasure[0].distance <= Config.BlockSize) {
+        // 宝箱が一定の距離以内にある場合、移動を停止
+        return;
+      }
+    }
+
     // カメラの位置をプレイヤーの位置と同期
     positionStore.playerPosition.copy(newPosition);
     targetPosition.copy(newPosition); // 目標位置を新しい位置に更新
@@ -445,7 +521,7 @@ const gameLoop = () => {
   // カメラの位置を更新
   if (!camera.position.equals(targetPosition)) {
     camera.position.lerp(targetPosition, 0.05);
-    light.position.copy(targetPosition);
+    pointLight.position.copy(targetPosition);
   }
 
   // カメラの回転を更新
@@ -455,14 +531,6 @@ const gameLoop = () => {
 
   requestAnimationFrame(gameLoop); // 次のフレームでゲームループを再度呼び出す
 }
-
-//ログ表示用
-// const actionLog = ref<InstanceType<typeof ActionLog> | null>(null);
-// const addNewLog = (log: string) => {
-//   if (actionLog.value) {
-//     actionLog.value.addLog(log, 0);
-//   }
-// };
 
 </script>
 

@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Forest of Envy",
+    "info": "A mysterious cave filled with dangerous creatures and treasures.",
+    "wallUrl": "img/dungeon/wall/forest1.jpg",
+    "floorUrl": "img/dungeon/floor/forest1.jpg",
+    "ceilUrl": "img/dungeon/wall/forest1.jpg",
+    "mapHeight": 75,
+    "mapWidth": 100,
+    "roomCountMin": 5,
+    "roomCountMax": 10,
+    "roomMinHeight": 5,
+    "roomMaxHeight": 10,
+    "roomMinWidth": 5,
+    "roomMaxWidth": 10,
+    "meetPointCount": 2,
+    "music": "maou_bgm_fantasy01",
+    "numLayers": 3,
+    "layers": [
+      {
+        "rankTreasure": [
+          1
+        ],
+        "midBoss": [],
+        "numBoss": 0
+      },
+      {
+        "rankTreasure": [
+          1
+        ],
+        "midBoss": [1],
+        "numBoss": 0
+      },
+      {
+        "rankTreasure": [
+          1,
+          2
+        ],
+        "midBoss": [],
+        "numBoss": 1
+      }
+    ]
+  }
+]

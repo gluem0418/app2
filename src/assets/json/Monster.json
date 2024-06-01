@@ -261,8 +261,8 @@
 		]
 	},
 	{
-		"mon_id": 10,
-		"mon_type": 1,
+		"mon_id": 1001,
+		"mon_type": 3,
 		"name": "boss5",
 		"GraphicUrl": "img/monster/boss5.png",
 		"LV": 20,

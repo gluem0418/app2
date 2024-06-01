@@ -67,28 +67,28 @@ export default {
   wepSpear: 'Spear',
 
   //マップ作成
-  MapWidth: 200,
-  MapHeight: 150,
+  // MapWidth: 200,
+  // MapHeight: 150,
   MapWall: 0,
   MapRoom: 1,
   MapRoad: 2,
   //配置情報
+  SetTreasure: 77,  //宝箱
   SetDoorUp: 11,  //上にドア
   SetDoorUnder: 12,  //下にドア
   SetDoorLeft: 13,  //左にドア
   SetDoorRight: 14,  //右にドア
-  roomMinHeight: 10,
-  roomMaxHeight: 20,
-  roomMinWidth: 10,
-  roomMaxWidth: 20,
-  RoomCountMin: 15,
-  RoomCountMax: 25,
+  // roomMinHeight: 10,
+  // roomMaxHeight: 20,
+  // roomMinWidth: 10,
+  // roomMaxWidth: 20,
+  // RoomCountMin: 15,
+  // RoomCountMax: 25,
 
   BlockSize: 10, //1ブロックあたりの長さ
   BlockHeight: 20, //壁の高さ  
   //道の集合点を増やしたいならこれを増やす
-  // meetPointCount: 2,
-  meetPointCount: 5,
+  // meetPointCount: 5,
 
   //ミニマップ
   MiniHeight: 300,
@@ -109,7 +109,9 @@ export default {
   //エンカウント
   encountMin: 1,
   encountMax: 5,
-  encountLimit: 1,  //エンカウント発生ポイント
+  encountLimit: 1000,  //エンカウント発生ポイント
+  //ダンジョン素材
+  pathTreasure: '3d/treasure_box.glb',
 
   //戦闘
   monNumMin: 1,
@@ -172,8 +174,6 @@ export default {
   // music
   mscTitle: 'maou_bgm_orchestra18',
   mscTown: 'maou_bgm_acoustic36',
-
-  mscDungeon1: 'maou_bgm_fantasy01',
 
   mscBattle1: 'Bite_the_Bullet',
   mscBattle2: 'maou_bgm_fantasy15',
