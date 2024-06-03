@@ -46,4 +46,4 @@ export default class Dungeon {
   }
 }
 
-export const Dungeons = Dungeon_json.map((data: any) => new Dungeon(data))
+export const dungeons = Dungeon_json.map((data: any) => new Dungeon(data))

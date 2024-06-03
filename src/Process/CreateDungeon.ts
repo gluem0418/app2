@@ -203,7 +203,10 @@ export default function CreateDungeon(mapInfo: Dungeon) {
       const randomY = randomNum(rooms[randomIndex].PointY, rooms[randomIndex].PointY + rooms[randomIndex].Height)
 
       // 選んだ位置に宝箱を配置
-      MapSet[randomY][randomX] = Config.SetTreasure;
+      // MapSet[randomY][randomX] = Config.SetTreasure;
+      //debug start
+      MapSet[initPoint.Y][initPoint.X - 1] = Config.SetTreasure;
+      //debug end
       console.log('placeTreasure', randomY, randomX)
 
       // 配置した部屋はリストから削除

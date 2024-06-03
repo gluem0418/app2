@@ -1,7 +1,7 @@
 <template>
   <div ref="dungeon"></div>
   <div
-    v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.party && !showUIStore.character && !showUIStore.item && !showUIStore.skill"
+    v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.party && !showUIStore.character && !showUIStore.item && !showUIStore.skill && !showUIStore.treasure"
     class="crossKey">
     <div class="upKey" @click="playerMove(Config.ArrowUp)"></div>
     <!-- <div class="downKey" @click="playerMove(Config.ArrowDown)"></div> -->
@@ -9,6 +9,7 @@
     <div class="rightKey" @click="playerMove(Config.TurnRight)"></div>
     <ActionLog ref="actionLog" class="actionLog" />
   </div>
+  <GetTreasure v-show="showUIStore.treasure" class="GetTreasure" :getTreasures="getTreasures" :getGold="getGold"/>
 </template>
 
 <script setup lang="ts">
@@ -16,15 +17,21 @@ import { onMounted, ref } from 'vue';
 import * as THREE from 'three';
 import { GLTF, GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+import CreateDungeon from './CreateDungeon.ts';
+import { MapData, MapSet, initPoint, isWall } from './CreateDungeon.ts';
+import GetTreasure from './GetTreasure.vue';
+
 import Dungeon from '@/Class/Dungeon.ts';
-import { Dungeons } from '@/Class/Dungeon.ts';
+import { dungeons } from '@/Class/Dungeon.ts';
+import TreasureBox from '@/Class/TreasureBox.ts'
+import Item from '@/Class/Item.ts';
+import Equipment from '@/Class/Equipment.ts';
 
 import ActionLog from '@/UI/ActionLog.vue';
 import { LogService } from '@/Process/LogService.ts';
 
 import Config from '@/config.ts';
-import CreateDungeon from './CreateDungeon.ts';
-import { MapData, MapSet, initPoint, isWall } from './CreateDungeon.ts';
+
 import { randomNum } from '@/Process/Common.ts';
 
 import imgWall01 from '/img/dungeon/wall/forest1.jpg';
@@ -107,11 +114,14 @@ let mixerTreasure: THREE.AnimationMixer
 //ポイント光源
 const lightParams = { point: 0xFBFDFF };
 //const lightParams = { point: 0xFBF5CB };
+// 宝箱取得時
+const getTreasures = ref<(Item | Equipment)[]>()
+const getGold = ref<number>()
 
 onMounted(() => {
 
   //ダンジョン情報取得
-  let wMapInfo = Dungeons.find(d => d.name === statusStore.whichDungeon);
+  let wMapInfo = dungeons.find(d => d.name === statusStore.whichDungeon);
   if (wMapInfo) {
     mapInfo = wMapInfo
   } else {
@@ -174,6 +184,7 @@ function whichDungeon() {
   imgFloor = mapInfo.floorUrl
   imgCeil = mapInfo.ceilUrl
   audioStore.playBgm(mapInfo.music)
+  statusStore.musicDungeon = mapInfo.music
 }
 
 // ダンジョンを描画
@@ -345,6 +356,7 @@ function SceneDungeon() {
 
 // マウスクリックイベントを設定
 const handleClick = (event: MouseEvent) => {
+  console.log('handleClick')
   if (statusStore.processDungeon == Config.processBattle) return;
   // Raycasterのインスタンスを作成
   const raycaster = new THREE.Raycaster();
@@ -357,18 +369,9 @@ const handleClick = (event: MouseEvent) => {
 
   // 宝箱との交差を計算
   const intersectsTreasure = raycaster.intersectObject(groupTreasure, true);
-
   // 宝箱がクリックされた場合
   if (intersectsTreasure.length > 0) {
-    console.log('handleClick_treasure')
-    // アニメーションを開始
-    const action = mixerTreasure.clipAction(gltfTreasure.animations[0]);
-    action.play();
-
-    // 2秒後にアニメーションを停止
-    setTimeout(() => {
-      action.paused = true
-    }, 2000)
+    clickTreasure()
   }
 
   // 扉のオブジェクトとの交差を計算
@@ -392,6 +395,27 @@ const handleClick = (event: MouseEvent) => {
       }
     }
   }
+  //宝箱クリック時の処理
+  function clickTreasure() {
+    console.log('handleClick_treasure')
+    // アニメーションを開始
+    const action = mixerTreasure.clipAction(gltfTreasure.animations[0]);
+    action.play();
+    // 2秒後にアニメーションを停止
+    setTimeout(() => {
+      action.paused = true
+    }, 2000)
+    // rankTreasure配列からランダムなインデックスを取得
+    const randomIndex = Math.floor(Math.random() * mapInfo.layers[0].rankTreasure.length);
+    // ランダムなインデックスの値をrankTreasureにセット
+    const rankTreasure = mapInfo.layers[0].rankTreasure[randomIndex];
+    // Treasureを取得
+    getTreasures.value = TreasureBox.getRandomTreasures(rankTreasure)
+    getGold.value = randomNum(rankTreasure * 100, rankTreasure * 1000)
+    console.log('clickTreasure', getTreasures.value, getGold.value)
+    // 取得したTreasureを表示
+    showUIStore.treasure = true
+  }
 };
 
 //画面クリックでの移動処理
@@ -414,7 +438,7 @@ function playerMove(eventKey: string) {
   console.log('playerMove', eventKey)
 
   //パーティorキャラクターui表示時
-  if (showUIStore.party || showUIStore.character || showUIStore.item || showUIStore.skill) return;
+  if (showUIStore.party || showUIStore.character || showUIStore.item || showUIStore.skill || showUIStore.treasure) return;
   if (statusStore.processDungeon == Config.processBattle) return;
   if (!camera) return
 
@@ -535,6 +559,10 @@ const gameLoop = () => {
 </script>
 
 <style scoped>
+.GetTreasure {
+  position: fixed;
+  z-index:10;
+}
 .upKey {
   position: absolute;
   top: 0;

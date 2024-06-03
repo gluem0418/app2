@@ -8,6 +8,7 @@ export const useShowUI = defineStore('showUI', {
     character: false,
     item: false,
     skill: false,
+    treasure: false,
     message: false,
     errorMessage: false,
   }),

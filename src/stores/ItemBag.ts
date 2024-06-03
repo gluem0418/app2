@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import Itembag_json from '@/assets/json/ItemBag.json';
 import Item from '@/Class/Item';
-import { Items } from '@/Class/Item';
+import { items } from '@/Class/Item';
 
 export interface ItemBag {
   item_id: number;
@@ -14,7 +14,7 @@ export const useItemBagStore = defineStore('itemBag', {
   state: () => ({
     itemBag: Itembag_json.map((bagItem: any) => ({
       ...bagItem,
-      item: Items.find((item) => item.item_id === bagItem.item_id), // item_idに基づいてItemクラスのインスタンスを追加
+      item: items.find((item) => item.item_id === bagItem.item_id), // item_idに基づいてItemクラスのインスタンスを追加
     })) as ItemBag[],
     // itemBag: Itembag_json as ItemBag[],
   }),

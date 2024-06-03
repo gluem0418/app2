@@ -28,4 +28,4 @@ export default class Item {
   }
 }
 
-export const Items = Item_json.map((data: any) => new Item(data))
+export const items = Item_json.map((data: any) => new Item(data))

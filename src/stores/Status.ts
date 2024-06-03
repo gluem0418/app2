@@ -8,6 +8,6 @@ export const useStatusStore = defineStore('status', {
     processDungeon: '',
     guildMenu: '',
     whichDungeon: '',
-    // musicDungeon: '',
+    musicDungeon: '',
   }),
 });

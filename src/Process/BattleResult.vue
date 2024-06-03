@@ -1,6 +1,6 @@
 <template>
   <div class="battleResult" @click="clickResult()">
-    <div class="result">RESULT</div>
+    <TitleName class="result" :inside="'Battle Result'" />
     <div class="resultFlame">
       <div class="expGoldLine">
         <span class="expItem">
@@ -31,6 +31,8 @@
 
 import Config from '@/config.ts';
 import ProgressBarExp from '@/components/progress/ProgressBarExp.vue';
+import TitleName from '@/components/flame/Flame2.vue';
+
 
 //パーティ情報
 import { usePartyStore } from '@/stores/Party.ts';
@@ -69,16 +71,15 @@ function clickResult() {
   left: 50%;
   transform: translateX(-50%);
   top: 2vh;
-  background-image: url('/img/flame/flame030302.png');
+  /* background-image: url('/img/flame/flame030302.png');
   background-size: 100% 100%;
   color: #E2D8A6;
   font-family: "Trade Winds";
-  /* font-family: "Mystery Quest"; */
   font-size: 8vh;
   height: 14vh;
   width: 35vw;
   padding: 1.5vh;
-  text-align: center;
+  text-align: center; */
   z-index: 10;
 }
 
