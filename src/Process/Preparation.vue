@@ -13,7 +13,6 @@
         @useSkill='useItem' />
     </div>
 
-    <!-- <div v-if="selectedItem" class="gif-modal"> -->
     <div v-if="selectedItem">
       <!-- character  -->
       <CurrentUI class="CurrentUI" :currentCharacter="currentCharacter" :targetCharacter="targetCharacter"

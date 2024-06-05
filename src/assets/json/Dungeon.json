@@ -19,7 +19,7 @@
     "layers": [
       {
         "rankTreasure": [
-          1
+          1,1,2,2
         ],
         "midBoss": [],
         "numBoss": 0
