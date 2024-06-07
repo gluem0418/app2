@@ -16,16 +16,20 @@ export const useItemBagStore = defineStore('itemBag', {
       ...bagItem,
       item: items.find((item) => item.item_id === bagItem.item_id), // item_idに基づいてItemクラスのインスタンスを追加
     })) as ItemBag[],
-    // itemBag: Itembag_json as ItemBag[],
   }),
   actions: {
     //item追加（存在する場合は個数追加）
-    addItem(item: ItemBag) {
+    getItem(item: Item) {
       const existingItem = this.itemBag.find((i) => i.item_id === item.item_id);
       if (existingItem) {
-        existingItem.number += item.number;
+        existingItem.number += 1;
       } else {
-        this.itemBag.push(item);
+        this.itemBag.push({
+          item_id: item.item_id,
+          use: item.use,
+          number: 1, // 新しいアイテムの初期数量は1とします
+          item: item
+        });
       }
     },
     //item減少（0の場合、削除）

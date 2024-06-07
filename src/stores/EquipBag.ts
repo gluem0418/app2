@@ -1,3 +1,4 @@
+import Equipment from '@/Class/Equipment.ts';
 import { defineStore } from 'pinia';
 import equipbag_json from '@/assets/json/EquipBag.json';
 
@@ -19,6 +20,7 @@ export const useEquipBagStore = defineStore('equipBag', {
     },
   }),
   actions: {
+    //初期処理にて装備カバンを設定
     setEquipBag() {
       for (let item of equipbag_json) {
         this.addEquipment(item.eqpbag_id, item.eqp_id, item.type, item.equippedBy);
@@ -28,9 +30,22 @@ export const useEquipBagStore = defineStore('equipBag', {
       if (!this.equipmentType[type]) {
         this.equipmentType[type] = [];
       }
-      const equipment = { eqpbag_id: eqpbag_id, eqp_id: eqp_id, type: type, equippedBy: equippedBy };
-      this.equipmentType[type].push(equipment);
-      this.equipmentItem[eqpbag_id] = equipment;
+      const newEquip = { eqpbag_id: eqpbag_id, eqp_id: eqp_id, type: type, equippedBy: equippedBy };
+      this.equipmentType[type].push(newEquip);
+      this.equipmentItem[eqpbag_id] = newEquip;
+    },
+    //装備取得時にカバンに追加
+    getEquipment(equipment: Equipment) {
+      const eqpbag_id = this.getEquipBagId();
+      const newEquip = { eqpbag_id: eqpbag_id, eqp_id: equipment.eqp_id, type: equipment.type, equippedBy: null };
+      this.equipmentType[equipment.type].push(newEquip);
+      this.equipmentItem[eqpbag_id] = newEquip;
+    },
+    // eqpbag_idの最大値を取得
+    getEquipBagId(): number {
+      const maxId = Math.max(...Object.keys(this.equipmentItem).map(Number));
+      // 最大値に1を加えた値を返す
+      return maxId + 1;
     },
     // 装備を削除するメソッド
     removeEquipment(eqpbag_id: number) {
@@ -45,11 +60,6 @@ export const useEquipBagStore = defineStore('equipBag', {
     getEquipmentByType(type: string) {
       return this.equipmentType[type] || [];
     },
-    // eqp_idとequippedByを指定して装備を取得するメソッド
-    // findEquipment(eqp_id: number, cha_id: number | null) {
-    //   const key = `${eqp_id}_${cha_id === null ? 'null' : cha_id}`;
-    //   return this.equipmentItem[key];
-    // },
     // 装備のequippedByを更新
     equipEquipment(eqpbag_id: number, cha_id: number | null) {
       const equipment = this.equipmentItem[eqpbag_id];

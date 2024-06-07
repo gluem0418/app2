@@ -35,15 +35,15 @@ import EquipInfo from '@/UI//EquipInfo.vue';
 import TitleName from '@/components/flame/Flame2.vue';
 import CloseBtn from '@/components/flame/BlueBtn.vue';
 
-//状態管理
-import { useStatusStore } from '@/stores/Status.ts';
-const statusStore = useStatusStore()
 //アイテム管理
-import { useItemBagStore, ItemBag } from '@/stores/ItemBag.ts';
+import { useItemBagStore } from '@/stores/ItemBag.ts';
 const itemBagStore = useItemBagStore()
-//UI表示
-import { useShowUI } from '@/stores/ShowUI.ts';
-const showUIStore = useShowUI()
+//equipmentBagを作成
+import { useEquipBagStore } from '@/stores/EquipBag.ts';
+const equipBagStore = useEquipBagStore()
+//パーティ情報
+import { usePartyStore } from '@/stores/Party.ts';
+const partyStore = usePartyStore()
 
 const props = defineProps({
   getGold: { type: Number },
@@ -65,15 +65,25 @@ const selectItem = (item: Item | Equipment) => {
     itemInfo.value = null
   }
 };
-// function clickClose() {
-//   console.log('clickClose', selectedItem.value)
-//   //画面クローズ
-//   selectedItem.value = null
-// }
-
-  //画面クローズ
+//画面クローズ
 const emit = defineEmits(["closeTreasure"])
 const clickClose = () => {
+  //gold取得
+  console.log('clickClose_beforeGet', itemBagStore.itemBag, equipBagStore.equipmentItem)
+  if (props.getGold) {
+    partyStore.getGold(props.getGold)
+  }
+  props.getTreasures.forEach((treasure) => {
+    if (treasure instanceof Item) {
+      //Item取得
+      itemBagStore.getItem(treasure)
+    } else if (treasure instanceof Equipment) {
+      //Equipment取得
+      equipBagStore.getEquipment(treasure)
+    }
+  });
+  console.log('clickClose_afterGet', itemBagStore.itemBag, equipBagStore.equipmentItem)
+  //Equipment取得
   selectedItem.value = null
   emit('closeTreasure')
 };
@@ -97,9 +107,11 @@ const clickClose = () => {
   margin-top: 5vh;
   margin-left: 5vw;
 }
+
 .result {
-  margin-left:13vw;
+  margin-left: 13vw;
 }
+
 .flame2 {
   display: flex;
   margin-top: 3vh;

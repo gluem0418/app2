@@ -160,8 +160,10 @@ const animate = function () {
   requestAnimationFrame(animate);
   //3dモデルアニメーション
   const delta = clock.getDelta();
-  if (mixerTreasure) mixerTreasure.update(delta);
-  //
+  // 各宝箱のアニメーションを更新
+  treasures.forEach(treasure => {
+    treasure.mixer.update(delta);
+  });
   renderer.render(scene, camera);
 };
 
@@ -370,9 +372,7 @@ function SceneDungeon() {
     });
     treasureId += 1
   }
-
 }
-
 // マウスクリックイベントを設定
 let clickedTreasureId: number | null = null;
 const handleClick = (event: MouseEvent) => {
@@ -387,44 +387,24 @@ const handleClick = (event: MouseEvent) => {
   // Raycasterを更新
   raycaster.setFromCamera(mouse, camera);
   // 宝箱との交差を計算
-  let clickedObject = rayTreasure(raycaster)
+  const intersectsTreasure = raycaster.intersectObjects(treasures.map(t => t.treasure), true);
   // 宝箱が近くにある場合、3dモデルの親を取得
-  if (clickedObject) {
-    const clickedScene = getScene(clickedObject)
+  if (rayObjects(intersectsTreasure)) {
+    const clickedScene = getScene(intersectsTreasure[0].object)
     console.log('handleClick_clickedTreasure', clickedScene)
     const intersectedTreasure = treasures.find(treasure => treasure.treasure === clickedScene);
     // 未開封の宝箱なら開ける
     if (intersectedTreasure && !intersectedTreasure.isOpen) {
-      console.log('handleClick_intersectedTreasure', intersectedTreasure)
-      clickedTreasureId = clickedObject.id; // クリックした宝箱のIDを保存
+      console.log('handleClick_intersectedTreasure', clickedScene.id, intersectedTreasure)
+      clickedTreasureId = clickedScene.id; // クリックした宝箱のIDを保存
       intersectedTreasure.isOpen = true;
       clickTreasure(intersectedTreasure)
-    }
-  }
-  // 扉のオブジェクトとの交差を計算
-  const intersectsDoor = raycaster.intersectObjects(doors.flatMap(door => [door.leftDoor, door.rightDoor]));
-  // 交差したオブジェクトがある場合
-  if (intersectsDoor.length > 0) {
-    // 最初に交差したオブジェクトを取得
-    const intersectedDoor = doors.find(door => door.leftDoor === intersectsDoor[0].object || door.rightDoor === intersectsDoor[0].object);
-    if (intersectedDoor) {
-      // 扉が閉じている場合、扉を開く
-      if (!intersectedDoor.isOpen) {
-        intersectedDoor.leftDoor.translateOnAxis(new THREE.Vector3(-1, 0, 0), Config.BlockSize / 4);
-        intersectedDoor.rightDoor.translateOnAxis(new THREE.Vector3(1, 0, 0), Config.BlockSize / 4);
-        // 回転を設定
-        intersectedDoor.leftDoor.rotateY(-Math.PI / 2.1);
-        intersectedDoor.rightDoor.rotateY(Math.PI / 2.1);
-        // 扉の位置を調整して、元に戻す
-        intersectedDoor.leftDoor.translateOnAxis(new THREE.Vector3(1, 0, 0), Config.BlockSize / 4);
-        intersectedDoor.rightDoor.translateOnAxis(new THREE.Vector3(-1, 0, 0), Config.BlockSize / 4);
-        intersectedDoor.isOpen = true;
-      }
     }
   }
   //宝箱クリック時の処理
   function clickTreasure(treasure: Treasure) {
     // アニメーションを開始
+    console.log('clickTreasure', treasure)
     const action = treasure.mixer.clipAction(gltfTreasure.animations[0]);
     action.play();
     // 2秒後にアニメーションを停止
@@ -442,17 +422,36 @@ const handleClick = (event: MouseEvent) => {
     // 取得したTreasureを表示
     showUIStore.treasure = true
   }
-};
-//宝箱との距離を算出
-function rayTreasure(raycaster: THREE.Raycaster): THREE.Object3D | undefined {
-  // 宝箱との交差を計算
-  const intersectsTreasure = raycaster.intersectObjects(treasures.map(t => t.treasure), true);
-  // 宝箱がクリックされた場合
-  if (intersectsTreasure.length > 0) {
-    if (intersectsTreasure[0].distance <= Config.BlockSize) {
-      return intersectsTreasure[0].object
+  // 扉のオブジェクトとの交差を計算
+  const intersectsDoor = raycaster.intersectObjects(doors.flatMap(door => [door.leftDoor, door.rightDoor]));
+  // if (intersectsDoor.length > 0) {
+  if (rayObjects(intersectsDoor)) {
+    // 交差したオブジェクトがある場合
+    const intersectedDoor = doors.find(door => door.leftDoor === intersectsDoor[0].object || door.rightDoor === intersectsDoor[0].object);
+    if (intersectedDoor) {
+      // 扉が閉じている場合、扉を開く
+      if (!intersectedDoor.isOpen) {
+        intersectedDoor.leftDoor.translateOnAxis(new THREE.Vector3(-1, 0, 0), Config.BlockSize / 4);
+        intersectedDoor.rightDoor.translateOnAxis(new THREE.Vector3(1, 0, 0), Config.BlockSize / 4);
+        // 回転を設定
+        intersectedDoor.leftDoor.rotateY(-Math.PI / 2.1);
+        intersectedDoor.rightDoor.rotateY(Math.PI / 2.1);
+        // 扉の位置を調整して、元に戻す
+        intersectedDoor.leftDoor.translateOnAxis(new THREE.Vector3(1, 0, 0), Config.BlockSize / 4);
+        intersectedDoor.rightDoor.translateOnAxis(new THREE.Vector3(-1, 0, 0), Config.BlockSize / 4);
+        intersectedDoor.isOpen = true;
+      }
     }
   }
+};
+//Objectとの距離を算出し、近くにあればtrueを返す
+function rayObjects(Intersects: THREE.Intersection[]): Boolean {
+  // 宝箱がクリックされた場合
+  if (Intersects.length > 0) {
+    if (Intersects[0].distance <= Config.BlockSize) {
+      return true
+    } else return false
+  } else return false
 }
 //ObjectのSceneを取得
 function getScene(object: THREE.Object3D): THREE.Object3D {
@@ -466,13 +465,15 @@ function getScene(object: THREE.Object3D): THREE.Object3D {
 
 //宝箱画面を閉じて、宝を削除
 const closeTreasure = () => {
-  console.log('closeTreasure', clickedTreasureId)
   const treasureToRemove = scene.getObjectById(clickedTreasureId!);
-  if (!treasureToRemove) return
-  // 宝箱の中身を削除
-  const objectToRemove = treasureToRemove.children.find(child => child.name === strTreasure);
-  if (objectToRemove) {
-    treasureToRemove.remove(objectToRemove);
+  if (treasureToRemove) {
+    // 宝箱の中身を削除
+    const objectToRemove = treasureToRemove.children.find(child => child.name === strTreasure);
+    if (objectToRemove) {
+      treasureToRemove.remove(objectToRemove);
+    }
+  } else {
+    console.log('closeTreasure_no', clickedTreasureId)
   }
   showUIStore.treasure = false
 };
@@ -569,10 +570,10 @@ function playerMove(eventKey: string) {
       }
     }
     // 宝箱との交差を計算
-    let clickedObject = rayTreasure(raycaster)
+    const intersectsTreasure = raycaster.intersectObjects(treasures.map(t => t.treasure), true);
     // 宝箱が近くにある場合、3dモデルの親を取得
-    if (clickedObject) {
-      const clickedScene = getScene(clickedObject)
+    if (rayObjects(intersectsTreasure)) {
+      const clickedScene = getScene(intersectsTreasure[0].object)
       const intersectedTreasure = treasures.find(treasure => treasure.treasure === clickedScene);
       // 未開封の宝箱なら移動を停止
       if (intersectedTreasure && !intersectedTreasure.isOpen) return

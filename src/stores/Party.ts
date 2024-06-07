@@ -22,9 +22,12 @@ export const usePartyStore = defineStore('party', {
   }),
   actions: {
     setParty() {
-      this.characters =  characterList.filter(character =>  partyData.characters.includes(character.cha_id));
+      this.characters = characterList.filter(character => partyData.characters.includes(character.cha_id));
       // this.characters =  character_json.map((characterData: any, index: number) => new Character(characterData, index));
       this.map = MapData;
+    },
+    getGold(gold: number) {
+      this.gold += gold
     },
   },
 });

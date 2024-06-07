@@ -64,7 +64,7 @@ import SelectName from '@/components/flame/Flame1.vue';
 import { useStatusStore } from '@/stores/Status.ts';
 const statusStore = useStatusStore()
 //アイテム管理
-import { useItemBagStore, ItemBag } from '@/stores/ItemBag.ts';
+import { useItemBagStore } from '@/stores/ItemBag.ts';
 const itemBagStore = useItemBagStore()
 //UI表示
 import { useShowUI } from '@/stores/ShowUI.ts';
