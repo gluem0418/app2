@@ -67,28 +67,19 @@ export default {
   wepSpear: 'Spear',
 
   //マップ作成
-  // MapWidth: 200,
-  // MapHeight: 150,
   MapWall: 0,
   MapRoom: 1,
   MapRoad: 2,
   //配置情報
-  SetTreasure: 77,  //宝箱
   SetDoorUp: 11,  //上にドア
   SetDoorUnder: 12,  //下にドア
   SetDoorLeft: 13,  //左にドア
   SetDoorRight: 14,  //右にドア
-  // roomMinHeight: 10,
-  // roomMaxHeight: 20,
-  // roomMinWidth: 10,
-  // roomMaxWidth: 20,
-  // RoomCountMin: 15,
-  // RoomCountMax: 25,
+  SetTreasure: 77,  //宝箱
+  SetCircle: 100,  //魔方陣
 
   BlockSize: 10, //1ブロックあたりの長さ
   BlockHeight: 20, //壁の高さ  
-  //道の集合点を増やしたいならこれを増やす
-  // meetPointCount: 5,
 
   //ミニマップ
   MiniHeight: 300,
@@ -112,6 +103,9 @@ export default {
   encountLimit: 1000,  //エンカウント発生ポイント
   //ダンジョン素材
   pathTreasure: '3d/treasure_box.glb',
+  pathCircle: '3d/magic_circle.glb',
+  pathMidBoss: '3d/sitting_gargoyle.glb',
+  pathBoss: '3d/angel2.glb',
 
   //戦闘
   monNumMin: 1,
@@ -194,9 +188,14 @@ export default {
   msgAddParty2: ' to your party?',
   msgRemoveParty1: 'Do you remove ',
   msgRemoveParty2: ' from the party?',
+  msgNextLayer: 'Are you Going to the next layer?',
+  msgLastLayer: 'Are you going back to town?',
+
   msgAddPartyError: 'The party is full. Please remove someone.',
   msgRemovePartyError: 'This character cannot remove from party.',
   msgSkillCostError: 'Skill cost limit error test12345678901234567890',
   msgHPLackError: 'Because lack of HP, you cannot use skill',
   msgMPLackError: 'Because lack of MP, you cannot use skill'
+
+  
 }

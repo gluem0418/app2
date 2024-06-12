@@ -17,7 +17,6 @@
         <EquipInfo v-else-if="selectedItem && equipStatus" class="SkillInfo" :status="equipStatus" />
       </div>
       <CloseBtn class="CloseBtn" :inside="'CLOSE'" @click="clickClose()" />
-
     </div>
   </div>
 </template>

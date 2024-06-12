@@ -1,8 +1,6 @@
 <template>
   <div ref="dungeon"></div>
-  <div
-    v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.party && !showUIStore.character && !showUIStore.item && !showUIStore.skill && !showUIStore.treasure"
-    class="crossKey">
+  <div v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.isAnyUIShow" class="crossKey">
     <div class="upKey" @click="playerMove(Config.ArrowUp)"></div>
     <!-- <div class="downKey" @click="playerMove(Config.ArrowDown)"></div> -->
     <div class="leftKey" @click="playerMove(Config.TurnLeft)"></div>
@@ -11,6 +9,8 @@
   </div>
   <GetTreasure v-show="showUIStore.treasure" class="GetTreasure" :getTreasures="getTreasures" :getGold="getGold"
     @closeTreasure='closeTreasure' />
+  <Confirmation v-show="showUIStore.message" :message="confirmationMessage"
+    @confirmationResponse="confirmationResponse" />
 </template>
 
 <script setup lang="ts">
@@ -19,7 +19,7 @@ import * as THREE from 'three';
 import { GLTF, GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import CreateDungeon from './CreateDungeon.ts';
-import { MapData, MapSet, initPoint, isWall } from './CreateDungeon.ts';
+import { state, isWall } from './CreateDungeon.ts';
 import GetTreasure from './GetTreasure.vue';
 
 import Dungeon from '@/Class/Dungeon.ts';
@@ -30,6 +30,7 @@ import Equipment from '@/Class/Equipment.ts';
 
 import ActionLog from '@/UI/ActionLog.vue';
 import { LogService } from '@/Process/LogService.ts';
+import Confirmation from '@/components/information/Confirmation.vue';
 
 import Config from '@/config.ts';
 
@@ -84,78 +85,76 @@ const actionLog = ref(null);
 const logService = new LogService();
 const addNewLog = (log: string, kind: number) => logService.addNewLog(log, kind);
 
-let mapInfo: Dungeon
 const dungeon = ref<HTMLElement | null>(null);
-
-let scene = new THREE.Scene()
+let nowLayer: number = 0
+let mapInfo: Dungeon
+const wmapInfo = dungeons.find(d => d.name === statusStore.whichDungeon);
+if (!wmapInfo) {
+  throw new Error(`Dungeon ${statusStore.whichDungeon} does not exist in dungeons.`);
+} else {
+  mapInfo = wmapInfo
+}
+// let scene = new THREE.Scene()
+let scene: THREE.Scene
 let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 let renderer = new THREE.WebGLRenderer();
+let targetPosition = new THREE.Vector3(); // カメラの目標位置
+// let camera :THREE.PerspectiveCamera
+// let renderer :THREE.WebGLRenderer;
+// let targetPosition : THREE.Vector3; // カメラの目標位置
 let pointLight: THREE.PointLight;
 let spotLight: THREE.SpotLight;
-let targetPosition = new THREE.Vector3(); // カメラの目標位置
 let targetRotation = 0; // カメラの目標回転角度
 let encounter = 0; // エンカウントの確率を管理する変数
 let imgWall: string
 let imgFloor: string
 let imgCeil: string
-
 // doorの定義
 interface Door {
-  id: number;
+  // id: number;
   leftDoor: THREE.Mesh;
   rightDoor: THREE.Mesh;
   isOpen: boolean;
 }
-let doors: Door[] = [] //door object 格納用
-let doorId: number = 0
+let doors: Door[] //door object 格納用
 // Treasureの定義
 let gltfTreasure: GLTF
-let groupTreasure: THREE.Group
-let mixerTreasure: THREE.AnimationMixer
 interface Treasure {
-  id: number;
+  // id: number;
   treasure: THREE.Group
   mixer: THREE.AnimationMixer
   isOpen: boolean
 }
-let treasures: Treasure[] = [] //treasure object 格納用
-let treasureId: number = 0
+let treasures: Treasure[] //treasure object 格納用
+// let treasureId: number = 0
 // 宝箱取得時
 const getTreasures = ref<(Item | Equipment)[]>()
 const getGold = ref<number>()
 const strTreasure = 'jb477'
+// 魔方陣の定義
+let gltfCircle: GLTF
+let groupCircle: THREE.Group
+let mixerCircle: THREE.AnimationMixer
+let flgNearCircle: Boolean = false
+// MidBossの定義
+interface MidBoss {
+  midBoss: THREE.Group
+}
+let midBosses: MidBoss[]
+// ボスの定義
+let groupBoss: THREE.Group
 //ポイント光源
 const lightParams = { point: 0xFBFDFF };
+// 確認用メッセージ
+let confirmationMessage: string
 
 onMounted(() => {
-
-  //ダンジョン情報取得
-  let wMapInfo = dungeons.find(d => d.name === statusStore.whichDungeon);
-  if (wMapInfo) {
-    mapInfo = wMapInfo
-  } else {
-    return
-  }
-  //ダンジョン生成
-  CreateDungeon(mapInfo)
-  console.log(MapData)
-  // console.log(MapSet)
-  //シーン初期化
-  initScene()
   // ダンジョン毎の処理
   whichDungeon()
-  //ダンジョン描写
-  SceneDungeon()
-  // キーボードの矢印キーにイベントリスナーを追加
-  window.addEventListener('keydown', handleKeydown)
-  window.addEventListener('click', handleClick)
-  // レンダリングループ
-  animate();
-  gameLoop();
-
+  //ダンジョンの階層作成
+  createLayer()
 });
 const clock = new THREE.Clock();
-
 const animate = function () {
   requestAnimationFrame(animate);
   //3dモデルアニメーション
@@ -164,19 +163,40 @@ const animate = function () {
   treasures.forEach(treasure => {
     treasure.mixer.update(delta);
   });
+  if (mixerCircle) mixerCircle.update(delta)
   renderer.render(scene, camera);
 };
 
+function createLayer() {
+  //ダンジョン生成
+  CreateDungeon(mapInfo, nowLayer)
+  console.log('MapData', state.MapData)
+  console.log('MapSet', state.MapSet)
+  //シーン初期化
+  initScene()
+  //ダンジョン描写
+  SceneDungeon()
+  // キーボードの矢印キーにイベントリスナーを追加
+  window.addEventListener('keydown', handleKeydown)
+  window.addEventListener('click', handleClick)
+  // レンダリングループ
+  animate();
+  gameLoop();
+}
 function initScene() {
+  //scene object 初期化
+  scene = new THREE.Scene();
+  doors = [], treasures = [], midBosses = []
+
   renderer.setSize(window.innerWidth, window.innerHeight);
   //3dモデル用の設定
   // renderer.outputColorSpace = THREE.SRGBColorSpace;
   // renderer.toneMapping = THREE.ACESFilmicToneMapping;
-
+  renderer.shadowMap.enabled = true;
+  //
   dungeon.value?.appendChild(renderer.domElement);
-
   // プレイヤーの初期位置を設定
-  positionStore.playerPosition = new THREE.Vector3(Config.BlockSize * initPoint.X, 5, Config.BlockSize * initPoint.Y);
+  positionStore.playerPosition = new THREE.Vector3(Config.BlockSize * state.initPoint.X, 5, Config.BlockSize * state.initPoint.Y);
   targetPosition.copy(positionStore.playerPosition);
   // カメラの位置をプレイヤーの位置と同期
   camera.position.copy(positionStore.playerPosition);
@@ -184,10 +204,9 @@ function initScene() {
   //全体光源
   // const light = new THREE.AmbientLight(0xFFFFFF, 1.0);  
   //PointLight(色, 光の強さ, 距離, 光の減衰率)
-  pointLight = new THREE.PointLight(lightParams.point, 10, 100, 0.5);
+  pointLight = new THREE.PointLight(lightParams.point, 10, 50, 0.5);
   pointLight.position.copy(positionStore.playerPosition);
   scene.add(pointLight);
-
 }
 // ダンジョンの情報セット
 function whichDungeon() {
@@ -227,10 +246,10 @@ function SceneDungeon() {
   const cMaterial = new THREE.MeshPhongMaterial({ map: cTexture, side: THREE.DoubleSide, bumpMap: cTexture, bumpScale: 0.2 });
 
 
-  for (let i = 0; i < MapData.length; i++) {
-    for (let j = 0; j < MapData[i].length; j++) {
+  for (let i = 0; i < state.MapData.length; i++) {
+    for (let j = 0; j < state.MapData[i].length; j++) {
 
-      if (MapData[i][j] == Config.MapRoom || MapData[i][j] == Config.MapRoad) {
+      if (state.MapData[i][j] == Config.MapRoom || state.MapData[i][j] == Config.MapRoad) {
 
         // 部屋か通路の場合、床と天井を追加
         const planeFloor = new THREE.Mesh(fGeometry, fMaterial);
@@ -269,7 +288,8 @@ function SceneDungeon() {
         }
 
         // 通路と部屋の境目に扉を描画
-        switch (MapSet[i][j]) {
+        //宝箱と魔方陣を描画
+        switch (state.MapSet[i][j]) {
           case Config.SetDoorUp:
             //この地点か一つ上の左右が壁の場合に描画
             setDoor(i, j, 'Up')
@@ -290,7 +310,19 @@ function SceneDungeon() {
             //宝箱を配置
             setTreasure(i, j)
             break
+          case Config.SetCircle:
+            //魔方陣を配置
+            setCircle(i, j)
+            break
           default:
+        }
+        //中ボスを描画
+        if (state.MapSet[i][j] >= 1000 && state.MapSet[i][j] < 2000) {
+          setMidBoss(i, j)
+        }
+        //ボスを描画
+        if (state.MapSet[i][j] >= 2000) {
+          setBoss(i, j)
         }
       }
     }
@@ -334,20 +366,23 @@ function SceneDungeon() {
     scene.add(planeRightDoor);
     pushDoor(planeLeftDoor, planeRightDoor)
     scene.add(planeWallDoor);
-  }
-  function pushDoor(leftDoor: THREE.Mesh, rightDoor: THREE.Mesh) {
-    doors.push({
-      id: doorId, // 一意のIDを設定
-      leftDoor: leftDoor,
-      rightDoor: rightDoor,
-      isOpen: false
-    });
-    doorId += 1
+    //
+    function pushDoor(leftDoor: THREE.Mesh, rightDoor: THREE.Mesh) {
+      doors.push({
+        // id: doorId, // 一意のIDを設定
+        leftDoor: leftDoor,
+        rightDoor: rightDoor,
+        isOpen: false
+      });
+      // doorId += 1
+    }
   }
   //宝箱セット処理
   function setTreasure(i: number, j: number) {
     //宝箱のロードと表示位置の設定
     const gltfloader: GLTFLoader = new GLTFLoader();
+    let groupTreasure: THREE.Group
+    let mixerTreasure: THREE.AnimationMixer
     gltfloader.load(Config.pathTreasure, (gltf: GLTF) => {
       gltfTreasure = gltf;
       groupTreasure = gltfTreasure.scene;
@@ -357,27 +392,131 @@ function SceneDungeon() {
       mixerTreasure = new THREE.AnimationMixer(groupTreasure)
       pushTreasure(groupTreasure, mixerTreasure)
     });
-
     //SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
     spotLight = new THREE.SpotLight(lightParams.point, 10, 20, Math.PI, 20, 1.0);
     spotLight.position.set(Config.BlockSize * j, 0, Config.BlockSize * i)
     scene.add(spotLight);
+    //
+    function pushTreasure(groupTreasure: THREE.Group, mixerTreasure: THREE.AnimationMixer) {
+      treasures.push({
+        // id: treasureId, // 一意のIDを設定
+        treasure: groupTreasure,
+        mixer: mixerTreasure,
+        isOpen: false
+      });
+      // treasureId += 1
+    }
   }
-  function pushTreasure(groupTreasure: THREE.Group, mixerTreasure: THREE.AnimationMixer) {
-    treasures.push({
-      id: treasureId, // 一意のIDを設定
-      treasure: groupTreasure,
-      mixer: mixerTreasure,
-      isOpen: false
+  //魔方陣セット処理
+  function setCircle(i: number, j: number) {
+    //魔方陣のロードと表示位置の設定
+    const gltfloader: GLTFLoader = new GLTFLoader();
+    gltfloader.load(Config.pathCircle, (gltf: GLTF) => {
+      gltfCircle = gltf;
+      groupCircle = gltfCircle.scene;
+      groupCircle.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+      // groupCircle.scale.set(1.5, 1.5, 1.5); //大きさの調整
+      groupCircle.scale.set(3, 3, 3); //大きさの調整
+      scene.add(groupCircle);
+      mixerCircle = new THREE.AnimationMixer(groupCircle)
+      console.log('setCircle_gltfCircle', gltfCircle)
+      // マテリアルの透過処理
+      groupTransparent(groupCircle)
+      // バウンディングボックスヘルパーの作成
+      const boxHelper = new THREE.BoxHelper(groupCircle, 0xffff00);
+      scene.add(boxHelper);
     });
-    treasureId += 1
   }
+  //中ボスセット処理
+  function setMidBoss(i: number, j: number) {
+    //中ボスのロードと表示位置の設定
+    console.log('setMidBoss')
+    const gltfloader: GLTFLoader = new GLTFLoader();
+    let groupMidBoss: THREE.Group
+    gltfloader.load(Config.pathMidBoss, (gltf: GLTF) => {
+      // gltfTreasure = gltf;
+      groupMidBoss = gltf.scene;
+      groupMidBoss.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+      groupMidBoss.scale.set(5.0, 5.0, 5.0); //大きさの調整
+      groupMidBoss.traverse((obj) => {
+        if (obj.type === 'Mesh') {
+          obj.receiveShadow = true;
+          obj.castShadow = true;
+          // } else if (obj.type === 'DirectionalLight') {
+          //   obj.castShadow = true;
+        }
+      });
+      scene.add(groupMidBoss);
+      pushMidBoss(groupMidBoss)
+    });
+    //SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
+    // spotLight = new THREE.SpotLight(lightParams.point, 10, 30, Math.PI / 6, 0, 0.5);
+    // spotLight.position.set(Config.BlockSize * j, Config.BlockHeight, Config.BlockSize * i - Config.BlockSize)
+    // spotLight.target.position.set(Config.BlockSize * j, 0, Config.BlockSize * i);
+    // scene.add(spotLight);
+    // scene.add(spotLight.target);
+    //
+    function pushMidBoss(groupMidBoss: THREE.Group) {
+      midBosses.push({
+        // id: midBossId, // 一意のIDを設定
+        midBoss: groupMidBoss,
+      });
+      // midBossId += 1
+    }
+
+  }
+  //ボスセット処理
+  function setBoss(i: number, j: number) {
+    //中ボスのロードと表示位置の設定
+    console.log('setBoss')
+    const gltfloader: GLTFLoader = new GLTFLoader();
+    // let groupMidBoss: THREE.Group
+    gltfloader.load(Config.pathBoss, (gltf: GLTF) => {
+      groupBoss = gltf.scene;
+      groupBoss.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+      groupBoss.scale.set(0.5, 0.5, 0.5); //大きさの調整
+      groupBoss.traverse((obj) => {
+        if (obj.type === 'Mesh') {
+          obj.receiveShadow = true;
+          obj.castShadow = true;
+          // } else if (obj.type === 'DirectionalLight') {
+          //   obj.castShadow = true;
+        }
+      });
+      scene.add(groupBoss);
+    });
+    //SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
+    // spotLight = new THREE.SpotLight(lightParams.point, 10, 30, Math.PI / 6, 0, 0.5);
+    // spotLight.position.set(Config.BlockSize * j, Config.BlockHeight, Config.BlockSize * i - Config.BlockSize)
+    // spotLight.target.position.set(Config.BlockSize * j, 0, Config.BlockSize * i);
+    // scene.add(spotLight);
+    // scene.add(spotLight.target);
+    //
+  }
+
+}
+function groupTransparent(group: THREE.Group) {
+  group.traverse((node: THREE.Object3D) => {
+    if ((node as THREE.Mesh).isMesh) {
+      const material = (node as THREE.Mesh).material;
+      if (Array.isArray(material)) {
+        // マテリアルが配列の場合、各マテリアルに対して透明性を設定
+        material.forEach((mat) => {
+          mat.transparent = true;
+        });
+      } else {
+        // マテリアルが単一の場合、透明性を設定
+        material.transparent = true;
+      }
+    }
+  });
 }
 // マウスクリックイベントを設定
 let clickedTreasureId: number | null = null;
 const handleClick = (event: MouseEvent) => {
-  if (showUIStore.party || showUIStore.character || showUIStore.item || showUIStore.skill || showUIStore.treasure) return;
   if (statusStore.processDungeon == Config.processBattle) return;
+  // if (showUIStore.party || showUIStore.character || showUIStore.item || showUIStore.skill || showUIStore.treasure) return;
+  if (showUIStore.isAnyUIShow) return;
   // Raycasterのインスタンスを作成
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
@@ -495,11 +634,12 @@ const handleKeydown = (event: KeyboardEvent) => {
 }
 //十字キーでの移動
 function playerMove(eventKey: string) {
-  console.log('playerMove', eventKey)
+  // console.log('playerMove', eventKey)
 
   //パーティorキャラクターui表示時
-  if (showUIStore.party || showUIStore.character || showUIStore.item || showUIStore.skill || showUIStore.treasure) return;
   if (statusStore.processDungeon == Config.processBattle) return;
+  // if (showUIStore.party || showUIStore.character || showUIStore.item || showUIStore.skill || showUIStore.treasure) return;
+  if (showUIStore.isAnyUIShow) return;
   if (!camera) return
 
   const direction = new THREE.Vector3()
@@ -578,7 +718,41 @@ function playerMove(eventKey: string) {
       // 未開封の宝箱なら移動を停止
       if (intersectedTreasure && !intersectedTreasure.isOpen) return
     }
-
+    // // 魔方陣との交差を計算
+    // const intersectsCircle = raycaster.intersectObject(groupCircle, true);
+    // // 魔方陣が近くにある場合、アニメーションを開始
+    // console.log('playerMove_intersectsCircle', intersectsCircle, groupCircle)
+    // if (rayObjects(intersectsCircle)) {
+    //   const action = mixerCircle.clipAction(gltfCircle.animations[0]);
+    //   action.play();
+    // }
+    //魔方陣との距離を計算
+    const objectPosition = groupCircle.position;
+    // プレイヤーとオブジェクトの間の距離を計算
+    const distance = newPosition.distanceTo(objectPosition);
+    // 距離が一定の閾値以下であるかをチェック
+    const action = mixerCircle.clipAction(gltfCircle.animations[0]);
+    if (distance <= 15) {
+      if (!flgNearCircle) {
+        action.play();
+        if (nowLayer == mapInfo.numLayers - 1) {
+          //最下層の場合、町に戻る？
+          confirmationMessage = Config.msgLastLayer
+        } else {
+          //次に層に進む？
+          confirmationMessage = Config.msgNextLayer
+        }
+        flgNearCircle = true
+        showUIStore.message = true;
+        positionStore.playerPosition.copy(newPosition);
+        targetPosition.copy(newPosition); // 目標位置を新しい位置に更新
+        return
+      }
+    } else {
+      flgNearCircle = false
+      // action.paused = true;
+      action.stop();
+    }
     // カメラの位置をプレイヤーの位置と同期
     positionStore.playerPosition.copy(newPosition);
     targetPosition.copy(newPosition); // 目標位置を新しい位置に更新
@@ -612,6 +786,32 @@ const gameLoop = () => {
   }
 
   requestAnimationFrame(gameLoop); // 次のフレームでゲームループを再度呼び出す
+}
+
+// YESの場合、現在の階層から移動
+const confirmationResponse = (response: string) => {
+  showUIStore.message = false;
+  if (response == Config.textYes) {
+    if (nowLayer == mapInfo.numLayers - 1) {
+      //最下層の場合、町に戻る
+      statusStore.status = Config.statusTown
+      console.log('confirmationResponse_return')
+    } else {
+      //次に層に進む
+      nowLayer += 1
+      // scene = new THREE.Scene();  //シーンリセット
+      resetDungeon()
+      createLayer()
+    }
+  }
+};
+function resetDungeon() {
+  // シーンからすべてのオブジェクトを削除
+  for (const object of scene.children) {
+    scene.remove(object);
+  }
+  // 新しいシーンを作成
+  // scene = new THREE.Scene();
 }
 
 </script>

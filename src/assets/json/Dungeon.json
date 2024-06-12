@@ -28,7 +28,7 @@
         "rankTreasure": [
           1
         ],
-        "midBoss": [1],
+        "midBoss": [1001],
         "numBoss": 0
       },
       {
@@ -37,7 +37,7 @@
           2
         ],
         "midBoss": [],
-        "numBoss": 1
+        "numBoss": 2001
       }
     ]
   }

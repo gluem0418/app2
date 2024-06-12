@@ -15,7 +15,7 @@
 import { ref, watch, Ref, nextTick } from 'vue';
 // import * as THREE from 'three';
 import Config from '@/config.ts';
-import { MapData } from '@/Process//CreateDungeon.ts';
+import { state } from '@/Process//CreateDungeon.ts';
 
 //プレイヤー現在地
 import { usePositionStore } from '@/stores/Position.ts';
@@ -35,18 +35,18 @@ const showFullMap = ref(false);
 
 // ミニマップを描画
 const initMapUI = () => {
-  if (MapData!.length == 0 || !fullMap.value || !MapUI.value) return;
+  if (state.MapData!.length == 0 || !fullMap.value || !MapUI.value) return;
   const fullCtx = fullMap.value.getContext('2d');
   if (!fullCtx) return;
 
-  fullMap.value.width = MapData[0].length * 3;
-  fullMap.value.height = MapData.length * 3;
+  fullMap.value.width = state.MapData[0].length * 3;
+  fullMap.value.height = state.MapData.length * 3;
   MapUI.value.width = 40 * 3
   MapUI.value.height = 40 * 3
 
-  for (let i = 0; i < MapData!.length; i++) {
-    for (let j = 0; j < MapData![i].length; j++) {
-      switch (MapData![i][j]) {
+  for (let i = 0; i < state.MapData!.length; i++) {
+    for (let j = 0; j < state.MapData![i].length; j++) {
+      switch (state.MapData![i][j]) {
         // case 0: // 壁
         //   fullCtx.fillStyle = Config.MiniWallColor;
         //   break;
@@ -92,7 +92,7 @@ function clickMap() {
   console.log('clickMap', showFullMap)
 }
 
-watch(() => MapData, () => {
+watch(() => state.MapData, () => {
   nextTick(initMapUI);
 }, { immediate: true, deep: true });
 

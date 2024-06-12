@@ -15,6 +15,7 @@ export const useAudioStore = defineStore('audio', {
         this.audioElements[bgmName] = new Audio(`music/bgm/${bgmName}.mp3`);
         this.audioElements[bgmName].loop = true;
       }
+      this.audioElements[bgmName].currentTime = 0;
       this.audioElements[bgmName].play();
       this.currentBgm = bgmName;
     },

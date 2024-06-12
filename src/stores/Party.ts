@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import Character from '@/Class/Character.ts';
 import { characterList } from '@/Class/Character.ts';
 
-import { MapData } from '@/Process/CreateDungeon.ts';
+import { state } from '@/Process/CreateDungeon.ts';
 
 let partyData = {
   characters: [1, 2, 3, 6],
@@ -24,7 +24,7 @@ export const usePartyStore = defineStore('party', {
     setParty() {
       this.characters = characterList.filter(character => partyData.characters.includes(character.cha_id));
       // this.characters =  character_json.map((characterData: any, index: number) => new Character(characterData, index));
-      this.map = MapData;
+      this.map = state.MapData;
     },
     getGold(gold: number) {
       this.gold += gold
