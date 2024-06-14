@@ -17,7 +17,7 @@
         <Battle />
       </div>
       <Dungeon />
-      <MapUI class="MapUI" v-show="showUIStore.map" />
+      <!-- <MapUI class="MapUI" v-show="showUIStore.map" /> -->
     </div>
     <IconFullscreen class="IconFullscreen" />
   </div>
@@ -33,7 +33,7 @@ import Dungeon from '@/Process/Dungeon.vue';
 import Battle from '@/Process/Battle.vue';
 import CurrentUI from '@/UI/Current.vue';
 import PartyUI from '@/UI/Party.vue';
-import MapUI from '@/UI/Map.vue';
+// import MapUI from '@/UI/Map.vue';
 
 import Monster from '@/Class/Monster.ts';
 import monster_json from '@/assets/json/Monster.json';
@@ -82,6 +82,7 @@ const showUIStore = useShowUI()
   position: fixed;
   top: 0vh;
   right: 0vw;
+  /* z-index:10; */
 }
 
 .CurrentUI {
@@ -89,6 +90,7 @@ const showUIStore = useShowUI()
   top: 1vh;
   right: 6vw;
   animation: slideRight 0.5s ease-in-out;
+  /* z-index:10; */
 }
 
 .MapUI {

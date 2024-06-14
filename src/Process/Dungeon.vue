@@ -1,26 +1,31 @@
 <template>
-  <div ref="dungeon"></div>
-  <div v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.isAnyUIShow" class="crossKey">
-    <div class="upKey" @click="playerMove(Config.ArrowUp)"></div>
-    <!-- <div class="downKey" @click="playerMove(Config.ArrowDown)"></div> -->
-    <div class="leftKey" @click="playerMove(Config.TurnLeft)"></div>
-    <div class="rightKey" @click="playerMove(Config.TurnRight)"></div>
-    <ActionLog ref="actionLog" class="actionLog" />
+  <div v-if="!isLoading" ref="dungeon">
+    <!-- <div ref="dungeon" class="dungeon"> -->
+    <MapUI class="MapUI" v-show="showUIStore.map" />
+    <div v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.isAnyUIShow" class="crossKey">
+      <div class="upKey" @click="playerMove(Config.ArrowUp)"></div>
+      <!-- <div class="downKey" @click="playerMove(Config.ArrowDown)"></div> -->
+      <div class="leftKey" @click="playerMove(Config.TurnLeft)"></div>
+      <div class="rightKey" @click="playerMove(Config.TurnRight)"></div>
+      <ActionLog ref="actionLog" class="actionLog" />
+    </div>
+    <GetTreasure v-show="showUIStore.treasure" class="GetTreasure" :getTreasures="getTreasures" :getGold="getGold"
+      @closeTreasure='closeTreasure' />
+    <Confirmation v-show="showUIStore.message" :message="confirmationMessage"
+      @confirmationResponse="confirmationResponse" />
   </div>
-  <GetTreasure v-show="showUIStore.treasure" class="GetTreasure" :getTreasures="getTreasures" :getGold="getGold"
-    @closeTreasure='closeTreasure' />
-  <Confirmation v-show="showUIStore.message" :message="confirmationMessage"
-    @confirmationResponse="confirmationResponse" />
+  <Loading v-else class="Loading" />
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, nextTick } from 'vue';
 import * as THREE from 'three';
 import { GLTF, GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import CreateDungeon from './CreateDungeon.ts';
 import { state, isWall } from './CreateDungeon.ts';
 import GetTreasure from './GetTreasure.vue';
+import MapUI from '@/UI/Map.vue';
 
 import Dungeon from '@/Class/Dungeon.ts';
 import { dungeons } from '@/Class/Dungeon.ts';
@@ -31,6 +36,7 @@ import Equipment from '@/Class/Equipment.ts';
 import ActionLog from '@/UI/ActionLog.vue';
 import { LogService } from '@/Process/LogService.ts';
 import Confirmation from '@/components/information/Confirmation.vue';
+import Loading from '@/components/information/Loading.vue';
 
 import Config from '@/config.ts';
 
@@ -137,23 +143,42 @@ let groupCircle: THREE.Group
 let mixerCircle: THREE.AnimationMixer
 let flgNearCircle: Boolean = false
 // MidBossの定義
+let gltfMidBoss: GLTF
 interface MidBoss {
   midBoss: THREE.Group
 }
 let midBosses: MidBoss[]
 // ボスの定義
+let gltfBoss: GLTF
 let groupBoss: THREE.Group
 //ポイント光源
 const lightParams = { point: 0xFBFDFF };
 // 確認用メッセージ
 let confirmationMessage: string
-
+//ローディング画面制御
+const isLoading = ref<boolean>(true)
+// 素材のロードが完了したかどうかを追跡するPromiseの配列
+const loadPromises: Promise<any>[] = [];
+// const scenePromises: Promise<any>[] = [];
+////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////
 onMounted(() => {
   // ダンジョン毎の処理
   whichDungeon()
-  //ダンジョンの階層作成
-  createLayer()
-});
+  //素材のロード
+  loadAssets()
+  // すべての素材のロードが完了したら、ダンジョン描画
+  Promise.all(loadPromises).then(() => {
+    isLoading.value = false; // ロード完了を示す
+    // DOMの更新が完了するのを待つ
+    nextTick(() => {
+      //シーン初期化
+      initScene()
+      createLayer();
+    });
+  });
+})
 const clock = new THREE.Clock();
 const animate = function () {
   requestAnimationFrame(animate);
@@ -167,22 +192,62 @@ const animate = function () {
   renderer.render(scene, camera);
 };
 
+function loadAssets() {
+
+  loadGltf(Config.strTreasure, Config.pathTreasure)
+  loadGltf(Config.strCircle, Config.pathCircle)
+  loadGltf(Config.strMidBoss, Config.pathMidBoss)
+  loadGltf(Config.strBoss, Config.pathBoss)
+
+  function loadGltf(asset: string, path: string) {
+    //各3dモデルのロード
+    const gltfloader: GLTFLoader = new GLTFLoader();
+    loadPromises.push(
+      new Promise((resolve) => {
+        gltfloader.load(path, (gltf: GLTF) => {
+          // 選んだ位置にオブジェクトを配置
+          switch (asset) {
+            // 宝箱を配置
+            case Config.strTreasure:
+              gltfTreasure = gltf;
+              break
+            // 魔方陣を配置
+            case Config.strCircle:
+              gltfCircle = gltf;
+              break
+            // 中ボスを配置
+            case Config.strMidBoss:
+              gltfMidBoss = gltf;
+              break
+            // ボスを配置
+            case Config.strBoss:
+              gltfBoss = gltf;
+              break
+            default:
+          }
+          resolve(asset);
+        });
+      })
+    );
+  }
+}
 function createLayer() {
   //ダンジョン生成
   CreateDungeon(mapInfo, nowLayer)
   console.log('MapData', state.MapData)
   console.log('MapSet', state.MapSet)
-  //シーン初期化
-  initScene()
   //ダンジョン描写
   SceneDungeon()
   // キーボードの矢印キーにイベントリスナーを追加
   window.addEventListener('keydown', handleKeydown)
   window.addEventListener('click', handleClick)
+  // すべての素材のロードが完了したら、ローディング状態をfalseに設定
+  // isLoading.value = false;
   // レンダリングループ
   animate();
   gameLoop();
 }
+//
 function initScene() {
   //scene object 初期化
   scene = new THREE.Scene();
@@ -194,7 +259,11 @@ function initScene() {
   // renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.shadowMap.enabled = true;
   //
+  console.log('dungeon.value:', dungeon.value);
+  console.log('renderer.domElement:', renderer.domElement);
   dungeon.value?.appendChild(renderer.domElement);
+  console.log('dungeon.value:', dungeon.value);
+  console.log('renderer.domElement:', renderer.domElement);
   // プレイヤーの初期位置を設定
   positionStore.playerPosition = new THREE.Vector3(Config.BlockSize * state.initPoint.X, 5, Config.BlockSize * state.initPoint.Y);
   targetPosition.copy(positionStore.playerPosition);
@@ -224,7 +293,6 @@ function SceneDungeon() {
   const loadPic = new THREE.TextureLoader();
   // 壁
   const wGeometry = new THREE.PlaneGeometry(Config.BlockSize, Config.BlockHeight);
-  // const wTexture = loadPic.load(alyImgWall[indexTexture]);
   const wTexture = loadPic.load(imgWall);
   const wMaterial = new THREE.MeshPhongMaterial({ map: wTexture, side: THREE.DoubleSide, bumpMap: wTexture, bumpScale: 0.2 });
   // 扉
@@ -380,18 +448,19 @@ function SceneDungeon() {
   //宝箱セット処理
   function setTreasure(i: number, j: number) {
     //宝箱のロードと表示位置の設定
-    const gltfloader: GLTFLoader = new GLTFLoader();
+    // const gltfloader: GLTFLoader = new GLTFLoader();
+    console.log('setTreasure_gltfTreasure', gltfTreasure)
     let groupTreasure: THREE.Group
     let mixerTreasure: THREE.AnimationMixer
-    gltfloader.load(Config.pathTreasure, (gltf: GLTF) => {
-      gltfTreasure = gltf;
-      groupTreasure = gltfTreasure.scene;
-      groupTreasure.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
-      groupTreasure.scale.set(1.5, 1.5, 1.5); //大きさの調整
-      scene.add(groupTreasure);
-      mixerTreasure = new THREE.AnimationMixer(groupTreasure)
-      pushTreasure(groupTreasure, mixerTreasure)
-    });
+    // gltfloader.load(Config.pathTreasure, (gltf: GLTF) => {
+    //   gltfTreasure = gltf;
+    groupTreasure = gltfTreasure.scene;
+    groupTreasure.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+    groupTreasure.scale.set(1.5, 1.5, 1.5); //大きさの調整
+    scene.add(groupTreasure);
+    mixerTreasure = new THREE.AnimationMixer(groupTreasure)
+    pushTreasure(groupTreasure, mixerTreasure)
+    // });
     //SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
     spotLight = new THREE.SpotLight(lightParams.point, 10, 20, Math.PI, 20, 1.0);
     spotLight.position.set(Config.BlockSize * j, 0, Config.BlockSize * i)
@@ -410,45 +479,45 @@ function SceneDungeon() {
   //魔方陣セット処理
   function setCircle(i: number, j: number) {
     //魔方陣のロードと表示位置の設定
-    const gltfloader: GLTFLoader = new GLTFLoader();
-    gltfloader.load(Config.pathCircle, (gltf: GLTF) => {
-      gltfCircle = gltf;
-      groupCircle = gltfCircle.scene;
-      groupCircle.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
-      // groupCircle.scale.set(1.5, 1.5, 1.5); //大きさの調整
-      groupCircle.scale.set(3, 3, 3); //大きさの調整
-      scene.add(groupCircle);
-      mixerCircle = new THREE.AnimationMixer(groupCircle)
-      console.log('setCircle_gltfCircle', gltfCircle)
-      // マテリアルの透過処理
-      groupTransparent(groupCircle)
-      // バウンディングボックスヘルパーの作成
-      const boxHelper = new THREE.BoxHelper(groupCircle, 0xffff00);
-      scene.add(boxHelper);
-    });
+    // const gltfloader: GLTFLoader = new GLTFLoader();
+    // gltfloader.load(Config.pathCircle, (gltf: GLTF) => {
+    // gltfCircle = gltf;
+    groupCircle = gltfCircle.scene;
+    groupCircle.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+    // groupCircle.scale.set(1.5, 1.5, 1.5); //大きさの調整
+    groupCircle.scale.set(3, 3, 3); //大きさの調整
+    scene.add(groupCircle);
+    mixerCircle = new THREE.AnimationMixer(groupCircle)
+    console.log('setCircle_gltfCircle', gltfCircle)
+    // マテリアルの透過処理
+    groupTransparent(groupCircle)
+    // バウンディングボックスヘルパーの作成
+    const boxHelper = new THREE.BoxHelper(groupCircle, 0xffff00);
+    scene.add(boxHelper);
+    // });
   }
   //中ボスセット処理
   function setMidBoss(i: number, j: number) {
     //中ボスのロードと表示位置の設定
     console.log('setMidBoss')
-    const gltfloader: GLTFLoader = new GLTFLoader();
+    // const gltfloader: GLTFLoader = new GLTFLoader();
     let groupMidBoss: THREE.Group
-    gltfloader.load(Config.pathMidBoss, (gltf: GLTF) => {
-      // gltfTreasure = gltf;
-      groupMidBoss = gltf.scene;
-      groupMidBoss.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
-      groupMidBoss.scale.set(5.0, 5.0, 5.0); //大きさの調整
-      groupMidBoss.traverse((obj) => {
-        if (obj.type === 'Mesh') {
-          obj.receiveShadow = true;
-          obj.castShadow = true;
-          // } else if (obj.type === 'DirectionalLight') {
-          //   obj.castShadow = true;
-        }
-      });
-      scene.add(groupMidBoss);
-      pushMidBoss(groupMidBoss)
+    // gltfloader.load(Config.pathMidBoss, (gltf: GLTF) => {
+    // gltfTreasure = gltf;
+    groupMidBoss = gltfMidBoss;
+    groupMidBoss.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+    groupMidBoss.scale.set(5.0, 5.0, 5.0); //大きさの調整
+    groupMidBoss.traverse((obj) => {
+      if (obj.type === 'Mesh') {
+        obj.receiveShadow = true;
+        obj.castShadow = true;
+        // } else if (obj.type === 'DirectionalLight') {
+        //   obj.castShadow = true;
+      }
     });
+    scene.add(groupMidBoss);
+    pushMidBoss(groupMidBoss)
+    // });
     //SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
     // spotLight = new THREE.SpotLight(lightParams.point, 10, 30, Math.PI / 6, 0, 0.5);
     // spotLight.position.set(Config.BlockSize * j, Config.BlockHeight, Config.BlockSize * i - Config.BlockSize)
@@ -469,29 +538,22 @@ function SceneDungeon() {
   function setBoss(i: number, j: number) {
     //中ボスのロードと表示位置の設定
     console.log('setBoss')
-    const gltfloader: GLTFLoader = new GLTFLoader();
+    // const gltfloader: GLTFLoader = new GLTFLoader();
     // let groupMidBoss: THREE.Group
-    gltfloader.load(Config.pathBoss, (gltf: GLTF) => {
-      groupBoss = gltf.scene;
-      groupBoss.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
-      groupBoss.scale.set(0.5, 0.5, 0.5); //大きさの調整
-      groupBoss.traverse((obj) => {
-        if (obj.type === 'Mesh') {
-          obj.receiveShadow = true;
-          obj.castShadow = true;
-          // } else if (obj.type === 'DirectionalLight') {
-          //   obj.castShadow = true;
-        }
-      });
-      scene.add(groupBoss);
+    // gltfloader.load(Config.pathBoss, (gltf: GLTF) => {
+    groupBoss = gltfBoss;
+    groupBoss.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+    groupBoss.scale.set(0.6, 0.6, 0.6); //大きさの調整
+    groupBoss.traverse((obj) => {
+      if (obj.type === 'Mesh') {
+        obj.receiveShadow = true;
+        obj.castShadow = true;
+        // } else if (obj.type === 'DirectionalLight') {
+        //   obj.castShadow = true;
+      }
     });
-    //SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
-    // spotLight = new THREE.SpotLight(lightParams.point, 10, 30, Math.PI / 6, 0, 0.5);
-    // spotLight.position.set(Config.BlockSize * j, Config.BlockHeight, Config.BlockSize * i - Config.BlockSize)
-    // spotLight.target.position.set(Config.BlockSize * j, 0, Config.BlockSize * i);
-    // scene.add(spotLight);
-    // scene.add(spotLight.target);
-    //
+    scene.add(groupBoss);
+    // });
   }
 
 }
@@ -538,6 +600,7 @@ const handleClick = (event: MouseEvent) => {
       clickedTreasureId = clickedScene.id; // クリックした宝箱のIDを保存
       intersectedTreasure.isOpen = true;
       clickTreasure(intersectedTreasure)
+      return
     }
   }
   //宝箱クリック時の処理
@@ -579,6 +642,7 @@ const handleClick = (event: MouseEvent) => {
         intersectedDoor.leftDoor.translateOnAxis(new THREE.Vector3(1, 0, 0), Config.BlockSize / 4);
         intersectedDoor.rightDoor.translateOnAxis(new THREE.Vector3(-1, 0, 0), Config.BlockSize / 4);
         intersectedDoor.isOpen = true;
+        return
       }
     }
   }
@@ -634,7 +698,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 }
 //十字キーでの移動
 function playerMove(eventKey: string) {
-  // console.log('playerMove', eventKey)
+  console.log('playerMove', eventKey)
 
   //パーティorキャラクターui表示時
   if (statusStore.processDungeon == Config.processBattle) return;
@@ -817,6 +881,19 @@ function resetDungeon() {
 </script>
 
 <style scoped>
+.dungeon {
+  /* position: absolute;
+  top: 0vh;
+  left: 0vw; */
+}
+
+.MapUI {
+  position: absolute;
+  top: 1vh;
+  left: 1vw;
+  /* border: 0.3vw ridge #E2D8A6; */
+}
+
 .GetTreasure {
   position: fixed;
   z-index: 10;

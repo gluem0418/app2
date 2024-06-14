@@ -41,6 +41,11 @@ export default {
   nameDungeon6: 'Palace of Lust',
   nameDungeon7: 'Tower of Pride',
 
+  strTreasure: 'Treasure',
+  strCircle: 'MagicCircle',
+  strMidBoss: 'MidBoss',
+  strBoss: 'Boss',
+
   //キャラクター
   mainChaid: 1,
   clsSamurai: 'Samurai',
@@ -183,7 +188,6 @@ export default {
   msgInGame1: 'Please turn the screen horizontally.',
   msgInGame2: 'Music plays in this game.',
   msgEnterDungeon: 'Do you enter The ',
-
   msgAddParty1: 'Do you add ',
   msgAddParty2: ' to your party?',
   msgRemoveParty1: 'Do you remove ',
@@ -191,11 +195,13 @@ export default {
   msgNextLayer: 'Are you Going to the next layer?',
   msgLastLayer: 'Are you going back to town?',
 
+  msgNowLoading: 'Now Loading...',
+
   msgAddPartyError: 'The party is full. Please remove someone.',
   msgRemovePartyError: 'This character cannot remove from party.',
   msgSkillCostError: 'Skill cost limit error test12345678901234567890',
   msgHPLackError: 'Because lack of HP, you cannot use skill',
   msgMPLackError: 'Because lack of MP, you cannot use skill'
 
-  
+
 }

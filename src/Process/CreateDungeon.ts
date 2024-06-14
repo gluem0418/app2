@@ -29,11 +29,6 @@ export const state = reactive({
 // export let MapSet: Array<Array<number>>
 // export const initPoint: Point = { X: 0, Y: 0 }
 
-const strTreasure = 'Treasure'
-const strCircle = 'MagicCircle'
-const strMidBoss = 'MidBoss'
-const strBoss = 'Boss'
-
 //////////////////////////////////////////////////////
 /// CreateDungeon
 /// ダンジョン生成
@@ -96,16 +91,16 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
     }
   }
   //宝箱セット
-  placeObjects(strTreasure, mapInfo.layers[nowLayer].rankTreasure)
+  placeObjects(Config.strTreasure, mapInfo.layers[nowLayer].rankTreasure)
   //魔方陣セット
-  placeObjects(strCircle, 1)
+  placeObjects(Config.strCircle, 1)
   //中ボスセット
   if (mapInfo.layers[nowLayer].midBoss.length > 0) {
-    placeObjects(strMidBoss, mapInfo.layers[nowLayer].midBoss)
+    placeObjects(Config.strMidBoss, mapInfo.layers[nowLayer].midBoss)
   }
   //ボスセット
   if (mapInfo.layers[nowLayer].numBoss !== 0) {
-    placeObjects(strBoss, mapInfo.layers[nowLayer].numBoss)
+    placeObjects(Config.strBoss, mapInfo.layers[nowLayer].numBoss)
   }
   //////////////////////////////////////////////////////
   /// CreateDoor
@@ -209,10 +204,10 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
     // objectがnumber[]型である場合の処理
     if (Array.isArray(object)) {
       count = object.length
-      if (name == strMidBoss) aryMidBoss = object
+      if (name == Config.strMidBoss) aryMidBoss = object
     } else {
       count = 1
-      if (name == strBoss) numBoss = object
+      if (name == Config.strBoss) numBoss = object
     }
     for (let i = 0; i < count; i++) {
       if (rooms.length === 0) {
@@ -225,20 +220,20 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
       // 選んだ位置にオブジェクトを配置
       switch (name) {
         // 宝箱を配置
-        case strTreasure:
+        case Config.strTreasure:
           state.MapSet[randomY][randomX] = Config.SetTreasure;
           break
         // 魔方陣を配置
-        case strCircle:
+        case Config.strCircle:
           // MapSet[randomY][randomX] = Config.SetCircle;
           state.MapSet[state.initPoint.Y][state.initPoint.X - 1] = Config.SetCircle;
           break
         // 中ボスを配置
-        case strMidBoss:
+        case Config.strMidBoss:
           state.MapSet[randomY][randomX] = aryMidBoss[i];
           console.log('placeObjects_midBoss', aryMidBoss[i], randomY, randomX)
           break
-        case strBoss:
+        case Config.strBoss:
           state.MapSet[randomY][randomX] = numBoss;
           break
         default:
