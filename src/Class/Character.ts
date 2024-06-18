@@ -6,9 +6,9 @@ import { EquipmentType } from './Equipment.ts';
 import ActiveSkill from './ActiveSkill.ts';
 import PassiveSkill from './PassiveSkill.ts';
 
-import { equipmentList } from '@/Class/Equipment.ts';
-import { activeSkills } from '@/Class/ActiveSkill.ts';
-import { passiveSkills } from '@/Class/PassiveSkill.ts';
+import { equipmentList } from '@/class/Equipment.ts';
+import { activeSkills } from '@/class/ActiveSkill.ts';
+import { passiveSkills } from '@/class/PassiveSkill.ts';
 
 import Config from '@/config.ts';
 

@@ -3,7 +3,7 @@ export type EquipmentType = 'WEP' | 'ARM' | 'ACC';
 import equipment_json from '@/assets/json/Equipment.json';
 
 import ActiveSkill from './ActiveSkill.ts';
-import { activeSkills } from '@/Class/ActiveSkill.ts';
+import { activeSkills } from '@/class/ActiveSkill.ts';
 
 
 export default class Equipment {

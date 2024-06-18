@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import Itembag_json from '@/assets/json/ItemBag.json';
-import Item from '@/Class/Item';
-import { items } from '@/Class/Item';
+import Item from '@/class/Item';
+import { items } from '@/class/Item';
 
 export interface ItemBag {
   item_id: number;

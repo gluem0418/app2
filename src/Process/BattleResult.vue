@@ -28,11 +28,11 @@
 </template>
   
 <script setup lang="ts">
+import { onMounted } from 'vue'
 
 import Config from '@/config.ts';
 import ProgressBarExp from '@/components/progress/ProgressBarExp.vue';
 import TitleName from '@/components/flame/Flame2.vue';
-
 
 //パーティ情報
 import { usePartyStore } from '@/stores/Party.ts';
@@ -51,12 +51,15 @@ const props = defineProps({
   getExp: { type: Number },
   getGold: { type: Number },
 });
+//mount時に音楽再生
+onMounted(() => {
+  audioStore.playBgm(Config.mscVictory) // ここで音楽を再生
+})
 
 function clickResult() {
   showUIStore.map = true
   statusStore.processDungeon = Config.processSearch
   audioStore.playBgm(statusStore.musicDungeon) // ここで音楽を再生
-
 }
 
 </script>
@@ -140,11 +143,11 @@ function clickResult() {
 
 .rightFlame {
   width: 10vw;
-  margin-left:1vw;
+  margin-left: 1vw;
 }
+
 .progress-bar {
   position: absolute;
   width: 15vw;
 }
-
 </style>

@@ -1,7 +1,8 @@
 import Dungeon_json from '@/assets/json/Dungeon.json';
 
 export interface Layer {
-  rankTreasure: number[];
+  treasureRank: number[];
+  monsterRank: number;
   midBoss: number[];
   numBoss: number;
 }

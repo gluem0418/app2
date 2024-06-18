@@ -38,8 +38,14 @@
     <img v-if="showAreaSkill == Config.targetAll" :src="skillAnime" class=skillAllEffect alt="skill effect"
       @load="loadSkillAnime()">
 
-    <div v-if="battleProcess == 'startTurn'" class="startTurn">{{ numTurn }} Turn Start</div>
-    <div v-if="battleProcess == 'endBattle'" class="endBattle">Battle Ends</div>
+    <!-- <div v-if="battleProcess == 'startTurn'" class="boxBattleProcess">
+      <div class="msgBattleProcess">{{ numTurn }} Turn Start</div>
+    </div>
+    <div v-if="battleProcess == 'endBattle'" class="boxBattleProcess">
+      <div class="msgBattleProcess">Battle Ends</div>
+    </div> -->
+    <LineFlame1 v-if="battleProcess == 'startTurn' || battleProcess == 'endBattle'" class="boxBattleProcess" :inside="battleMessage" />
+    <!-- <LineFlame1 v-if="battleProcess == 'endBattle'" class="boxBattleProcess" /> -->
 
     <!-- character  -->
     <CurrentUI class="CurrentUI" :currentCharacter="currentCharacter" :targetCharacter="targetCharacter"
@@ -56,8 +62,7 @@
 
       <IconBag id="IconAttack" class="IconBag" @click="clickIcon(Config.actionItem)" :style="styles.ItemBtn" />
 
-      <SkillUI v-if="showSkillList" class="SkillUI" :character="currentCharacter" :inUseSkill=true
-        @useSkill='useSkill' />
+      <SkillUI v-if="showSkillList" class="SkillUI" :character="currentCharacter" :inUseSkill=true @useSkill='useSkill' />
 
       <ItemBagUI v-if="showItemList" class="ItemBagUI" />
 
@@ -73,8 +78,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, inject, reactive, CSSProperties } from 'vue'
-import { cloneDeep } from 'lodash';
+import { ref, onMounted, reactive, CSSProperties } from 'vue'
+// import { cloneDeep } from 'lodash';
 
 import TurnOrder from './TurnOrder.vue';
 import BattleResult from './BattleResult.vue';
@@ -104,6 +109,7 @@ import IconSkill from '@/components/icon/IconSkill.vue';
 // import IconMagic from '@/components/icon/IconMagic.vue';
 import SelectName from '@/components/flame/Flame1.vue';
 import IconBag from '@/components/icon/IconBag.vue';
+import LineFlame1 from '@/components/flame/LineFlame1.vue';
 
 //パーティ情報
 import { usePartyStore } from '@/stores/Party.ts';
@@ -111,6 +117,9 @@ const partyStore = usePartyStore()
 //音楽管理
 import { useAudioStore } from '@/stores/Audio';
 const audioStore = useAudioStore()
+//出現モンスター管理
+import { useSetMonsterStore } from '@/stores/SetMonster.ts';
+const setMonsterStore = useSetMonsterStore()
 
 import { characterAssist, characterHeal } from '@/Process/CharacterAssist.ts';
 
@@ -120,8 +129,8 @@ type Current = Character | Monster
 // monsterGridへの表示用
 ///////////////////////////////////////////////////////////
 const monsterGrid = ref(Array(6).fill(null));
-const monsterList = inject('monsterList') as Monster[];
-const selectedMonsters: Monster[] = [];
+// const monsterList = inject('monsterList') as Monster[];
+// const selectedMonsters: Monster[] = [];
 const toMonsterEffect = ref<{ effect: string | number, position: { top: string, left: string }, visible: boolean }[][]>(Array(6).fill([]));
 //戦闘表示用
 const currentMonster = ref<Monster | undefined>(undefined)   //行動モンスター
@@ -156,6 +165,7 @@ const getExp = ref<number>(0)
 const turnOrder = ref<Current[]>([])
 const numOrder = ref<number>(0)
 const battleProcess = ref<string | null>('encount');
+const battleMessage = ref<string>();
 let resolveSelectPromise: Function | null = null;
 // const characterType = ref<string>('') //物理タイプと魔法タイプでのアイコン切り替え
 const styles = reactive<Record<string, CSSProperties>>({
@@ -204,12 +214,14 @@ const addNewLog = (log: string, kind: number) => logService.addNewLog(log, kind)
 ///////////////////////////////////////////////////////////
 // 戦闘処理
 ///////////////////////////////////////////////////////////
+let numTurn = 1
 //mount時にモンスター配置
 onMounted(async () => {
   setMusic()
   await timer(Config.awaitTime);  //
   setMonster()
   battleProcess.value = "startTurn"
+  battleMessage.value = String(numTurn) && ' Turn Start'
   // anime({
   //   targets: '.BattleUI',
   //   scale: [0.1, 1],
@@ -230,44 +242,47 @@ onMounted(async () => {
 })
 
 function setMusic() {
-  let indexMusic: number
-  indexMusic = Math.floor(Math.random() * alyBattleMusic.length);
-  audioStore.playBgm(alyBattleMusic[indexMusic])
+  if (setMonsterStore.isBoss) {
+    audioStore.playBgm(setMonsterStore.music)
+  } else {
+    let indexMusic: number
+    indexMusic = Math.floor(Math.random() * alyBattleMusic.length);
+    audioStore.playBgm(alyBattleMusic[indexMusic])
+  }
 }
 
 //
 function setMonster() {
   // 出現モンスターを作成
-  const numMonsters = randomNum(Config.monNumMin, Config.monNumMax)
-  for (let i = 0; i < numMonsters; i++) {
-    // let randomIndex = random(monsterList.length)
-    const newMonster: Monster = cloneDeep(monsterList[random(monsterList.length)]);
-    // const newMonster: Monster = new Monster({
-    //   ...monsterList[randomIndex]
-    // });
+  // const numMonsters = randomNum(Config.monNumMin, Config.monNumMax)
+  // for (let i = 0; i < numMonsters; i++) {
+  //   const newMonster: Monster = cloneDeep(monsterList[random(monsterList.length)]);
+  //   selectedMonsters.push(newMonster);
+  // }
+  // console.log("setMonster_selectedMonsters", selectedMonsters)
+  console.log("setMonster", setMonsterStore.selectedMonsters)
 
-    // newMonster.activeSkill = monsterList[randomIndex].activeSkill
-    selectedMonsters.push(newMonster);
-  }
-  console.log("setMonster_selectedMonsters", selectedMonsters)
-
-  // モンスター配置場所を決定
   let positions: number[] = [];
-  while (positions.length < selectedMonsters.length) {
-    const position: number = random(6);
+  //ボス戦の場合、固定配置
+  if (setMonsterStore.isBoss) {
+    positions.push(Config.positionBoss);
+  } else {
+    // モンスター配置場所を決定
+    while (positions.length < setMonsterStore.selectedMonsters.length) {
+      const position: number = random(6);
 
-    if (!positions.includes(position)) {
-      positions.push(position);
+      if (!positions.includes(position)) {
+        positions.push(position);
+      }
     }
   }
 
   // グリッドにモンスター配置、selectedMonstersに配置場所を設定
   positions.forEach((position, index) => {
-    selectedMonsters[index].order = position;
-    monsterGrid.value[position] = selectedMonsters[index];
+    setMonsterStore.selectedMonsters[index].order = position;
+    monsterGrid.value[position] = setMonsterStore.selectedMonsters[index];
   });
 }
-let numTurn = 1
 // ターン開始時に呼び出される関数
 async function startTurn() {
   // battleProcess.value = ""
@@ -275,7 +290,7 @@ async function startTurn() {
   // 行動順を決定
   turnOrder.value = [
     ...partyStore.characters.filter(character => character.nowHP > 0),
-    ...selectedMonsters.filter(monster => monster.nowHP > 0)
+    ...setMonsterStore.selectedMonsters.filter(monster => monster.nowHP > 0)
   ];
   // SPD値を基準にソート
   turnOrder.value.sort((a: Current, b: Current) => {
@@ -309,8 +324,9 @@ async function startTurn() {
       }
     }
     // モンスター全員のHPが0になったら戦闘終了
-    if (!selectedMonsters.some(monster => monster.nowHP > 0)) {
+    if (!setMonsterStore.selectedMonsters.some(monster => monster.nowHP > 0)) {
       battleProcess.value = "endBattle"
+      battleMessage.value ='Battle Ends'
       await timer(Config.awaitTime);
       battleProcess.value = "result"
       break;
@@ -363,7 +379,7 @@ function clickIcon(iconId: string) {
         }
         break
       case Config.actionSkill:
-      // case Config.actionMagic:
+        // case Config.actionMagic:
         showSkillList.value = true
         break
       case Config.actionItem:
@@ -915,7 +931,7 @@ function endTurn() {
   height: 100%;
   top: 0;
   left: 0;
-  background: transparent;
+  background: #3B413C70;
   animation: scale 1.0s ease-in-out;
 }
 
@@ -975,8 +991,8 @@ function endTurn() {
   /* width:50vw; */
   /* height: 50vh; */
   /* max-width: 50vw; */
-  max-height: 60vh;
-  object-fit: contain;
+  max-height: 80vh;
+  /* object-fit: contain; */
   /* object-fit: cover; */
 }
 
@@ -1079,19 +1095,19 @@ function endTurn() {
   width: 13vw;
 }
 
-.startTurn,
-.endBattle {
+.boxBattleProcess {
   position: absolute;
   top: 25%;
   left: 50%;
   transform: translateX(-50%);
+}
+.msgBattleProcess {
   font-family: "Mystery Quest";
   color: #F34213;
   font-size: 30vh;
   white-space: nowrap;
   animation: slideInOut 1.5s linear forwards;
 }
-
 @keyframes slideInOut {
   0% {
     transform: translateX(-110%);

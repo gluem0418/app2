@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 
-import Character from '@/Class/Character.ts';
+import Character from '@/class/Character.ts';
 
 const props = defineProps({
   character:  { type: Character }

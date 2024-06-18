@@ -19,6 +19,7 @@ const props = defineProps({
 });
 
 const emitResponse = (response: string) => {
+  console.log('confirmationResponse')
   emit('confirmationResponse', response);
 };
 

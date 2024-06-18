@@ -35,8 +35,6 @@ import CurrentUI from '@/UI/Current.vue';
 import PartyUI from '@/UI/Party.vue';
 // import MapUI from '@/UI/Map.vue';
 
-import Monster from '@/Class/Monster.ts';
-import monster_json from '@/assets/json/Monster.json';
 import Config from '@/config.ts';
 import IconFullscreen from '@/components/icon/IconFullscreen.vue';
 
@@ -67,9 +65,9 @@ console.log('equipmentType', equipBagStore.equipmentType)
 console.log('equipmentItem', equipBagStore.equipmentItem)
 
 // monsterListを作成
-const monsterList = ref(monster_json.map((monsterData: any) => new Monster(monsterData)));
-provide('monsterList', monsterList.value);
-console.log('monsterList', monsterList.value)
+import { useSetMonsterStore } from '@/stores/SetMonster.ts';
+const setMonsterStore = useSetMonsterStore()
+console.log('monsterList', setMonsterStore.monsterList)
 
 //UI表示
 import { useShowUI } from '@/stores/ShowUI.ts';

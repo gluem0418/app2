@@ -1,5 +1,5 @@
 import { usePartyStore } from '@/stores/Party.ts';
-import Character from '@/Class/Character.ts';
+import Character from '@/class/Character';
 
 //////////////////////////////////////
 //共通処理

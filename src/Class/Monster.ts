@@ -1,11 +1,12 @@
 import Config from '@/config.ts';
 
 import ActiveSkill from './ActiveSkill.ts';
-import { activeSkills } from '@/Class/ActiveSkill.ts';
+import { activeSkills } from '@/class/ActiveSkill.ts';
 
 export default class Monster {
   mon_id: number;
   mon_type: number;
+  Rank: number;
   name: string;
   GraphicUrl: string;
   LV: number;
@@ -23,6 +24,7 @@ export default class Monster {
   constructor(data: any) {
     this.mon_id = data.mon_id
     this.mon_type = data.mon_type
+    this.Rank =  data.Rank;
     this.name = data.name;
     this.GraphicUrl = data.GraphicUrl;
     this.LV = data.LV

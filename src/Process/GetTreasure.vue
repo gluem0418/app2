@@ -153,7 +153,7 @@ const clickClose = () => {
 
 .CloseBtn {
   position: absolute;
-  top: 55vh;
+  top: 50vh;
   left: 42vw;
 }
 </style>

@@ -45,6 +45,7 @@ export default {
   strCircle: 'MagicCircle',
   strMidBoss: 'MidBoss',
   strBoss: 'Boss',
+  strDoor: 'Door',
 
   //キャラクター
   mainChaid: 1,
@@ -105,16 +106,21 @@ export default {
   //エンカウント
   encountMin: 1,
   encountMax: 5,
-  encountLimit: 1000,  //エンカウント発生ポイント
+  encountLimit: 100,  //エンカウント発生ポイント
   //ダンジョン素材
+  pathDoor: '3d/doors1.glb',
   pathTreasure: '3d/treasure_box.glb',
   pathCircle: '3d/magic_circle.glb',
   pathMidBoss: '3d/sitting_gargoyle.glb',
   pathBoss: '3d/angel2.glb',
 
   //戦闘
-  monNumMin: 1,
-  monNumMax: 6,
+  monNumMin: 1, //モンスター最小数
+  monNumMax: 6, //モンスター最大数
+  positionBoss: 4,  //ボスの配置
+
+  processEncount: 'encount',
+
   minEffectTop: 20,
   maxEffectTop: 40,
   minEffectLeft: 30,
@@ -180,6 +186,13 @@ export default {
   mscBattle4: 'Strike_the_Despair',
   mscBattle5: 'Integral-one',
 
+  mscMidBoss1: 'Will_you_still_cry',
+  mscMidBoss2: '情動カタルシス',
+  mscMidBoss3: 'ロベリア',
+  mscBoss1: 'maou_bgm_orchestra11',
+
+  mscVictory: 'victory',
+
   //log
   logEnterDungeon: 'Enter the dungeon',
   logMonsterEncounter: 'Monster Encounter',
@@ -195,7 +208,8 @@ export default {
   msgNextLayer: 'Are you Going to the next layer?',
   msgLastLayer: 'Are you going back to town?',
 
-  msgNowLoading: 'Now Loading...',
+  msgBeforeMidBoss: 'There is a scary feeling from here on out.Do you really want to move on?',
+  msgBeforeBoss: 'There is a incredibly scary feeling from here on out.Do you really want to move on?',
 
   msgAddPartyError: 'The party is full. Please remove someone.',
   msgRemovePartyError: 'This character cannot remove from party.',

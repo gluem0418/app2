@@ -1,8 +1,8 @@
 import { reactive } from 'vue';
-import Dungeon from '@/Class/Dungeon.ts';
+import Dungeon from '@/class/Dungeon';
 
 import Config from '@/config.ts';
-import { randomNum } from '@/Process/Common.ts';
+import { randomNum } from '@/process/Common';
 //状態管理
 // import { useStatusStore } from '@/stores/Status.ts';
 
@@ -91,7 +91,7 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
     }
   }
   //宝箱セット
-  placeObjects(Config.strTreasure, mapInfo.layers[nowLayer].rankTreasure)
+  placeObjects(Config.strTreasure, mapInfo.layers[nowLayer].treasureRank)
   //魔方陣セット
   placeObjects(Config.strCircle, 1)
   //中ボスセット
@@ -225,13 +225,12 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
           break
         // 魔方陣を配置
         case Config.strCircle:
-          // MapSet[randomY][randomX] = Config.SetCircle;
+          // state.MapSet[randomY][randomX] = Config.SetCircle;
           state.MapSet[state.initPoint.Y][state.initPoint.X - 1] = Config.SetCircle;
           break
         // 中ボスを配置
         case Config.strMidBoss:
           state.MapSet[randomY][randomX] = aryMidBoss[i];
-          console.log('placeObjects_midBoss', aryMidBoss[i], randomY, randomX)
           break
         case Config.strBoss:
           state.MapSet[randomY][randomX] = numBoss;

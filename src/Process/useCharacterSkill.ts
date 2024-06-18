@@ -1,6 +1,6 @@
 import { Ref } from 'vue';
 // import Character from '@/Class/Character.ts';
-import { SkillEffect } from '@/Class/ActiveSkill.ts';
+import { SkillEffect } from '@/class/ActiveSkill';
 import Config from '@/config.ts';
 
 export default function useCharacterSkill(

@@ -1,4 +1,4 @@
-import Equipment from '@/Class/Equipment.ts';
+import Equipment from '@/class/Equipment';
 import { defineStore } from 'pinia';
 import equipbag_json from '@/assets/json/EquipBag.json';
 

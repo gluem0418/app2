@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
 
-import Character from '@/Class/Character.ts';
-import { characterList } from '@/Class/Character.ts';
+import Character from '@/class/Character';
+import { characterList } from '@/class/Character';
 
-import { state } from '@/Process/CreateDungeon.ts';
+import { state } from '@/process/CreateDungeon';
 
 let partyData = {
   characters: [1, 2, 3, 6],

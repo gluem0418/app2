@@ -5,7 +5,7 @@
     "wallUrl": "img/dungeon/wall/forest1.jpg",
     "floorUrl": "img/dungeon/floor/forest1.jpg",
     "ceilUrl": "img/dungeon/wall/forest1.jpg",
-    "mapHeight": 75,
+    "mapHeight": 100,
     "mapWidth": 100,
     "roomCountMin": 5,
     "roomCountMax": 10,
@@ -18,24 +18,27 @@
     "numLayers": 3,
     "layers": [
       {
-        "rankTreasure": [
+        "treasureRank": [
           1,1,2,2
         ],
+        "monsterRank": 1,
         "midBoss": [],
         "numBoss": 0
       },
       {
-        "rankTreasure": [
+        "treasureRank": [
           1
         ],
+        "monsterRank": 1,
         "midBoss": [1001],
         "numBoss": 0
       },
       {
-        "rankTreasure": [
+        "treasureRank": [
           1,
           2
         ],
+        "monsterRank": 2,
         "midBoss": [],
         "numBoss": 2001
       }

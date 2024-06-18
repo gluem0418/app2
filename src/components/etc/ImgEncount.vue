@@ -1,5 +1,5 @@
 <template>
-  <div class="txtEncount">Encounter</div>
+  <!-- <div class="txtEncount">Encounter</div> -->
   <img class="imgEncount" :src="img" alt="imgEncount">
 </template>
   

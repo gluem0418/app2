@@ -1,6 +1,6 @@
 import Item_json from '@/assets/json/Item.json';
 
-import { SkillEffect } from '@/Class/ActiveSkill'
+import { SkillEffect } from '@/class/ActiveSkill'
 
 export default class Item {
   item_id: number;

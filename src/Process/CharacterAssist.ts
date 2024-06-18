@@ -1,6 +1,6 @@
-import Character from '@/Class/Character.ts';
-import { SkillEffect } from '@/Class/ActiveSkill.ts';
-import { getCharacterIndex } from '@/Process/Common.ts';
+import Character from '@/class/Character.ts';
+import { SkillEffect } from '@/class/ActiveSkill.ts';
+import { getCharacterIndex } from '@/process/Common.ts';
 import Config from '@/config.ts';
 import { LogService } from './LogService.ts';
 import { usePartyStore } from '@/stores/Party.ts';
