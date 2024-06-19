@@ -64,10 +64,10 @@
 <script setup lang="ts">
 
 import { ref, watch } from 'vue';
-import PassiveSkill from '@/Class/PassiveSkill.ts';
-import ActiveSkill from '@/Class/ActiveSkill.ts';
-import Character from '@/Class/Character.ts';
-import SkillInfo from '@/UI//SkillInfo.vue';
+import PassiveSkill from '@/class/PassiveSkill.ts';
+import ActiveSkill from '@/class/ActiveSkill.ts';
+import Character from '@/class/Character.ts';
+import SkillInfo from '@/ui//SkillInfo.vue';
 
 import Config from '@/config.ts';
 import ErrorMessage from '@/components/information/Information.vue';

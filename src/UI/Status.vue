@@ -72,7 +72,7 @@
   
 <script setup lang="ts">
 
-import Character from '@/Class/Character.ts';
+import Character from '@/class/Character.ts';
 import ProgressBarHp from '@/components/progress/ProgressBarHp.vue';
 import ProgressBarMp from '@/components/progress/ProgressBarMp.vue';
 // import IconWep from '@/components/IconWep.vue';

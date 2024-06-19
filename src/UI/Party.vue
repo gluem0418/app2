@@ -39,10 +39,10 @@ import { ref } from 'vue';
 
 import StatusUI from './Status.vue';
 import CharacterUI from './Character.vue';
-import Preparation from '@/Process/Preparation.vue';
+import Preparation from '@/process/Preparation.vue';
 // import CurrentUI from '@/UI/Current.vue';
 
-import Character from '@/Class/Character.ts';
+import Character from '@/class/Character.ts';
 import IconBack from '@/components/icon/IconBack.vue';
 import IconBag from '@/components/icon/IconBag.vue';
 import IconParty from '@/components/icon/IconParty.vue';

@@ -25,21 +25,19 @@
 
 <script setup lang="ts">
 
-import { ref, provide } from 'vue';
-
-import Opening from '@/Process/Opening.vue';
-import Town from '@/Process/Town.vue';
-import Dungeon from '@/Process/Dungeon.vue';
-import Battle from '@/Process/Battle.vue';
-import CurrentUI from '@/UI/Current.vue';
-import PartyUI from '@/UI/Party.vue';
+import Opening from '@/process/Opening.vue';
+import Town from '@/process/Town.vue';
+import Dungeon from '@/process/Dungeon.vue';
+import Battle from '@/process/Battle.vue';
+import CurrentUI from '@/ui/Current.vue';
+import PartyUI from '@/ui/Party.vue';
 // import MapUI from '@/UI/Map.vue';
 
 import Config from '@/config.ts';
 import IconFullscreen from '@/components/icon/IconFullscreen.vue';
 
-import { passiveSkills } from '@/Class/PassiveSkill.ts';
-import { activeSkills } from '@/Class/ActiveSkill.ts';
+import { passiveSkills } from '@/class/PassiveSkill.ts';
+import { activeSkills } from '@/class/ActiveSkill.ts';
 
 ///////////////////////////////
 //初期設定

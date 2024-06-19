@@ -25,11 +25,11 @@
 
 import { ref, PropType } from 'vue';
 
-import Item from '@/Class/Item.ts';
-import Equipment from '@/Class/Equipment.ts';
+import Item from '@/class/Item.ts';
+import Equipment from '@/class/Equipment.ts';
 
-import SkillInfo from '@/UI//SkillInfo.vue';
-import EquipInfo from '@/UI//EquipInfo.vue';
+import SkillInfo from '@/ui//SkillInfo.vue';
+import EquipInfo from '@/ui//EquipInfo.vue';
 
 import TitleName from '@/components/flame/Flame2.vue';
 import CloseBtn from '@/components/flame/BlueBtn.vue';

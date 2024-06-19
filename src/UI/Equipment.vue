@@ -43,10 +43,10 @@
 <script setup lang="ts">
 
 import { ref, computed } from 'vue';
-import Equipment from '@/Class/Equipment.ts';
-import { equipmentList, EquipmentType } from '@/Class/Equipment.ts';
-import Character from '@/Class/Character.ts';
-import { characterList } from '@/Class/Character.ts';
+import Equipment from '@/class/Equipment.ts';
+import { equipmentList, EquipmentType } from '@/class/Equipment.ts';
+import Character from '@/class/Character.ts';
+import { characterList } from '@/class/Character.ts';
 
 const props = defineProps({
   character: { type: Character },

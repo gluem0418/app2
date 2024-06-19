@@ -51,7 +51,7 @@
 </template>
   
 <script setup lang="ts">
-import Character from '@/Class/Character.ts';
+import Character from '@/class/Character.ts';
 
 import imgSlash from "/icon/slash.png"
 import imgStab from "/icon/stab.png"

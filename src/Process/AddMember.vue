@@ -23,10 +23,10 @@ import { ref, computed } from 'vue';
 import 'vue3-carousel/dist/carousel.css'
 import { Carousel, Navigation, Pagination, Slide } from 'vue3-carousel'
 
-import CharaCardUI from '@/UI/CharaCard.vue';
-import { characterList } from '@/Class/Character.ts';
-import CharacterUI from '@/UI/Character.vue';
-import Character from '@/Class/Character.ts';
+import CharaCardUI from '@/ui/CharaCard.vue';
+import { characterList } from '@/class/Character.ts';
+import CharacterUI from '@/ui/Character.vue';
+import Character from '@/class/Character.ts';
 
 //パーティ情報
 import { usePartyStore } from '@/stores/Party.ts';

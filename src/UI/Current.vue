@@ -22,9 +22,9 @@
 
 <script setup lang="ts">
 import { ref, PropType, watch } from 'vue'
-import Character from '@/Class/Character.ts';
-import { SkillEffect } from '@/Class/ActiveSkill.ts';
-import { getCharacterIndex } from '@/Process/Common.ts';
+import Character from '@/class/Character.ts';
+import { SkillEffect } from '@/class/ActiveSkill.ts';
+import { getCharacterIndex } from '@/process/Common.ts';
 
 import ProgressBarHp from '@/components/progress/ProgressBarHp.vue';
 import ProgressBarMp from '@/components/progress/ProgressBarMp.vue';

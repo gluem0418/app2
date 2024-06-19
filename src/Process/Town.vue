@@ -35,16 +35,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
-import Guild from '@/Process/Guild.vue';
-import Inn from '@/Process/Inn.vue';
-import PartyUI from '@/UI/Party.vue';
+import Guild from '@/process/Guild.vue';
+import Inn from '@/process/Inn.vue';
+import PartyUI from '@/ui/Party.vue';
 import Config from '@/config.ts';
 
 import ProcessBack from '@/components/icon/ProcessBack.vue';
 import SelectName from '@/components/flame/Flame1.vue';
 import Confirmation from '@/components/information/Confirmation.vue';
 
-import useFullscreen from '@/Process/UseFullscreen';
+import useFullscreen from '@/process/UseFullscreen';
 const { enterFullscreen } = useFullscreen();
 
 //状態管理

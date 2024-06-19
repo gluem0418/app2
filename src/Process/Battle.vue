@@ -38,13 +38,16 @@
     <img v-if="showAreaSkill == Config.targetAll" :src="skillAnime" class=skillAllEffect alt="skill effect"
       @load="loadSkillAnime()">
 
+    <LineFlame1 v-if="battleProcess == 'startTurn' || battleProcess == 'endBattle'" class="boxBattleProcess"
+      :inside="battleMessage" />
+
     <!-- <div v-if="battleProcess == 'startTurn'" class="boxBattleProcess">
       <div class="msgBattleProcess">{{ numTurn }} Turn Start</div>
     </div>
     <div v-if="battleProcess == 'endBattle'" class="boxBattleProcess">
       <div class="msgBattleProcess">Battle Ends</div>
     </div> -->
-    <LineFlame1 v-if="battleProcess == 'startTurn' || battleProcess == 'endBattle'" class="boxBattleProcess" :inside="battleMessage" />
+    <!-- <LineFlame1 class="boxBattleProcess" :inside="battleMessage" /> -->
     <!-- <LineFlame1 v-if="battleProcess == 'endBattle'" class="boxBattleProcess" /> -->
 
     <!-- character  -->
@@ -81,25 +84,27 @@
 import { ref, onMounted, reactive, CSSProperties } from 'vue'
 // import { cloneDeep } from 'lodash';
 
-import TurnOrder from './TurnOrder.vue';
-import BattleResult from './BattleResult.vue';
-import CurrentUI from '@/UI/Current.vue';
-import SkillUI from '@/UI//Skill.vue';
-import SkillInfo from '@/UI//SkillInfo.vue';
-import ItemBagUI from '@/UI/ItemBag.vue';
+import TurnOrder from '@/process/TurnOrder.vue';
+import BattleResult from '@/process/BattleResult.vue';
+import CurrentUI from '@/ui/Current.vue';
+import SkillUI from '@/ui//Skill.vue';
+import SkillInfo from '@/ui//SkillInfo.vue';
+import ItemBagUI from '@/ui/ItemBag.vue';
 import useCharacterSkill from './useCharacterSkill.ts';
 
-import ActionLog from '@/UI/ActionLog.vue';
+import { characterAssist, characterHeal } from '@/process/CharacterAssist.ts';
+
+import ActionLog from '@/ui/ActionLog.vue';
 import { LogService } from './LogService.ts';
 
 
-import Character from '@/Class/Character.ts';
-import Monster from '@/Class/Monster.ts';
-import ActiveSkill from '@/Class/ActiveSkill.ts';
-import { SkillEffect } from '@/Class/ActiveSkill.ts';
+import Character from '@/class/Character.ts';
+import Monster from '@/class/Monster.ts';
+import ActiveSkill from '@/class/ActiveSkill.ts';
+import { SkillEffect } from '@/class/ActiveSkill.ts';
 
 import Config from '@/config.ts';
-import { timer, randomNum, random, getCharacterIndex } from '@/Process/Common.ts';
+import { timer, randomNum, random, getCharacterIndex } from '@/process/Common.ts';
 
 //components import
 import ProgressBarHp from '@/components/progress/ProgressBarHp.vue';
@@ -120,8 +125,6 @@ const audioStore = useAudioStore()
 //出現モンスター管理
 import { useSetMonsterStore } from '@/stores/SetMonster.ts';
 const setMonsterStore = useSetMonsterStore()
-
-import { characterAssist, characterHeal } from '@/Process/CharacterAssist.ts';
 
 //戦闘用のクラス
 type Current = Character | Monster
@@ -221,7 +224,7 @@ onMounted(async () => {
   await timer(Config.awaitTime);  //
   setMonster()
   battleProcess.value = "startTurn"
-  battleMessage.value = String(numTurn) && ' Turn Start'
+  battleMessage.value = String(numTurn) + ' Turn Start'
   // anime({
   //   targets: '.BattleUI',
   //   scale: [0.1, 1],
@@ -237,7 +240,6 @@ onMounted(async () => {
     //ターン開始を表示し、スタート
     battleProcess.value = "startTurn"
     await startTurn()
-    // startTurn()
   }
 })
 
@@ -326,7 +328,7 @@ async function startTurn() {
     // モンスター全員のHPが0になったら戦闘終了
     if (!setMonsterStore.selectedMonsters.some(monster => monster.nowHP > 0)) {
       battleProcess.value = "endBattle"
-      battleMessage.value ='Battle Ends'
+      battleMessage.value = 'Battle Ends'
       await timer(Config.awaitTime);
       battleProcess.value = "result"
       break;
@@ -1019,7 +1021,6 @@ function endTurn() {
 
   100% {
     border: 0.2vw solid #F2EDD5;
-    /* background: #624CAB80; */
   }
 }
 
@@ -1088,7 +1089,6 @@ function endTurn() {
 
 .monsterName {
   color: #F2EDD5;
-  /* color: #260101 */
 }
 
 .progress-bar-hp {
@@ -1097,47 +1097,9 @@ function endTurn() {
 
 .boxBattleProcess {
   position: absolute;
-  top: 25%;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-}
-.msgBattleProcess {
-  font-family: "Mystery Quest";
-  color: #F34213;
-  font-size: 30vh;
-  white-space: nowrap;
-  animation: slideInOut 1.5s linear forwards;
-}
-@keyframes slideInOut {
-  0% {
-    transform: translateX(-110%);
-    opacity: 0;
-  }
-
-  10% {
-    transform: translateX(-90%);
-    opacity: 1;
-  }
-
-  30% {
-    transform: translateX(-50%);
-    opacity: 1;
-  }
-
-  70% {
-    transform: translateX(-50%);
-    opacity: 1;
-  }
-
-  90% {
-    transform: translateX(-10%);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateX(10%);
-    opacity: 0;
-  }
+  transform: translate(-50%, -50%);
 }
 
 .CurrentUI {

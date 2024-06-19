@@ -24,13 +24,13 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import CharaCardUI from './CharaCard.vue';
-import CharaStatusUI from './CharaStatus.vue';
-import CharaSubStatusUI from './CharaSubStatus.vue';
-import EquipmentUI from './Equipment.vue';
-import SkillUI from './Skill.vue';
+import CharaCardUI from '@/ui/CharaCard.vue';
+import CharaStatusUI from '@/ui/CharaStatus.vue';
+import CharaSubStatusUI from '@/ui/CharaSubStatus.vue';
+import EquipmentUI from '@/ui/Equipment.vue';
+import SkillUI from '@/ui/Skill.vue';
 
-import Character from '@/Class/Character.ts';
+import Character from '@/class/Character.ts';
 import Config from '@/config.ts';
 
 import switchBtn from '@/components/flame/SwitchBtn.vue';

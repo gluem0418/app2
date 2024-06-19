@@ -42,23 +42,23 @@
 
 import { ref } from 'vue';
 
-import CurrentUI from '@/UI/Current.vue';
-import ItemBagUI from '@/UI/ItemBag.vue';
-import SkillInfo from '@/UI//SkillInfo.vue';
-import SkillUI from '@/UI/Skill.vue';
-import useCharacterSkill from './useCharacterSkill.ts';
+import CurrentUI from '@/ui/Current.vue';
+import ItemBagUI from '@/ui/ItemBag.vue';
+import SkillInfo from '@/ui//SkillInfo.vue';
+import SkillUI from '@/ui/Skill.vue';
+import useCharacterSkill from '@/process/useCharacterSkill.ts';
 
-import Character from '@/Class/Character.ts';
-import Item from '@/Class/Item.ts';
-import ActiveSkill from '@/Class/ActiveSkill.ts';
-import { SkillEffect } from '@/Class/ActiveSkill.ts';
+import Character from '@/class/Character.ts';
+import Item from '@/class/Item.ts';
+import ActiveSkill from '@/class/ActiveSkill.ts';
+import { SkillEffect } from '@/class/ActiveSkill.ts';
 import OkBtn from '@/components/flame/BlueBtn.vue';
 import CancelBtn from '@/components/flame/RedBtn.vue';
 
 import Config from '@/config.ts';
-import { timer } from '@/Process/Common.ts';
+import { timer } from '@/process/Common.ts';
 
-import { characterAssist } from '@/Process/CharacterAssist.ts';
+import { characterAssist } from '@/process/CharacterAssist.ts';
 import SelectName from '@/components/flame/Flame1.vue';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';

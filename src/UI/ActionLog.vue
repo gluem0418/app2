@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import Config from '@/config.ts';
-import { LogService } from '@/Process//LogService.ts';
+import { LogService } from '@/process//LogService.ts';
 
 import IconClose from '@/components/icon/IconClose.vue';
 import imgLog from "/icon/message1.svg"

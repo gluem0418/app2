@@ -27,7 +27,7 @@
 
 import { ref, computed } from 'vue';
 
-import SkillInfo from '@/UI//SkillInfo.vue';
+import SkillInfo from '@/ui//SkillInfo.vue';
 import Config from '@/config.ts';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';

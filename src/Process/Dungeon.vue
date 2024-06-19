@@ -22,25 +22,25 @@ import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue';
 import * as THREE from 'three';
 import { GLTF, GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-import CreateDungeon from './CreateDungeon.ts';
-import { state, isWall } from './CreateDungeon.ts';
-import GetTreasure from './GetTreasure.vue';
-import MapUI from '@/UI/Map.vue';
+import CreateDungeon from '@/process/CreateDungeon.ts';
+import { state, isWall } from '@/process/CreateDungeon.ts';
+import GetTreasure from '@/process/GetTreasure.vue';
+import MapUI from '@/ui/Map.vue';
 
-import Dungeon from '@/Class/Dungeon.ts';
-import { dungeons } from '@/Class/Dungeon.ts';
-import TreasureBox from '@/Class/TreasureBox.ts'
-import Item from '@/Class/Item.ts';
-import Equipment from '@/Class/Equipment.ts';
+import Dungeon from '@/class/Dungeon.ts';
+import { dungeons } from '@/class/Dungeon.ts';
+import TreasureBox from '@/class/TreasureBox.ts'
+import Item from '@/class/Item.ts';
+import Equipment from '@/class/Equipment.ts';
 
-import ActionLog from '@/UI/ActionLog.vue';
-import { LogService } from '@/Process/LogService.ts';
+import ActionLog from '@/ui/ActionLog.vue';
+import { LogService } from '@/process/LogService.ts';
 import Confirmation from '@/components/information/Confirmation.vue';
 import Loading from '@/components/information/Loading.vue';
 
 import Config from '@/config.ts';
 
-import { randomNum } from '@/Process/Common.ts';
+import { randomNum } from '@/process/Common.ts';
 
 import imgWall01 from '/img/dungeon/wall/forest1.jpg';
 

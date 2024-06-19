@@ -6,7 +6,7 @@
 
 import { ref, watchEffect } from 'vue';
 import img from "/icon/fullscreen.svg"
-import useFullscreen from '@/Process/UseFullscreen';
+import useFullscreen from '@/process/UseFullscreen';
 
 // const { isFullscreen , enterFullscreen } = useFullscreen();
 const { enterFullscreen } = useFullscreen();

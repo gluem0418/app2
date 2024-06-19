@@ -15,7 +15,7 @@
 import { ref, watch, Ref, nextTick } from 'vue';
 // import * as THREE from 'three';
 import Config from '@/config.ts';
-import { state } from '@/Process//CreateDungeon.ts';
+import { state } from '@/process//CreateDungeon.ts';
 
 //プレイヤー現在地
 import { usePositionStore } from '@/stores/Position.ts';

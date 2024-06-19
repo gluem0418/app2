@@ -11,8 +11,8 @@
 
 <script setup lang="ts">
 import { PropType } from 'vue';
-import Character from '@/Class/Character.ts'
-import Monster from '@/Class/Monster.ts';
+import Character from '@/class/Character.ts'
+import Monster from '@/class/Monster.ts';
 
 import characterFlame from "/img/flame/flame032401.png"
 import monsterFlame from "/img/flame/flame032402.png"
