@@ -1,34 +1,34 @@
 <template>
   <div class="town">
-    <div v-if="statusStore.processTown == Config.statusTown">
+    <div v-if="statusStore.processTown == config.statusTown">
       <div v-if="!showUIStore.party">
-        <img class="guild" :src="iconGuild" alt="GUILD" @click=clickShop(Config.processGuild)
-          @mouseover="overFacility(Config.processGuild)" @mouseout="outFacility()">
-        <img class="inn" :src="iconInn" alt="INN" @click=clickShop(Config.processInn)
-          @mouseover="overFacility(Config.processInn)" @mouseout="outFacility()">
-        <img class="dungeon1" :src="iconDungeon1" alt="Dungeon1" @click=clickDungeon(Config.nameDungeon1)
-          @mouseover="overFacility(Config.nameDungeon1)" @mouseout="outFacility()">
-        <img class="dungeon2" :src="iconDungeon2" alt="Dungeon2" @click=clickDungeon(Config.nameDungeon2)
-          @mouseover="overFacility(Config.nameDungeon2)" @mouseout="outFacility()">
-        <img class="dungeon3" :src="iconDungeon3" alt="Dungeon3" @click=clickDungeon(Config.nameDungeon3)
-          @mouseover="overFacility(Config.nameDungeon3)" @mouseout="outFacility()">
-        <img class="dungeon4" :src="iconDungeon4" alt="Dungeon4" @click=clickDungeon(Config.nameDungeon4)
-          @mouseover="overFacility(Config.nameDungeon4)" @mouseout="outFacility()">
-        <img class="dungeon5" :src="iconDungeon5" alt="Dungeon5" @click=clickDungeon(Config.nameDungeon5)
-          @mouseover="overFacility(Config.nameDungeon5)" @mouseout="outFacility()">
-        <img class="dungeon6" :src="iconDungeon6" alt="Dungeon6" @click=clickDungeon(Config.nameDungeon6)
-          @mouseover="overFacility(Config.nameDungeon6)" @mouseout="outFacility()">
-        <img class="dungeon7" :src="iconDungeon7" alt="Dungeon7" @click=clickDungeon(Config.nameDungeon7)
-          @mouseover="overFacility(Config.nameDungeon7)" @mouseout="outFacility()">
+        <img class="guild" :src="iconGuild" alt="GUILD" @click=clickShop(config.processGuild)
+          @mouseover="overFacility(config.processGuild)" @mouseout="outFacility()">
+        <img class="inn" :src="iconInn" alt="INN" @click=clickShop(config.processInn)
+          @mouseover="overFacility(config.processInn)" @mouseout="outFacility()">
+        <img class="dungeon1" :src="iconDungeon1" alt="Dungeon1" @click=clickDungeon(config.nameDungeon1)
+          @mouseover="overFacility(config.nameDungeon1)" @mouseout="outFacility()">
+        <img class="dungeon2" :src="iconDungeon2" alt="Dungeon2" @click=clickDungeon(config.nameDungeon2)
+          @mouseover="overFacility(config.nameDungeon2)" @mouseout="outFacility()">
+        <img class="dungeon3" :src="iconDungeon3" alt="Dungeon3" @click=clickDungeon(config.nameDungeon3)
+          @mouseover="overFacility(config.nameDungeon3)" @mouseout="outFacility()">
+        <img class="dungeon4" :src="iconDungeon4" alt="Dungeon4" @click=clickDungeon(config.nameDungeon4)
+          @mouseover="overFacility(config.nameDungeon4)" @mouseout="outFacility()">
+        <img class="dungeon5" :src="iconDungeon5" alt="Dungeon5" @click=clickDungeon(config.nameDungeon5)
+          @mouseover="overFacility(config.nameDungeon5)" @mouseout="outFacility()">
+        <img class="dungeon6" :src="iconDungeon6" alt="Dungeon6" @click=clickDungeon(config.nameDungeon6)
+          @mouseover="overFacility(config.nameDungeon6)" @mouseout="outFacility()">
+        <img class="dungeon7" :src="iconDungeon7" alt="Dungeon7" @click=clickDungeon(config.nameDungeon7)
+          @mouseover="overFacility(config.nameDungeon7)" @mouseout="outFacility()">
         <SelectName v-if="selectName" class="selectName" :inside="selectName"></SelectName>
       </div>
       <PartyUI />
       <Confirmation v-show="showUIStore.message" :message="confirmationMessage"
           @confirmationResponse="confirmationResponse" />
     </div>
-    <Guild v-else-if="statusStore.processTown == Config.processGuild" class="into" />
-    <Inn v-else-if="statusStore.processTown == Config.processInn" class="into" />
-    <ProcessBack v-if="statusStore.processTown != Config.statusTown" class="ProcessBack" />
+    <Guild v-else-if="statusStore.processTown == config.processGuild" class="into" />
+    <Inn v-else-if="statusStore.processTown == config.processInn" class="into" />
+    <ProcessBack v-if="statusStore.processTown != config.statusTown" class="ProcessBack" />
   </div>
 </template>
 
@@ -38,7 +38,7 @@ import { ref, onMounted } from 'vue';
 import Guild from '@/process/Guild.vue';
 import Inn from '@/process/Inn.vue';
 import PartyUI from '@/ui/Party.vue';
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 
 import ProcessBack from '@/components/icon/ProcessBack.vue';
 import SelectName from '@/components/flame/Flame1.vue';
@@ -70,7 +70,7 @@ import iconDungeon7 from "/icon/town/tower.jpg"
 
 //ロード時
 onMounted(() => {
-  audioStore.playBgm(Config.mscTown) // ここで音楽を再生
+  audioStore.playBgm(config.mscTown) // ここで音楽を再生
 });
 
 //ショップ表示
@@ -82,17 +82,17 @@ function clickShop(name: string) {
 let confirmationMessage: string
 let selectDungeon: string
 function clickDungeon(name: string) {
-  confirmationMessage = Config.msgEnterDungeon + name + '.'
+  confirmationMessage = config.msgEnterDungeon + name + '.'
   selectDungeon = name
   showUIStore.message = true
 }
 // YESの場合、該当キャラクターをパーティに追加
 async function confirmationResponse(response: string) {
   showUIStore.message = false;
-  if (response == Config.textYes) {
+  if (response == config.textYes) {
     await enterFullscreen()
-    statusStore.status = Config.statusDungeon
-    statusStore.processDungeon = Config.processSearch
+    statusStore.status = config.statusDungeon
+    statusStore.processDungeon = config.processSearch
     statusStore.whichDungeon = selectDungeon
   }
 };

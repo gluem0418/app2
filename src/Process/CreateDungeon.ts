@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
 import Dungeon from '@/class/Dungeon';
 
-import Config from '@/config.ts';
+import dConfig from '@/config/dungeonConfig';
 import { randomNum } from '@/process/Common';
 //状態管理
 // import { useStatusStore } from '@/stores/Status.ts';
@@ -36,7 +36,7 @@ export const state = reactive({
 export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
 
   // export const MapData: Array<Array<number>> = Array(Config.MapHeight).fill(Config.MapWall).map(() => Array(Config.MapWidth).fill(Config.MapWall));;
-  state.MapData = Array(mapInfo.mapHeight).fill(Config.MapWall).map(() => Array(mapInfo.mapWidth).fill(Config.MapWall));;
+  state.MapData = Array(mapInfo.mapHeight).fill(dConfig.MapWall).map(() => Array(mapInfo.mapWidth).fill(dConfig.MapWall));;
   state.MapSet = Array(mapInfo.mapHeight).fill(0).map(() => Array(mapInfo.mapWidth).fill(0));
 
   let rooms: Room[] = [];
@@ -48,7 +48,7 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
   for (let i = 0; i < meetPointX.length; i++) {
     meetPointX[i] = randomNum(mapInfo.mapWidth / 4, mapInfo.mapWidth * 3 / 4);
     meetPointY[i] = randomNum(mapInfo.mapHeight / 4, mapInfo.mapHeight * 3 / 4);
-    state.MapData[meetPointY[i]][meetPointX[i]] = Config.MapRoad;
+    state.MapData[meetPointY[i]][meetPointX[i]] = dConfig.MapRoad;
     if (i == 0) {
       state.initPoint.X = meetPointX[i];
       state.initPoint.Y = meetPointY[i];
@@ -85,22 +85,22 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
   //扉セット
   for (let i = 0; i < state.MapData.length; i++) {
     for (let j = 0; j < state.MapData[i].length; j++) {
-      if (state.MapData[i][j] == Config.MapRoad) {
+      if (state.MapData[i][j] == dConfig.MapRoad) {
         CreateDoor(i, j)
       }
     }
   }
   //宝箱セット
-  placeObjects(Config.strTreasure, mapInfo.layers[nowLayer].treasureRank)
+  placeObjects(dConfig.strTreasure, mapInfo.layers[nowLayer].treasureRank)
   //魔方陣セット
-  placeObjects(Config.strCircle, 1)
+  placeObjects(dConfig.strCircle, 1)
   //中ボスセット
   if (mapInfo.layers[nowLayer].midBoss.length > 0) {
-    placeObjects(Config.strMidBoss, mapInfo.layers[nowLayer].midBoss)
+    placeObjects(dConfig.strMidBoss, mapInfo.layers[nowLayer].midBoss)
   }
   //ボスセット
   if (mapInfo.layers[nowLayer].numBoss !== 0) {
-    placeObjects(Config.strBoss, mapInfo.layers[nowLayer].numBoss)
+    placeObjects(dConfig.strBoss, mapInfo.layers[nowLayer].numBoss)
   }
   //////////////////////////////////////////////////////
   /// CreateDoor
@@ -113,22 +113,22 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
     if (isWall(y, x - 1) && isWall(y, x + 1)) {
       //1つ上が部屋の場合、扉配置
       if (isRoom(y - 1, x) && (isRoom(y - 1, x - 1) || isRoom(y - 1, x + 1))) {
-        state.MapSet[y][x] = Config.SetDoorUp;
+        state.MapSet[y][x] = dConfig.SetDoorUp;
       }
       //1つ下が部屋の場合、扉配置
       if (isRoom(y + 1, x) && (isRoom(y + 1, x - 1) || isRoom(y + 1, x + 1))) {
-        state.MapSet[y][x] = Config.SetDoorUnder;
+        state.MapSet[y][x] = dConfig.SetDoorUnder;
       }
     }
     //現在地の上下が壁の場合
     if (isWall(y - 1, x) && isWall(y + 1, x)) {
       //1つ左が部屋の場合、扉配置
       if (isRoom(y, x - 1) && (isRoom(y - 1, x - 1) || isRoom(y + 1, x - 1))) {
-        state.MapSet[y][x] = Config.SetDoorLeft;
+        state.MapSet[y][x] = dConfig.SetDoorLeft;
       }
       //1つ右が部屋の場合、扉配置
       if (isRoom(y, x + 1) && (isRoom(y - 1, x + 1) || isRoom(y + 1, x + 1))) {
-        state.MapSet[y][x] = Config.SetDoorRight;
+        state.MapSet[y][x] = dConfig.SetDoorRight;
       }
     }
   }
@@ -145,10 +145,10 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
     for (let i = 0; i < roomHeight; i++) {
       for (let j = 0; j < roomWidth; j++) {
         // if (MapData[roomPointY + i][roomPointX + j] == Config.MapRoom) {
-        if (state.MapData[roomPointY + i][roomPointX + j] == Config.MapRoom || state.MapData[roomPointY + i][roomPointX + j] == Config.MapRoad) {
+        if (state.MapData[roomPointY + i][roomPointX + j] == dConfig.MapRoom || state.MapData[roomPointY + i][roomPointX + j] == dConfig.MapRoad) {
           isRoom = true;
         } else {
-          state.MapData[roomPointY + i][roomPointX + j] = Config.MapRoom;
+          state.MapData[roomPointY + i][roomPointX + j] = dConfig.MapRoom;
         }
       }
     }
@@ -185,8 +185,8 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
     }
     //direction : 横1 OR 縦2
     function SetRoad(direction: number) {
-      if (state.MapData[StartPointY][StartPointX] == Config.MapWall) {
-        state.MapData[StartPointY][StartPointX] = Config.MapRoad
+      if (state.MapData[StartPointY][StartPointX] == dConfig.MapWall) {
+        state.MapData[StartPointY][StartPointX] = dConfig.MapRoad
       }
       if (direction == 1) {
         StartPointX = isRight ? StartPointX - 1 : StartPointX + 1;
@@ -204,10 +204,10 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
     // objectがnumber[]型である場合の処理
     if (Array.isArray(object)) {
       count = object.length
-      if (name == Config.strMidBoss) aryMidBoss = object
+      if (name == dConfig.strMidBoss) aryMidBoss = object
     } else {
       count = 1
-      if (name == Config.strBoss) numBoss = object
+      if (name == dConfig.strBoss) numBoss = object
     }
     for (let i = 0; i < count; i++) {
       if (rooms.length === 0) {
@@ -220,19 +220,19 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
       // 選んだ位置にオブジェクトを配置
       switch (name) {
         // 宝箱を配置
-        case Config.strTreasure:
-          state.MapSet[randomY][randomX] = Config.SetTreasure;
+        case dConfig.strTreasure:
+          state.MapSet[randomY][randomX] = dConfig.SetTreasure;
           break
         // 魔方陣を配置
-        case Config.strCircle:
+        case dConfig.strCircle:
           // state.MapSet[randomY][randomX] = Config.SetCircle;
-          state.MapSet[state.initPoint.Y][state.initPoint.X - 1] = Config.SetCircle;
+          state.MapSet[state.initPoint.Y][state.initPoint.X - 1] = dConfig.SetCircle;
           break
         // 中ボスを配置
-        case Config.strMidBoss:
+        case dConfig.strMidBoss:
           state.MapSet[randomY][randomX] = aryMidBoss[i];
           break
-        case Config.strBoss:
+        case dConfig.strBoss:
           state.MapSet[randomY][randomX] = numBoss;
           break
         default:
@@ -249,10 +249,10 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
 
 //指定場所 wall確認
 export function isWall(y: number, x: number) {
-  return y >= 0 && y < state.MapData.length && x >= 0 && x < state.MapData[0].length && state.MapData[y][x] == Config.MapWall;
+  return y >= 0 && y < state.MapData.length && x >= 0 && x < state.MapData[0].length && state.MapData[y][x] == dConfig.MapWall;
 }
 //指定場所 Room or 確認
 function isRoom(y: number, x: number) {
-  return y >= 0 && y < state.MapData.length && x >= 0 && x < state.MapData[0].length && (state.MapData[y][x] == Config.MapRoom);
+  return y >= 0 && y < state.MapData.length && x >= 0 && x < state.MapData[0].length && (state.MapData[y][x] == dConfig.MapRoom);
 }
 

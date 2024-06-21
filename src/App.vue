@@ -1,19 +1,19 @@
 <template>
   <div class="UI">
-    <div v-if="statusStore.status == Config.statusOpening">
+    <div v-if="statusStore.status == config.statusOpening">
       <Opening />
     </div>
-    <div v-else-if="statusStore.status == Config.statusTown">
+    <div v-else-if="statusStore.status == config.statusTown">
       <Town />
     </div>
-    <div v-else-if="statusStore.status == Config.statusDungeon">
+    <div v-else-if="statusStore.status == config.statusDungeon">
       <!-- <Dungeon /> -->
-      <div v-if="statusStore.processDungeon == Config.processSearch">
+      <div v-if="statusStore.processDungeon == config.processSearch">
         <CurrentUI class="CurrentUI" v-show="showUIStore.current" />
         <!-- <PartyUI /> -->
         <PartyUI class="PartyUI" />
       </div>
-      <div v-else-if="statusStore.processDungeon == Config.processBattle">
+      <div v-else-if="statusStore.processDungeon == config.processBattle">
         <Battle />
       </div>
       <Dungeon />
@@ -33,7 +33,7 @@ import CurrentUI from '@/ui/Current.vue';
 import PartyUI from '@/ui/Party.vue';
 // import MapUI from '@/UI/Map.vue';
 
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 import IconFullscreen from '@/components/icon/IconFullscreen.vue';
 
 import { passiveSkills } from '@/class/PassiveSkill.ts';

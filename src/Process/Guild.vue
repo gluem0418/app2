@@ -20,7 +20,7 @@
 import AddMember from '@/process/AddMember.vue';
 import RemoveMember from '@/ui/Party.vue';
 
-import Config from '@/config.ts';
+import Config from '@/config/commonConfig.ts';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
 const statusStore = useStatusStore()

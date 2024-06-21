@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 import { LogService } from '@/process//LogService.ts';
 
 import IconClose from '@/components/icon/IconClose.vue';
@@ -39,7 +39,7 @@ const statusStore = useStatusStore()
 const showLog = ref(false);
 
 //logのタイプ
-const logType: string[] = [Config.strLog1, Config.strLog2]
+const logType: string[] = [config.strLog1, config.strLog2]
 const selectedLogType = ref();
 const selectLogType = (item: string) => {
   selectedLogType.value = item;
@@ -74,7 +74,7 @@ function clickClose() {
 // }
 // 再ロード時に最新のログを表示
 onMounted(() => {
-  selectedLogType.value = statusStore.processDungeon == Config.processBattle ? Config.strLog2 : Config.strLog1
+  selectedLogType.value = statusStore.processDungeon == config.processBattle ? config.strLog2 : config.strLog1
   const logService = new LogService();
   logService.scrollTop()
 })
@@ -144,3 +144,4 @@ onMounted(() => {
   list-style-type: none;
 }
 </style>
+@/process/LogService

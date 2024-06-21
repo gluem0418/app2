@@ -17,7 +17,7 @@
           <!-- 単体用スキル -->
           <img v-if="showOneSkill[index]" :src="skillAnime" class="skillOneEffect" alt="skill effect"
             @load="loadSkillAnime(index)">
-          <img :src="cell.GraphicUrl" class="monsterImage" alt="monsterImage">
+          <img :src="cell.GraphicUrl" class="monsterImage" :id="'monsterImage' + index" alt="monsterImage">
         </div>
 
         <div v-if="selectMonster && selectMonster == cell" class="monsterInfo">
@@ -31,11 +31,11 @@
     </div>
 
     <!-- 複数スキル -->
-    <img v-if="showAreaSkill == Config.targetRowEnemy" :src="skillAnime" class=skillRowEffect
+    <img v-if="showAreaSkill == bConfig.targetRowEnemy" :src="skillAnime" class=skillRowEffect
       :style="{ top: skillTop + 'vh' }" alt="skill effect" @load="loadSkillAnime()">
-    <img v-if="showAreaSkill == Config.targetColumnEnemy" :src="skillAnime" class=skillColEffect
+    <img v-if="showAreaSkill == bConfig.targetColumnEnemy" :src="skillAnime" class=skillColEffect
       :style="{ left: skillLeft + 'vw' }" alt="skill effect" @load="loadSkillAnime()">
-    <img v-if="showAreaSkill == Config.targetAll" :src="skillAnime" class=skillAllEffect alt="skill effect"
+    <img v-if="showAreaSkill == bConfig.targetAll" :src="skillAnime" class=skillAllEffect alt="skill effect"
       @load="loadSkillAnime()">
 
     <LineFlame1 v-if="battleProcess == 'startTurn' || battleProcess == 'endBattle'" class="boxBattleProcess"
@@ -60,10 +60,11 @@
 
     <!-- icon  -->
     <div v-if="battleProcess == 'characterTurn' || battleProcess == 'selectTarget'">
-      <IconAttack id="IconAttack" class="IconAttack" @click="clickIcon(Config.actionAttack)" :style="styles.AttackBtn" />
-      <IconSkill id="IconAttack" class="IconSkill" @click="clickIcon(Config.actionSkill)" :style="styles.SkillBtn" />
+      <IconAttack id="IconAttack" class="IconAttack" @click="clickIcon(bConfig.actionAttack)" :style="styles.AttackBtn" />
+      <IconSkill id="IconAttack" class="IconSkill" @click="clickIcon(bConfig.actionSkill)" :characterType="characterType"
+        :style="styles.SkillBtn" />
 
-      <IconBag id="IconAttack" class="IconBag" @click="clickIcon(Config.actionItem)" :style="styles.ItemBtn" />
+      <IconBag id="IconAttack" class="IconBag" @click="clickIcon(bConfig.actionItem)" :style="styles.ItemBtn" />
 
       <SkillUI v-if="showSkillList" class="SkillUI" :character="currentCharacter" :inUseSkill=true @useSkill='useSkill' />
 
@@ -82,7 +83,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, CSSProperties } from 'vue'
-// import { cloneDeep } from 'lodash';
+import anime from 'animejs';
 
 import TurnOrder from '@/process/TurnOrder.vue';
 import BattleResult from '@/process/BattleResult.vue';
@@ -97,13 +98,13 @@ import { characterAssist, characterHeal } from '@/process/CharacterAssist.ts';
 import ActionLog from '@/ui/ActionLog.vue';
 import { LogService } from './LogService.ts';
 
-
 import Character from '@/class/Character.ts';
 import Monster from '@/class/Monster.ts';
 import ActiveSkill from '@/class/ActiveSkill.ts';
 import { SkillEffect } from '@/class/ActiveSkill.ts';
 
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
+import bConfig from '@/config/battleConfig.ts';
 import { timer, randomNum, random, getCharacterIndex } from '@/process/Common.ts';
 
 //components import
@@ -191,11 +192,11 @@ const { toCharacterSkill, showCharacterEffect } = useCharacterSkill(
 // 音楽関連の設定
 ///////////////////////////////////////////////////////////
 const alyBattleMusic = new Array(
-  Config.mscBattle1,
-  Config.mscBattle2,
-  Config.mscBattle3,
-  Config.mscBattle4,
-  Config.mscBattle5
+  config.mscBattle1,
+  config.mscBattle2,
+  config.mscBattle3,
+  config.mscBattle4,
+  config.mscBattle5
 )
 ///////////////////////////////////////////////////////////
 // 共通関数
@@ -221,21 +222,11 @@ let numTurn = 1
 //mount時にモンスター配置
 onMounted(async () => {
   setMusic()
-  await timer(Config.awaitTime);  //
+  await timer(bConfig.awaitTime);  //
   setMonster()
   battleProcess.value = "startTurn"
   battleMessage.value = String(numTurn) + ' Turn Start'
-  // anime({
-  //   targets: '.BattleUI',
-  //   scale: [0.1, 1],
-  //   duration: 2000,
-  //   rotate: 360,
-  //   // easing: 'linear' // 加減速の種類
-  //   easing: 'easeInOutCubic' // 加減速の種類
-  // });
-  // await timer(3000);  //
   // 戦闘ループ
-  // while (battleProcess.value !== "endBattle") {
   while (battleProcess.value !== "result") {
     //ターン開始を表示し、スタート
     battleProcess.value = "startTurn"
@@ -256,18 +247,12 @@ function setMusic() {
 //
 function setMonster() {
   // 出現モンスターを作成
-  // const numMonsters = randomNum(Config.monNumMin, Config.monNumMax)
-  // for (let i = 0; i < numMonsters; i++) {
-  //   const newMonster: Monster = cloneDeep(monsterList[random(monsterList.length)]);
-  //   selectedMonsters.push(newMonster);
-  // }
-  // console.log("setMonster_selectedMonsters", selectedMonsters)
   console.log("setMonster", setMonsterStore.selectedMonsters)
 
   let positions: number[] = [];
   //ボス戦の場合、固定配置
   if (setMonsterStore.isBoss) {
-    positions.push(Config.positionBoss);
+    positions.push(bConfig.positionBoss);
   } else {
     // モンスター配置場所を決定
     while (positions.length < setMonsterStore.selectedMonsters.length) {
@@ -300,7 +285,7 @@ async function startTurn() {
     let bSPD = b.totalStatus.SPD
     return bSPD - aSPD;
   });
-  await timer(Config.awaitTime);  //
+  await timer(bConfig.awaitTime);  //
   console.log("startTurn", turnOrder.value)
   // 行動順にキャラクターまたはモンスターの行動を実行
   for (let i = 0; i < turnOrder.value.length; i++) {
@@ -329,7 +314,7 @@ async function startTurn() {
     if (!setMonsterStore.selectedMonsters.some(monster => monster.nowHP > 0)) {
       battleProcess.value = "endBattle"
       battleMessage.value = 'Battle Ends'
-      await timer(Config.awaitTime);
+      await timer(bConfig.awaitTime);
       battleProcess.value = "result"
       break;
     }
@@ -338,19 +323,20 @@ async function startTurn() {
       battleProcess.value = "result"
       break;
     }
-    await timer(Config.nextTime)
+    await timer(bConfig.nextTime)
   }
   endTurn()
   numTurn += 1
 }
+const characterType = ref()
 // キャラクターの行動を処理する非同期関数
 async function characterTurn(character: Character) {
   battleProcess.value = "characterTurn"
-  // if (character.class == Config.clsPriest) {
-  //   characterType.value = Config.actionMagic
-  // } else {
-  //   characterType.value = Config.actionSkill
-  // }
+  if (character.class == config.clsPriest || character.class == config.clsWitch) {
+    characterType.value = bConfig.actionMagic
+  } else {
+    characterType.value = bConfig.actionSkill
+  }
   // ターゲットの選択を待つ
   await waitForTargetSelection();
   battleProcess.value = ""
@@ -375,16 +361,16 @@ function clickIcon(iconId: string) {
     styles[iconId] = { transform: 'scale(1.5) translateY(-20%)', opacity: 1 };
     currentAction = iconId;
     switch (iconId) {
-      case Config.actionAttack:
+      case bConfig.actionAttack:
         if (currentCharacter.value && currentCharacter.value.equipment.WEP!.activeSkill) {
           useSkill(currentCharacter.value.equipment.WEP!.activeSkill)
         }
         break
-      case Config.actionSkill:
+      case bConfig.actionSkill:
         // case Config.actionMagic:
         showSkillList.value = true
         break
-      case Config.actionItem:
+      case bConfig.actionItem:
         showItemList.value = true
         break
     }
@@ -410,30 +396,30 @@ function setTarget(index: number) {
   targetCharacter.value = [];
   targetMonster.value = []
   switch (selectionMode.value) {
-    case Config.targetMyself:
+    case bConfig.targetMyself:
       targetCharacter.value.push(currentCharacter.value!)
       break
-    case Config.targetOneFriend:
+    case bConfig.targetOneFriend:
       targetCharacter.value.push(currentCharacter.value!)
       break
-    case Config.targetAllFriends:
+    case bConfig.targetAllFriends:
       targetCharacter.value = partyStore.characters.filter(character => character.nowHP > 0)
       break
-    case Config.targetRandomFriend:
+    case bConfig.targetRandomFriend:
       break
-    case Config.targetOneEnemy:
+    case bConfig.targetOneEnemy:
       targetMonster.value.push(monsterGrid.value[index]);
       break
-    case Config.targetColumnEnemy:
+    case bConfig.targetColumnEnemy:
       targetColumn(index)
       break
-    case Config.targetRowEnemy:
+    case bConfig.targetRowEnemy:
       targetRow(index)
       break
-    case Config.targetAllEnemy:
+    case bConfig.targetAllEnemy:
       targetMonster.value = monsterGrid.value.filter(monster => monster !== null);
       break
-    case Config.targetRandomEnemy:
+    case bConfig.targetRandomEnemy:
       targetMonster.value = monsterGrid.value.filter(monster => monster !== null);
       break
     default:
@@ -519,7 +505,7 @@ let targetNow: number
 async function turnAction(current: Current) {
   addNewLog(current.name + "'s " + activeSkill.name, 1)
   //HP MP消費
-  if (activeSkill.consume_type == Config.statusHP) {
+  if (activeSkill.consume_type == config.statusHP) {
     current.nowHP -= activeSkill.consume_amount
   } else {
     current.nowMP -= activeSkill.consume_amount
@@ -556,7 +542,7 @@ async function turnAction(current: Current) {
       //キャラクターの敵対象スキル
       if (current instanceof Character) {
         toMonsterEffect.value = Array.from({ length: 6 }, () => []);
-        if (skillEffect.target_type == Config.targetRandomEnemy) {
+        if (skillEffect.target_type == bConfig.targetRandomEnemy) {
           //攻撃回数の攻撃
           for (let time = 1; time <= skillEffect.effect_times; time++) {
             //monsterからランダムに対象を設定
@@ -590,7 +576,7 @@ async function turnAction(current: Current) {
           showMonsterEffect()
         }
       }
-      effectTime = Config.effectTime + actionTimes * Config.delayTime
+      effectTime = bConfig.effectTime + actionTimes * bConfig.delayTime
     }
     await timer(animeTime + effectTime);
     //HPが0のモンスターをgridから削除
@@ -608,22 +594,22 @@ function setTarget2nd(current: Current) {
   targetCharacter.value = [];
   targetMonster.value = []
   switch (selectionMode.value) {
-    case Config.targetMyself:
+    case bConfig.targetMyself:
       if (current instanceof Character) {
         targetCharacter.value.push(current)
       } else {
         targetMonster.value.push(current)
       }
       break
-    case Config.targetAllFriends:
+    case bConfig.targetAllFriends:
       targetCharacter.value = partyStore.characters.filter(character => character.nowHP > 0)
       break
-    case Config.targetRandomFriend:
+    case bConfig.targetRandomFriend:
       break
-    case Config.targetAllEnemy:
+    case bConfig.targetAllEnemy:
       targetMonster.value = monsterGrid.value.filter(monster => monster !== null);
       break
-    case Config.targetRandomEnemy:
+    case bConfig.targetRandomEnemy:
       targetMonster.value = monsterGrid.value.filter(monster => monster !== null);
       break
     default:
@@ -639,26 +625,26 @@ function attackAction(attacker: Current, attacked: Current, skillEffect: SkillEf
   //命中率による命中の有無
   if (calcHit(attacker.totalStatus.HitRate, attacked.totalStatus.SPD)) {
     //物理/魔法による設定
-    if (skillEffect.base_status == Config.statusATK) {
+    if (skillEffect.base_status == config.statusATK) {
       //物理属性
       attackValue = attacker.totalStatus.ATK
       deffenceValue = attacked.totalStatus.DEF
-    } else if (skillEffect.base_status == Config.statusMGC) {
+    } else if (skillEffect.base_status == config.statusMGC) {
       //魔法属性
       attackValue = attacker.totalStatus.MGC
       deffenceValue = attacked.totalStatus.MDF
     }
     //クリティカル発生の有無
-    damageRate = calcCrit(attacker.totalStatus.CritRate, deffenceValue) ? Config.critDamageRate : Config.normalDamageRate
+    damageRate = calcCrit(attacker.totalStatus.CritRate, deffenceValue) ? bConfig.critDamageRate : bConfig.normalDamageRate
     //
-    effectAmount = currentAction == Config.actionAttack ? 1 : skillEffect!.effect_amount
+    effectAmount = currentAction == bConfig.actionAttack ? 1 : skillEffect!.effect_amount
     //ダメージ計算
     damage = Math.floor((attackValue - deffenceValue / 1.5) * effectAmount * damageRate)
     damage = damage < 0 ? 0 : damage
     attacked.nowHP = damage > attacked.nowHP ? 0 : attacked.nowHP - damage
   } else {
     //攻撃が外れた場合
-    damage = Config.strMiss
+    damage = bConfig.strMiss
   }
   // debug st
   console.log('attackAction', attacker, attacked, damage)
@@ -685,8 +671,8 @@ function attackAction(attacker: Current, attacked: Current, skillEffect: SkillEf
 const addMonsterEffect = (effect: string | number) => {
   // ダメージエフェクトを追加
   const position = {
-    top: randomNum(Config.minEffectTop, Config.maxEffectTop) + '%',
-    left: randomNum(Config.minEffectLeft, Config.maxEffectLeft) + '%'
+    top: randomNum(bConfig.minEffectTop, bConfig.maxEffectTop) + '%',
+    left: randomNum(bConfig.minEffectLeft, bConfig.maxEffectLeft) + '%'
   };
   return { effect, position, visible: false };
 }
@@ -710,24 +696,24 @@ function skillAttackAnime(skillEffect: SkillEffect) {
   skillAnime.value = skillEffect.skill_anime
   //skill show position
   let cellIndex = targetMonster.value[0].order!
-  if (skillEffect.target_type == Config.targetOneEnemy) {
+  if (skillEffect.target_type == bConfig.targetOneEnemy) {
     //target one enemy
     showOneSkill.value[cellIndex] = true
   } else {
     //target more enemy
     showAreaSkill.value = skillEffect.target_type
     switch (skillEffect.target_type) {
-      case Config.targetColumnEnemy:
+      case bConfig.targetColumnEnemy:
         skillLeft.value = 7 + (cellIndex % 3) * 27; // 
         break
-      case Config.targetRowEnemy:
+      case bConfig.targetRowEnemy:
         skillTop.value = 15 + Math.floor(cellIndex / 3) * 25; // 
         break
-      case Config.targetAllEnemy:
-        showAreaSkill.value = Config.targetAll
+      case bConfig.targetAllEnemy:
+        showAreaSkill.value = bConfig.targetAll
         break
-      case Config.targetRandomEnemy:
-        showAreaSkill.value = Config.targetAll
+      case bConfig.targetRandomEnemy:
+        showAreaSkill.value = bConfig.targetAll
         break
       default:
     }
@@ -774,7 +760,7 @@ const loadSkillAnime = (index: number = 0) => {
 //モンスター対象のエフェクト表示
 function showMonsterEffect() {
 
-  let delay = Config.delayTime;
+  let delay = bConfig.delayTime;
   for (let effects of toMonsterEffect.value) {
     // if (effects.length === 0) continue; // 空の配列をスキップ
     if (Array.isArray(effects)) {
@@ -784,9 +770,9 @@ function showMonsterEffect() {
           // さらに2秒後にエフェクトを非表示
           setTimeout(() => {
             effect.visible = false;
-          }, Config.effectTime);
+          }, bConfig.effectTime);
         }, delay);
-        delay += Config.delayTime;
+        delay += bConfig.delayTime;
       }
     }
   }
@@ -805,6 +791,17 @@ function showMonsterEffect() {
 // モンスターの行動を処理する関数
 function monsterTurn(monster: Monster) {
   battleProcess.value = "monsterTurn"
+  // animation test
+  anime({
+    targets: '#monsterImage' + monster.order!,
+    // translateX: 250,
+    scale: [1, 2, 1],
+    duration: 1000,
+    rotate: -30,
+    // easing: 'easeInOutCubic' // 加減速の種類
+    easing: 'linear' // 加減速の種類
+  });
+
   //使用スキル決定
   let indexSkill: number
   indexSkill = Math.floor(Math.random() * monster.activeSkill.length);
@@ -814,30 +811,30 @@ function monsterTurn(monster: Monster) {
   targetCharacter.value = [];
   targetMonster.value = []
   switch (selectionMode.value) {
-    case Config.targetMyself:
+    case bConfig.targetMyself: targetMonster
       targetMonster.value.push(monster);
       break
-    case Config.targetOneFriend:
+    case bConfig.targetOneFriend:
       targetCharacter.value.push(selectMonsterAction()!)
       break
-    case Config.targetAllFriends:
-    case Config.targetRandomFriend:
+    case bConfig.targetAllFriends:
+    case bConfig.targetRandomFriend:
       targetCharacter.value = partyStore.characters.filter(character => character.nowHP > 0)
       break
-    case Config.targetOneEnemy:
+    case bConfig.targetOneEnemy:
       //ランダムなモンスター一体を対象にする？
       targetMonster.value.push(monster);
       break
-    case Config.targetColumnEnemy:
+    case bConfig.targetColumnEnemy:
       targetColumn(monster.order!)
       break
-    case Config.targetRowEnemy:
+    case bConfig.targetRowEnemy:
       targetRow(monster.order!)
       break
-    case Config.targetAllEnemy:
+    case bConfig.targetAllEnemy:
       targetMonster.value = monsterGrid.value.filter(monster => monster !== null);
       break
-    case Config.targetRandomEnemy:
+    case bConfig.targetRandomEnemy:
       targetMonster.value = monsterGrid.value.filter(monster => monster !== null);
       break
     default:
@@ -869,7 +866,7 @@ async function monsterAction(monster: Monster, skillEffect: SkillEffect) {
   console.log('monsterAction', monster)
 
   toCharacterEffect.value = new Array(partyStore.characters.length).fill(null);
-  if (skillEffect.target_type == Config.targetRandomFriend) {
+  if (skillEffect.target_type == bConfig.targetRandomFriend) {
     //攻撃回数の攻撃
     for (let time = 1; time <= skillEffect.effect_times; time++) {
       //characterからランダムに対象を設定
@@ -897,14 +894,14 @@ function endTurn() {
   for (let chara of partyStore.characters) {
     for (let condition of chara.conditions) {
       switch (condition.status) {
-        case Config.effectRegeneration:
-          characterHeal(chara, condition.value, Config.statusnowHP)
+        case bConfig.effectRegeneration:
+          characterHeal(chara, condition.value, config.statusnowHP)
           toCharacterEffect.value[getCharacterIndex(chara)] = condition.value
           //キャラクターのエフェクト表示
-          toCharacterEffectType.value = Config.effectHeal
+          toCharacterEffectType.value = bConfig.effectHeal
           startCharacterEffect.value = true
           // debug st
-          console.log(Config.effectRegeneration, condition)
+          console.log(bConfig.effectRegeneration, condition)
           // debug ed
           break
         default:
@@ -912,7 +909,7 @@ function endTurn() {
       if (toCharacterEffect.value) {
         setTimeout(() => {
           startCharacterEffect.value = false
-        }, Config.effectTime);
+        }, bConfig.effectTime);
       }
     }
     //バフ、状態の更新

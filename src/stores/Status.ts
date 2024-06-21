@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 
 export const useStatusStore = defineStore('status', {
   state: () => ({
-    status: Config.statusOpening,
-    processTown: Config.statusTown,
+    status: config.statusOpening,
+    processTown: config.statusTown,
     processDungeon: '',
     guildMenu: '',
     whichDungeon: '',

@@ -1,6 +1,6 @@
 <template>
   <div class="partyUI">
-    <div class="party" v-if="showUIStore.party || statusStore.guildMenu == Config.menuRemoveMember">
+    <div class="party" v-if="showUIStore.party || statusStore.guildMenu == config.menuRemoveMember">
       <div class="characters">
         <div v-for="(character, index) in partyStore.characters" :key="character.cha_id"
           @click="selectCharacter(index, character)" class="character-card"
@@ -21,12 +21,12 @@
 
     <IconChange class="IconChange" @click="changeOrder" v-show="showUIStore.party" :class="{ 'changing': changing }" />
 
-    <div v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.character">
-      <IconSkill class="IconSkill" @click="clickIcon(Config.actionSkill)" />
-      <IconBag class="IconBag" @click="clickIcon(Config.actionItem)" />
+    <div v-if="(statusStore.processDungeon == config.processSearch) && !showUIStore.character">
+      <IconSkill class="IconSkill" @click="clickIcon(bConfig.actionSkill)" />
+      <IconBag class="IconBag" @click="clickIcon(bConfig.actionItem)" />
     </div>
 
-    <IconParty class="IconParty" @click="clickParty" v-if="statusStore.guildMenu != Config.menuRemoveMember" />
+    <IconParty class="IconParty" @click="clickParty" v-if="statusStore.guildMenu != config.menuRemoveMember" />
 
     <Confirmation v-show="showUIStore.message" :message="confirmationMessage"
       @confirmationResponse="confirmationResponse" />
@@ -47,11 +47,12 @@ import IconBack from '@/components/icon/IconBack.vue';
 import IconBag from '@/components/icon/IconBag.vue';
 import IconParty from '@/components/icon/IconParty.vue';
 import IconChange from '@/components/icon/IconChange.vue';
-import IconSkill from '@/components/icon/IconSkill.vue';
+import IconSkill from '@/components/icon/IconHeal.vue';
 import Confirmation from '@/components/information/Confirmation.vue';
 import Information from '@/components/information/Information.vue';
 
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
+import bConfig from '@/config/battleConfig.ts';
 
 //パーティ情報
 import { usePartyStore } from '@/stores/Party.ts';
@@ -88,7 +89,7 @@ const characterBack = () => {
 };
 //かばんアイコン
 const clickIcon = (kind :string) => {
-  if (kind == Config.actionItem) {
+  if (kind == bConfig.actionItem) {
     showUIStore.item = !showUIStore.item
     showUIStore.skill = false
     showUIStore.map = !showUIStore.item
@@ -141,13 +142,13 @@ let errorMessage: string
 
 function selectCharacter(index: number, character: Character) {
   //メンバーを外す場合
-  if (statusStore.guildMenu == Config.menuRemoveMember) {
-    if (character.cha_id == Config.mainChaid) {
-      errorMessage = Config.msgRemovePartyError
+  if (statusStore.guildMenu == config.menuRemoveMember) {
+    if (character.cha_id == config.mainChaid) {
+      errorMessage = config.msgRemovePartyError
       showUIStore.errorMessage = true;
       return;
     }
-    confirmationMessage = Config.msgRemoveParty1 + character.name + Config.msgRemoveParty2
+    confirmationMessage = config.msgRemoveParty1 + character.name + config.msgRemoveParty2
     showUIStore.message = true;
     selectedCharacter.value = character;
     return;
@@ -185,7 +186,7 @@ function selectCharacter(index: number, character: Character) {
 // YESの場合、該当キャラクターをパーティから外す
 const confirmationResponse = (response: string) => {
   showUIStore.message = false;
-  if (response == Config.textYes) {
+  if (response == config.textYes) {
     // partyStore.characters.push(selectedCharacter.value!);
     partyStore.characters = partyStore.characters.filter(character => character.cha_id !== selectedCharacter.value!.cha_id);
     showUIStore.character = false;

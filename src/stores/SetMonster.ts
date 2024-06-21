@@ -5,7 +5,7 @@ import Monster from '@/class/Monster';
 import monster_json from '@/assets/json/Monster.json';
 
 import { randomNum, random } from '@/process/Common';
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
@@ -23,7 +23,7 @@ export const useSetMonsterStore = defineStore('setMonster', {
       // 出現モンスターを作成
       this.isBoss = false
       this.selectedMonsters = []
-      const numMonsters = randomNum(Config.monNumMin, Config.monNumMax)
+      const numMonsters = randomNum(config.monNumMin, config.monNumMax)
 
       // ランクに一致するモンスターのリストを作成
       const monstersOfRank = this.monsterList.filter(monster => monster.Rank === rank);
@@ -57,22 +57,22 @@ export const useSetMonsterStore = defineStore('setMonster', {
       const statusStore = useStatusStore()
       if (monster.mon_type == 3) {
         switch (statusStore.whichDungeon) {
-          case Config.nameDungeon1:
-          case Config.nameDungeon2:
-          case Config.nameDungeon3:
-            this.music = Config.mscMidBoss1
+          case config.nameDungeon1:
+          case config.nameDungeon2:
+          case config.nameDungeon3:
+            this.music = config.mscMidBoss1
             break
-          case Config.nameDungeon4:
-          case Config.nameDungeon5:
-            this.music = Config.mscMidBoss2
+          case config.nameDungeon4:
+          case config.nameDungeon5:
+            this.music = config.mscMidBoss2
             break
-          case Config.nameDungeon6:
-          case Config.nameDungeon7:
-            this.music = Config.mscMidBoss3
+          case config.nameDungeon6:
+          case config.nameDungeon7:
+            this.music = config.mscMidBoss3
             break
         }
       } else {
-        this.music = Config.mscBoss1
+        this.music = config.mscBoss1
       }
     }
   }

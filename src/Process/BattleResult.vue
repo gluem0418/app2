@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 import ProgressBarExp from '@/components/progress/ProgressBarExp.vue';
 import TitleName from '@/components/flame/Flame2.vue';
 
@@ -53,12 +53,12 @@ const props = defineProps({
 });
 //mount時に音楽再生
 onMounted(() => {
-  audioStore.playBgm(Config.mscVictory) // ここで音楽を再生
+  audioStore.playBgm(config.mscVictory) // ここで音楽を再生
 })
 
 function clickResult() {
   showUIStore.map = true
-  statusStore.processDungeon = Config.processSearch
+  statusStore.processDungeon = config.processSearch
   audioStore.playBgm(statusStore.musicDungeon) // ここで音楽を再生
 }
 

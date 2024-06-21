@@ -41,18 +41,16 @@ export default {
   nameDungeon6: 'Palace of Lust',
   nameDungeon7: 'Tower of Pride',
 
-  strTreasure: 'Treasure',
-  strCircle: 'MagicCircle',
-  strMidBoss: 'MidBoss',
-  strBoss: 'Boss',
-  strDoor: 'Door',
-
   //キャラクター
   mainChaid: 1,
   clsSamurai: 'Samurai',
   clsHolyKnight: 'HolyKnight',
   clsPriest: 'Priest',
   clsArcher: 'Archer',
+  clsWarrior: 'Warrior',
+  clsWitch: "Witch",
+  clsAssassin: "Assassin",
+
   statusHP: 'HP',
   statusMP: 'MP',
   statusATK: 'ATK',
@@ -72,100 +70,8 @@ export default {
   wepBow: 'Bow',
   wepSpear: 'Spear',
 
-  //マップ作成
-  MapWall: 0,
-  MapRoom: 1,
-  MapRoad: 2,
-  //配置情報
-  SetDoorUp: 11,  //上にドア
-  SetDoorUnder: 12,  //下にドア
-  SetDoorLeft: 13,  //左にドア
-  SetDoorRight: 14,  //右にドア
-  SetTreasure: 77,  //宝箱
-  SetCircle: 100,  //魔方陣
-
-  BlockSize: 10, //1ブロックあたりの長さ
-  BlockHeight: 20, //壁の高さ  
-
-  //ミニマップ
-  MiniHeight: 300,
-  // MiniWallColor: '#d4c08d',  
-  // MiniRoomColor: '#C2B8B2',
-  MiniRoomColor: '#3B413C',
-  MiniMoveColor: '#F2EDD5',
-  MiniPlayerColor: '#CBEF43',
-
-  //移動キー
-  ArrowUp: 'ArrowUp',
-  ArrowDown: 'ArrowDown',
-  ArrowLeft: 'ArrowLeft',
-  ArrowRight: 'ArrowRight',
-  TurnLeft: 'TurnLeft',
-  TurnRight: 'TurnRight',
-
-  //エンカウント
-  encountMin: 1,
-  encountMax: 5,
-  encountLimit: 100,  //エンカウント発生ポイント
-  //ダンジョン素材
-  pathDoor: '3d/doors1.glb',
-  pathTreasure: '3d/treasure_box.glb',
-  pathCircle: '3d/magic_circle.glb',
-  pathMidBoss: '3d/sitting_gargoyle.glb',
-  pathBoss: '3d/angel2.glb',
-
-  //戦闘
-  monNumMin: 1, //モンスター最小数
-  monNumMax: 6, //モンスター最大数
-  positionBoss: 4,  //ボスの配置
-
-  processEncount: 'encount',
-
-  minEffectTop: 20,
-  maxEffectTop: 40,
-  minEffectLeft: 30,
-  maxEffectLeft: 50,
   initHitRate: 70,  //武器なしの命中率
   monsterHitRate: 75,  //モンスターの命中率
-  normalDamageRate: 1,  //通常攻撃
-  critDamageRate: 1.5,  //クリティカル攻撃
-  effectTime: 1000,  //エフェクト表示時間
-  normalAttackTime: 400,  //通常攻撃時間
-  monsterAttackTime: 500,  //モンスター通常攻撃時間
-  delayTime: 100,  //エフェクト表示の時間差
-  awaitTime: 1500,  //戦闘開始、終了時の待ち時間
-  nextTime: 500,  //行動終了後の待ち時間
-
-  actionAttack: 'Attack',
-  actionSkill: 'Skill',
-  actionMagic: 'Magic',
-  actionItem: 'Item',
-
-  strMiss: 'MISS',
-
-  targetMyself: 'myself',
-  targetOneFriend: 'oneFriend',
-  targetAllFriends: 'allFriends',
-  targetRandomFriend: 'randomFriend',
-  targetOneEnemy: 'oneEnemy',
-  targetColumnEnemy: 'columnEnemy',
-  targetRowEnemy: 'rowEnemy',
-  targetAllEnemy: 'allEnemy',
-  targetRandomEnemy: 'randomEnemy',
-  targetAll: 'all',
-
-  effectAttack: 'attack',
-  effectHeal: 'heal',
-  effectBuff: 'buff',
-  effectDebuff: 'debuff',
-  effectCondition: 'condition',
-  effectSpecial: 'special',
-  effectDamage: 'damage',
-  effectRegeneration: 'regeneration',
-
-  // スキル
-  baseFixValue: 'FixValue',
-  baseFixRate: 'FixRate',
 
   // アイテム
   returnItemId: 1,
@@ -175,6 +81,9 @@ export default {
   itemTab2: 'Battle',
   itemTab3: 'Special',
   itemBtn1: 'USE',
+
+  monNumMin: 1, //モンスター最小数
+  monNumMax: 6, //モンスター最大数
 
   // music
   mscTitle: 'maou_bgm_orchestra18',
@@ -192,10 +101,6 @@ export default {
   mscBoss1: 'maou_bgm_orchestra11',
 
   mscVictory: 'victory',
-
-  //log
-  logEnterDungeon: 'Enter the dungeon',
-  logMonsterEncounter: 'Monster Encounter',
 
   //メッセージ
   msgInGame1: 'Please turn the screen horizontally.',
@@ -216,6 +121,5 @@ export default {
   msgSkillCostError: 'Skill cost limit error test12345678901234567890',
   msgHPLackError: 'Because lack of HP, you cannot use skill',
   msgMPLackError: 'Because lack of MP, you cannot use skill'
-
 
 }

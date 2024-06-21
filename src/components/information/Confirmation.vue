@@ -2,8 +2,8 @@
   <div class="modal">
     <div class="confirmation">
       <div class="message">{{ message }}</div>
-      <YesBtn class="YesBtn" :inside="Config.textYes" @click="emitResponse(Config.textYes)"></YesBtn>
-      <NoBtn class="NoBtn" :inside="Config.textNo" @click="emitResponse(Config.textNo)"></NoBtn>
+      <YesBtn class="YesBtn" :inside="config.textYes" @click="emitResponse(config.textYes)"></YesBtn>
+      <NoBtn class="NoBtn" :inside="config.textNo" @click="emitResponse(config.textNo)"></NoBtn>
     </div>
   </div>
 </template>
@@ -12,7 +12,7 @@
 
 import YesBtn from '@/components/flame/BlueBtn.vue';
 import NoBtn from '@/components/flame/RedBtn.vue';
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 
 const props = defineProps({
   message: { type: String },

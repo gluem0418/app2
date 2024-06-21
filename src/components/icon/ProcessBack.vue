@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import IconBack from '@/components/icon/IconBack.vue';
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
 const statusStore = useStatusStore()
@@ -20,7 +20,7 @@ function clickBack() {
   } else if (statusStore.guildMenu) {
     statusStore.guildMenu = ''
   } else {
-    statusStore.processTown = Config.statusTown
+    statusStore.processTown = config.statusTown
   }
 }
 

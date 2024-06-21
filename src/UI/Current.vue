@@ -6,7 +6,7 @@
       <img v-if="showCharacterAnime && showCharacterAnime[index]" :src="toCharacterAnime!" class="toCharacterAnime"
         @load="loadSkillAnime(index)" alt="skill effect">
       <div v-if="showCharacterEffect && showCharacterEffect[index]" class="characterEffect"
-        :class="{ effectGreen: toCharacterEffectType == Config.effectHeal, effectRed: toCharacterEffectType == Config.effectAttack }">
+        :class="{ effectGreen: toCharacterEffectType == bConfig.effectHeal, effectRed: toCharacterEffectType == bConfig.effectAttack }">
         {{ toCharacterEffect[index] }}
       </div>
       <img class="characterface" :src="character.faceGraphicUrl">
@@ -29,7 +29,7 @@ import { getCharacterIndex } from '@/process/Common.ts';
 import ProgressBarHp from '@/components/progress/ProgressBarHp.vue';
 import ProgressBarMp from '@/components/progress/ProgressBarMp.vue';
 
-import Config from '@/config.ts';
+import bConfig from '@/config/battleConfig.ts';
 
 const props = defineProps({
   currentCharacter: { type: Character },
@@ -52,7 +52,7 @@ const showCharacterEffect = ref<boolean[]>(new Array(partyStore.characters.lengt
 
 // キャラクターを選択中に呼び出す関数
 function overTarget(character: Character) {
-  if (props.selectionMode != Config.targetOneFriend) return
+  if (props.selectionMode != bConfig.targetOneFriend) return
   //ターゲット設定
   if (!props.targetCharacter?.includes(character)) {
     selectCharacter('over', character)
@@ -60,16 +60,16 @@ function overTarget(character: Character) {
 }
 // キャラクターを選択中に呼び出す関数
 function clickTarget(character: Character) {
-  if (props.selectionMode == Config.targetMyself) {
+  if (props.selectionMode == bConfig.targetMyself) {
     selectCharacter('click')
-  } else if (props.selectionMode == Config.targetOneFriend) {
+  } else if (props.selectionMode == bConfig.targetOneFriend) {
     //ターゲット設定
     if (props.targetCharacter?.includes(character)) {
       selectCharacter('click', character)
     } else {
       selectCharacter('over', character)
     }
-  } else if (props.selectionMode == Config.targetAllFriends) {
+  } else if (props.selectionMode == bConfig.targetAllFriends) {
     selectCharacter('click')
   }
 }
@@ -95,7 +95,7 @@ function effectToCharacters(index: number) {
   showCharacterEffect.value[index] = true;
   setTimeout(() => {
     showCharacterEffect.value[index] = false
-  }, Config.effectTime);
+  }, bConfig.effectTime);
 }
 
 watch(() => props.startCharacterAnime, () => {
@@ -110,13 +110,13 @@ watch(() => props.startCharacterAnime, () => {
 
 watch(() => props.startCharacterEffect, () => {
   if (!props.startCharacterEffect || !props.toCharacterEffect) return
-  let delay = Config.delayTime;
+  let delay = bConfig.delayTime;
   for (let i = 0; i < partyStore.characters.length; i++) {
     if (props.toCharacterEffect[i] == null) continue;
     setTimeout(() => {
       effectToCharacters(i)
     }, delay);
-    delay += Config.delayTime;
+    delay += bConfig.delayTime;
   }
 })
 
@@ -234,4 +234,4 @@ watch(() => props.startCharacterEffect, () => {
   max-width: 30vw;
   height: 30vh;
 }
-</style>
+</style>@/process/Common

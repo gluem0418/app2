@@ -11,8 +11,8 @@
       <ul class="itemBox">
         <li v-for="items in filteredItems" :key="items.item_id" class="itemList" @click=selectItem(items) :class="{
           'selected-tab': selectedItem === items,
-          'useless': (statusStore.processDungeon == Config.processSearch && items.use == 1) ||
-            (statusStore.processDungeon == Config.processBattle && items.use == 2)
+          'useless': (statusStore.processDungeon == config.processSearch && items.use == 1) ||
+            (statusStore.processDungeon == config.processBattle && items.use == 2)
         }">
           <span class="itemName">{{ items.item.name }}</span>
           <span class="itemNumber">{{ items.number }}</span>
@@ -28,7 +28,7 @@
 import { ref, computed } from 'vue';
 
 import SkillInfo from '@/ui//SkillInfo.vue';
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
 const statusStore = useStatusStore()
@@ -37,22 +37,22 @@ import { useItemBagStore, ItemBag } from '@/stores/ItemBag.ts';
 const itemBagStore = useItemBagStore()
 
 const itemTab = {
-  tabAll: Config.itemTabAll,
-  tab1: Config.itemTab1,
-  tab2: Config.itemTab2,
-  tab3: Config.itemTab3
+  tabAll: config.itemTabAll,
+  tab1: config.itemTab1,
+  tab2: config.itemTab2,
+  tab3: config.itemTab3
 };
 
-const selectedTab = ref(Config.itemTabAll);
+const selectedTab = ref(config.itemTabAll);
 // フィルタリングされたアイテムリストを計算する
 const filteredItems = computed(() => {
   selectedItem.value = null
   switch (selectedTab.value) {
-    case Config.itemTab1:
+    case config.itemTab1:
       return itemBagStore.itemBag.filter(item => item.use === 0);
-    case Config.itemTab2:
+    case config.itemTab2:
       return itemBagStore.itemBag.filter(item => item.use === 1);
-    case Config.itemTab3:
+    case config.itemTab3:
       return itemBagStore.itemBag.filter(item => item.use === 2);
     default:
       return itemBagStore.itemBag;
@@ -64,9 +64,9 @@ const selectedItem = ref<ItemBag | null>(null);
 const selectItem = (itemBag: ItemBag) => {
 
   if (selectedItem.value == itemBag) {
-    if (statusStore.processDungeon == Config.processSearch && itemBag.item.use != 1) {
+    if (statusStore.processDungeon == config.processSearch && itemBag.item.use != 1) {
       useItem(itemBag)
-    } else if (statusStore.processDungeon == Config.processBattle && itemBag.item.use != 2) {
+    } else if (statusStore.processDungeon == config.processBattle && itemBag.item.use != 2) {
       useItem(itemBag)
     }
   }

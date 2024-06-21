@@ -10,7 +10,7 @@ import { equipmentList } from '@/class/Equipment.ts';
 import { activeSkills } from '@/class/ActiveSkill.ts';
 import { passiveSkills } from '@/class/PassiveSkill.ts';
 
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 
 export default class Character {
   cha_id: number;
@@ -121,7 +121,7 @@ export default class Character {
   }
 
   calculateHitRate(DEX: number) {
-    let wepHitRate = this.equipment.WEP?.status.HitRate ? this.equipment.WEP?.status.HitRate : Config.initHitRate;
+    let wepHitRate = this.equipment.WEP?.status.HitRate ? this.equipment.WEP?.status.HitRate : config.initHitRate;
     return wepHitRate + Math.floor(DEX / 10)
   }
 

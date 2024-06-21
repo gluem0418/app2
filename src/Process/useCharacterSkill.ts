@@ -1,7 +1,7 @@
 import { Ref } from 'vue';
 // import Character from '@/Class/Character.ts';
 import { SkillEffect } from '@/class/ActiveSkill';
-import Config from '@/config.ts';
+import bConfig from '@/config/battleConfig.ts';
 
 export default function useCharacterSkill(
   startCharacterAnime: Ref<boolean>,
@@ -17,14 +17,14 @@ export default function useCharacterSkill(
 
     toSkillEffect.value = skillEffect
     switch (skillEffect.target_type) {
-      case Config.targetMyself:
-      case Config.targetOneFriend:
+      case bConfig.targetMyself:
+      case bConfig.targetOneFriend:
         startCharacterAnime.value = true
         //以降の処理はCurrent.vueで
         break
-      case Config.targetRandomFriend:
-      case Config.targetAllFriends:
-        showAreaSkill.value = Config.targetAll
+      case bConfig.targetRandomFriend:
+      case bConfig.targetAllFriends:
+        showAreaSkill.value = bConfig.targetAll
         skillAnime.value = skillEffect.skill_anime
         break
       default:
@@ -45,7 +45,7 @@ export default function useCharacterSkill(
     //以降の処理はCurrent.vueで
     setTimeout(() => {
       startCharacterEffect.value = false
-    }, Config.effectTime);
+    }, bConfig.effectTime);
   }
   return {
     toCharacterSkill,

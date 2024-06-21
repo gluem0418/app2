@@ -31,7 +31,7 @@ import EquipmentUI from '@/ui/Equipment.vue';
 import SkillUI from '@/ui/Skill.vue';
 
 import Character from '@/class/Character.ts';
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 
 import switchBtn from '@/components/flame/SwitchBtn.vue';
 import IconLeft from '@/components/icon/IconLeft.vue';
@@ -95,19 +95,19 @@ let confirmationMessage: string
 let errorMessage : string
 // 確認メッセージを表示
 function addMember() {
-  if (statusStore.guildMenu != Config.menuAddMember) return;
+  if (statusStore.guildMenu != config.menuAddMember) return;
   if (partyStore.characters.length == 4) {
-    errorMessage = Config.msgAddPartyError
+    errorMessage = config.msgAddPartyError
     showUIStore.errorMessage = true;
     return;
   }
-  confirmationMessage = Config.msgAddParty1 + selectedCharacter.value!.name + Config.msgAddParty2
+  confirmationMessage = config.msgAddParty1 + selectedCharacter.value!.name + config.msgAddParty2
   showUIStore.message = true;
 }
 // YESの場合、該当キャラクターをパーティに追加
 const confirmationResponse = (response: string) => {
   showUIStore.message = false;
-  if (response == Config.textYes) {
+  if (response == config.textYes) {
     partyStore.characters.push(selectedCharacter.value!);
     showUIStore.character = false;
   }

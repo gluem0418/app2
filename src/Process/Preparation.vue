@@ -23,14 +23,14 @@
       <SelectName class="selectName" :inside="selectedItem.name"></SelectName>
       <SkillInfo class="skillInfo" :skillInfo="selectedItem.info" />
       <!-- Special Item  -->
-      <OkBtn v-if="selectedItem.use == 2" class="OkBtn" :inside="Config.textOk" @click="clickOk(selectedItem)" />
+      <OkBtn v-if="selectedItem.use == 2" class="OkBtn" :inside="config.textOk" @click="clickOk(selectedItem)" />
 
-      <CancelBtn class="CancelBtn" :inside="Config.textCancel" @click="clickCancel()" />
+      <CancelBtn class="CancelBtn" :inside="config.textCancel" @click="clickCancel()" />
     </div>
 
     <!-- 全体スキル(GIF)表示用のモーダルウィンドウ -->
     <transition name="fade">
-      <div v-if="(showAreaSkill == Config.targetAll) && skillAnime" class="gif-modal" @click="showAreaSkill = null">
+      <div v-if="(showAreaSkill == bConfig.targetAll) && skillAnime" class="gif-modal" @click="showAreaSkill = null">
         <img :src="skillAnime" alt="animation" @load="loadSkillAnime()" />
       </div>
     </transition>
@@ -55,10 +55,11 @@ import { SkillEffect } from '@/class/ActiveSkill.ts';
 import OkBtn from '@/components/flame/BlueBtn.vue';
 import CancelBtn from '@/components/flame/RedBtn.vue';
 
-import Config from '@/config.ts';
-import { timer } from '@/process/Common.ts';
+import config from '@/config/commonConfig.ts';
+import bConfig from '@/config/battleConfig.ts';
 
 import { characterAssist } from '@/process/CharacterAssist.ts';
+import { timer } from '@/process/Common.ts';
 import SelectName from '@/components/flame/Flame1.vue';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
@@ -135,10 +136,10 @@ function setTarget(item: Item | ActiveSkill) {
     switch (selectionMode.value) {
       // case Config.targetMyself:
       //   break
-      case Config.targetOneFriend:
+      case bConfig.targetOneFriend:
         targetCharacter.value.push(partyStore.characters[0]);
         break
-      case Config.targetAllFriends:
+      case bConfig.targetAllFriends:
         targetCharacter.value = partyStore.characters.filter(character => character.nowHP > 0)
         break
       // case Config.targetRandomFriend:
@@ -172,7 +173,7 @@ async function useAction(item: Item | ActiveSkill) {
         }
       }
     }
-    await timer(animeTime + Config.effectTime);
+    await timer(animeTime + bConfig.effectTime);
   }
   //アイテム減少
   if (item instanceof Item) {
@@ -186,8 +187,8 @@ function clickOk(item: Item | ActiveSkill) {
   if (item instanceof Item && item.skill_effect) {
     switch (item.item_id) {
       //帰還用アイテム
-      case Config.returnItemId:
-        showAreaSkill.value = Config.targetAll;
+      case config.returnItemId:
+        showAreaSkill.value = bConfig.targetAll;
         skillAnime.value = item.skill_effect[0].skill_anime
         animeTime = item.skill_effect[0].anime_time
         break
@@ -229,7 +230,7 @@ const selectCharacter = (selectType: string, character: Character) => {
 const loadSkillAnime = () => {
   setTimeout(() => {
     showAreaSkill.value = ''
-    if (selectedItem.value instanceof Item && selectedItem.value.item_id == Config.returnItemId) {
+    if (selectedItem.value instanceof Item && selectedItem.value.item_id == config.returnItemId) {
       useReturnItem()
     }
   }, animeTime);
@@ -237,7 +238,7 @@ const loadSkillAnime = () => {
 
 // アイテム使用
 const useReturnItem = () => {
-  statusStore.status = Config.statusTown
+  statusStore.status = config.statusTown
   showUIStore.item = false
   showUIStore.skill = false
   showUIStore.map = true
@@ -346,4 +347,4 @@ const useReturnItem = () => {
   align-items: center;
   /* z-index: 1000; */
 }
-</style>
+</style>@/process/useCharacterSkill@/process/Common@/process/CharacterAssist

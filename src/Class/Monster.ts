@@ -1,4 +1,4 @@
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 
 import ActiveSkill from './ActiveSkill.ts';
 import { activeSkills } from '@/class/ActiveSkill.ts';
@@ -60,7 +60,7 @@ export default class Monster {
 
   calculateTotalStatus() {
     let totalStatus = { ...this.baseStatus };
-    totalStatus.HitRate = Config.monsterHitRate + Math.floor(totalStatus.DEX / 10)
+    totalStatus.HitRate = config.monsterHitRate + Math.floor(totalStatus.DEX / 10)
     totalStatus.CritRate = Math.floor(totalStatus.DEX / 8)
     // バフによるステータスの増加を計算
     for (let buff of this.buffs.values()) {

@@ -2,11 +2,11 @@
   <Loading v-show="showLoading" class="Loading" />
   <div v-if="!isLoading" v-show="showDungeon" ref="dungeon">
     <!-- <div ref="dungeon" class="dungeon"> -->
-    <div v-if="(statusStore.processDungeon == Config.processSearch) && !showUIStore.isAnyUIShow" class="crossKey">
-      <div class="upKey" @click="playerMove(Config.ArrowUp)"></div>
+    <div v-if="(statusStore.processDungeon == config.processSearch) && !showUIStore.isAnyUIShow" class="crossKey">
+      <div class="upKey" @click="playerMove(dConfig.ArrowUp)"></div>
       <!-- <div class="downKey" @click="playerMove(Config.ArrowDown)"></div> -->
-      <div class="leftKey" @click="playerMove(Config.TurnLeft)"></div>
-      <div class="rightKey" @click="playerMove(Config.TurnRight)"></div>
+      <div class="leftKey" @click="playerMove(dConfig.TurnLeft)"></div>
+      <div class="rightKey" @click="playerMove(dConfig.TurnRight)"></div>
       <ActionLog ref="actionLog" class="actionLog" />
     </div>
     <MapUI class="MapUI" v-show="showUIStore.map" />
@@ -38,7 +38,8 @@ import { LogService } from '@/process/LogService.ts';
 import Confirmation from '@/components/information/Confirmation.vue';
 import Loading from '@/components/information/Loading.vue';
 
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
+import dConfig from '@/config/dungeonConfig.ts';
 
 import { randomNum } from '@/process/Common.ts';
 
@@ -202,11 +203,11 @@ onMounted(() => {
   //
   function loadAssets() {
     //
-    loadGltf(Config.strDoor, Config.pathDoor)
-    loadGltf(Config.strTreasure, Config.pathTreasure)
-    loadGltf(Config.strCircle, Config.pathCircle)
-    loadGltf(Config.strMidBoss, Config.pathMidBoss)
-    loadGltf(Config.strBoss, Config.pathBoss)
+    loadGltf(dConfig.strDoor, dConfig.pathDoor)
+    loadGltf(dConfig.strTreasure, dConfig.pathTreasure)
+    loadGltf(dConfig.strCircle, dConfig.pathCircle)
+    loadGltf(dConfig.strMidBoss, dConfig.pathMidBoss)
+    loadGltf(dConfig.strBoss, dConfig.pathBoss)
 
     function loadGltf(asset: string, path: string) {
       //各3dモデルのロード
@@ -216,23 +217,23 @@ onMounted(() => {
           gltfloader.load(path, (gltf: GLTF) => {
             switch (asset) {
               // 扉
-              case Config.strDoor:
+              case dConfig.strDoor:
                 gltfDoor = gltf;
                 break
               // 宝箱
-              case Config.strTreasure:
+              case dConfig.strTreasure:
                 gltfTreasure = gltf;
                 break
               // 魔方陣
-              case Config.strCircle:
+              case dConfig.strCircle:
                 gltfCircle = gltf;
                 break
               // 中ボス
-              case Config.strMidBoss:
+              case dConfig.strMidBoss:
                 gltfMidBoss = gltf;
                 break
               // ボス
-              case Config.strBoss:
+              case dConfig.strBoss:
                 gltfBoss = gltf;
                 break
               default:
@@ -282,12 +283,12 @@ function initScene() {
   dungeon.value?.appendChild(renderer.domElement);
   // プレイヤーの初期位置を設定
   // targetPosition = new THREE.Vector3(); // カメラの目標位置
-  positionStore.playerPosition = new THREE.Vector3(Config.BlockSize * state.initPoint.X, 5, Config.BlockSize * state.initPoint.Y);
+  positionStore.playerPosition = new THREE.Vector3(dConfig.BlockSize * state.initPoint.X, 5, dConfig.BlockSize * state.initPoint.Y);
   targetPosition.copy(positionStore.playerPosition);
   // カメラの位置をプレイヤーの位置と同期
   // camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.copy(positionStore.playerPosition);
-  addNewLog(Config.logEnterDungeon, 0)
+  addNewLog(dConfig.logEnterDungeon, 0)
   //全体光源
   // const light = new THREE.AmbientLight(0xFFFFFF, 1.0);  
   //PointLight(色, 光の強さ, 距離, 光の減衰率)
@@ -302,12 +303,12 @@ function SceneDungeon() {
   // indexTexture = Math.floor(Math.random() * alyImgWall.length);
   const loadPic = new THREE.TextureLoader();
   // 壁
-  const wGeometry = new THREE.PlaneGeometry(Config.BlockSize, Config.BlockHeight);
+  const wGeometry = new THREE.PlaneGeometry(dConfig.BlockSize, dConfig.BlockHeight);
   const wTexture = loadPic.load(imgWall);
   const wMaterial = new THREE.MeshPhongMaterial({ map: wTexture, side: THREE.DoubleSide, bumpMap: wTexture, bumpScale: 0.2 });
   // 扉
   // const dGeometry = new THREE.PlaneGeometry(Config.BlockSize / 2, Config.BlockHeight);
-  const dGeometry = new THREE.PlaneGeometry(Config.BlockSize / 2, Config.BlockHeight / 1.5);
+  const dGeometry = new THREE.PlaneGeometry(dConfig.BlockSize / 2, dConfig.BlockHeight / 1.5);
   // const dMaterial = new THREE.MeshPhongMaterial({ map: null, side: THREE.DoubleSide, bumpMap: null, bumpScale: 0.2 });
   const dMaterial = new THREE.MeshPhongMaterial({
     map: null,
@@ -321,9 +322,9 @@ function SceneDungeon() {
   // const dTextureRight = loadPic.load(imgRightDoor1);
   // const dMaterialLeft = new THREE.MeshPhongMaterial({ map: dTextureLeft, side: THREE.DoubleSide, bumpMap: dTextureLeft, bumpScale: 0.2 });
   // const dMaterialRight = new THREE.MeshPhongMaterial({ map: dTextureRight, side: THREE.DoubleSide, bumpMap: dTextureRight, bumpScale: 0.2 });
-  const wdGeometry = new THREE.PlaneGeometry(Config.BlockSize, Config.BlockHeight / 3); //扉の上の壁
+  const wdGeometry = new THREE.PlaneGeometry(dConfig.BlockSize, dConfig.BlockHeight / 3); //扉の上の壁
   // 床
-  const fGeometry = new THREE.PlaneGeometry(Config.BlockSize, Config.BlockSize);
+  const fGeometry = new THREE.PlaneGeometry(dConfig.BlockSize, dConfig.BlockSize);
   // const fTexture = loadPic.load(alyImgFloor[indexTexture]);
   const fTexture = loadPic.load(imgFloor);
   const fMaterial = new THREE.MeshPhongMaterial({ map: fTexture, side: THREE.DoubleSide, bumpMap: fTexture, bumpScale: 0.2 });
@@ -336,67 +337,67 @@ function SceneDungeon() {
   for (let i = 0; i < state.MapData.length; i++) {
     for (let j = 0; j < state.MapData[i].length; j++) {
 
-      if (state.MapData[i][j] == Config.MapRoom || state.MapData[i][j] == Config.MapRoad) {
+      if (state.MapData[i][j] == dConfig.MapRoom || state.MapData[i][j] == dConfig.MapRoad) {
 
         // 部屋か通路の場合、床と天井を追加
         const planeFloor = new THREE.Mesh(fGeometry, fMaterial);
-        planeFloor.position.set(Config.BlockSize * j, 0, Config.BlockSize * i);
+        planeFloor.position.set(dConfig.BlockSize * j, 0, dConfig.BlockSize * i);
         planeFloor.rotation.x = 90 * Math.PI / 180;
         scene.add(planeFloor);
 
         // 天井はマップが出来てから設置
         const planeCeil = new THREE.Mesh(fGeometry, cMaterial);
-        planeCeil.position.set(Config.BlockSize * j, Config.BlockHeight, Config.BlockSize * i);
+        planeCeil.position.set(dConfig.BlockSize * j, dConfig.BlockHeight, dConfig.BlockSize * i);
         planeCeil.rotation.x = 90 * Math.PI / 180;
         scene.add(planeCeil);
 
         // 通路や部屋の上下左右で壁がある場合に壁を描画
         if (isWall(i - 1, j)) {
           const planeWall = new THREE.Mesh(wGeometry, wMaterial);
-          planeWall.position.set(Config.BlockSize * j, Config.BlockHeight / 2, Config.BlockSize * (i - 0.5));
+          planeWall.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 2, dConfig.BlockSize * (i - 0.5));
           scene.add(planeWall);
         }
         if (isWall(i + 1, j)) {
           const planeWall = new THREE.Mesh(wGeometry, wMaterial);
-          planeWall.position.set(Config.BlockSize * j, Config.BlockHeight / 2, Config.BlockSize * (i + 0.5));
+          planeWall.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 2, dConfig.BlockSize * (i + 0.5));
           scene.add(planeWall);
         }
         if (isWall(i, j - 1)) {
           const planeWall = new THREE.Mesh(wGeometry, wMaterial);
-          planeWall.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 2, Config.BlockSize * i);
+          planeWall.position.set(dConfig.BlockSize * (j - 0.5), dConfig.BlockHeight / 2, dConfig.BlockSize * i);
           planeWall.rotation.y = 90 * Math.PI / 180;
           scene.add(planeWall);
         }
         if (isWall(i, j + 1)) {
           const planeWall = new THREE.Mesh(wGeometry, wMaterial);
-          planeWall.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 2, Config.BlockSize * i);
+          planeWall.position.set(dConfig.BlockSize * (j + 0.5), dConfig.BlockHeight / 2, dConfig.BlockSize * i);
           planeWall.rotation.y = 90 * Math.PI / 180;
           scene.add(planeWall);
         }
         // 通路と部屋の境目に扉を描画
         //宝箱と魔方陣を描画
         switch (state.MapSet[i][j]) {
-          case Config.SetDoorUp:
+          case dConfig.SetDoorUp:
             //この地点か一つ上の左右が壁の場合に描画
             setDoor(i, j, 'Up')
             break
-          case Config.SetDoorUnder:
+          case dConfig.SetDoorUnder:
             //この地点か一つ下の左右が壁の場合に描画
             setDoor(i, j, 'Under')
             break
-          case Config.SetDoorLeft:
+          case dConfig.SetDoorLeft:
             // この地点か一つ左の上下が壁の場合に描画
             setDoor(i, j, 'Left')
             break
-          case Config.SetDoorRight:
+          case dConfig.SetDoorRight:
             //この地点か一つ右の上下が壁の場合に描画
             setDoor(i, j, 'Right')
             break
-          case Config.SetTreasure:
+          case dConfig.SetTreasure:
             //宝箱を配置
             setTreasure(i, j)
             break
-          case Config.SetCircle:
+          case dConfig.SetCircle:
             //魔方陣を配置
             setCircle(i, j)
             break
@@ -423,29 +424,29 @@ function SceneDungeon() {
 
     switch (position) {
       case 'Up':
-        groupDoor.position.set(Config.BlockSize * j, 0, Config.BlockSize * (i - 0.5));
-        meshDoor.position.set(Config.BlockSize * j, Config.BlockHeight / 3, Config.BlockSize * (i - 0.5));
-        planeWallDoor.position.set(Config.BlockSize * j, Config.BlockHeight / 1.2, Config.BlockSize * (i - 0.5));
+        groupDoor.position.set(dConfig.BlockSize * j, 0, dConfig.BlockSize * (i - 0.5));
+        meshDoor.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 3, dConfig.BlockSize * (i - 0.5));
+        planeWallDoor.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 1.2, dConfig.BlockSize * (i - 0.5));
         break
       case 'Under':
-        groupDoor.position.set(Config.BlockSize * j, 0, Config.BlockSize * (i + 0.5));
-        meshDoor.position.set(Config.BlockSize * j, Config.BlockHeight / 3, Config.BlockSize * (i + 0.5));
-        planeWallDoor.position.set(Config.BlockSize * j, Config.BlockHeight / 1.2, Config.BlockSize * (i + 0.5));
+        groupDoor.position.set(dConfig.BlockSize * j, 0, dConfig.BlockSize * (i + 0.5));
+        meshDoor.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 3, dConfig.BlockSize * (i + 0.5));
+        planeWallDoor.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 1.2, dConfig.BlockSize * (i + 0.5));
         break
       case 'Left':
-        groupDoor.position.set(Config.BlockSize * (j - 0.5), 0, Config.BlockSize * i);
+        groupDoor.position.set(dConfig.BlockSize * (j - 0.5), 0, dConfig.BlockSize * i);
         groupDoor.rotation.y = 90 * Math.PI / 180;
-        meshDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 3, Config.BlockSize * i);
+        meshDoor.position.set(dConfig.BlockSize * (j - 0.5), dConfig.BlockHeight / 3, dConfig.BlockSize * i);
         meshDoor.rotation.y = 90 * Math.PI / 180;
-        planeWallDoor.position.set(Config.BlockSize * (j - 0.5), Config.BlockHeight / 1.2, Config.BlockSize * i);
+        planeWallDoor.position.set(dConfig.BlockSize * (j - 0.5), dConfig.BlockHeight / 1.2, dConfig.BlockSize * i);
         planeWallDoor.rotation.y = 90 * Math.PI / 180;
         break
       case 'Right':
-        groupDoor.position.set(Config.BlockSize * (j + 0.5), 0, Config.BlockSize * i);
+        groupDoor.position.set(dConfig.BlockSize * (j + 0.5), 0, dConfig.BlockSize * i);
         groupDoor.rotation.y = 90 * Math.PI / 180;
-        meshDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 3, Config.BlockSize * i);
+        meshDoor.position.set(dConfig.BlockSize * (j + 0.5), dConfig.BlockHeight / 3, dConfig.BlockSize * i);
         meshDoor.rotation.y = 90 * Math.PI / 180;
-        planeWallDoor.position.set(Config.BlockSize * (j + 0.5), Config.BlockHeight / 1.2, Config.BlockSize * i);
+        planeWallDoor.position.set(dConfig.BlockSize * (j + 0.5), dConfig.BlockHeight / 1.2, dConfig.BlockSize * i);
         planeWallDoor.rotation.y = 90 * Math.PI / 180;
         break
       default:
@@ -476,7 +477,7 @@ function SceneDungeon() {
     // let mixerTreasure: THREE.AnimationMixer
     // groupTreasure = gltfTreasure.scene;
     let groupTreasure: THREE.Group = gltfTreasure.scene.clone(true); // クローンを作成
-    groupTreasure.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+    groupTreasure.position.set(dConfig.BlockSize * j, 0, dConfig.BlockSize * i); //表示が歯車の上に来るように調整
     groupTreasure.scale.set(1.5, 1.5, 1.5); //大きさの調整
     scene.add(groupTreasure);
     let mixerTreasure = new THREE.AnimationMixer(groupTreasure)
@@ -484,7 +485,7 @@ function SceneDungeon() {
     // });
     //SpotLight(色, 光の強さ, 距離, 照射角, ボケ具合, 減衰率)
     spotLight = new THREE.SpotLight(lightParams.point, 10, 20, Math.PI, 20, 1.0);
-    spotLight.position.set(Config.BlockSize * j, 0, Config.BlockSize * i)
+    spotLight.position.set(dConfig.BlockSize * j, 0, dConfig.BlockSize * i)
     scene.add(spotLight);
     //
     function pushTreasure(groupTreasure: THREE.Group, mixerTreasure: THREE.AnimationMixer) {
@@ -503,7 +504,7 @@ function SceneDungeon() {
     // gltfCircle = gltf;
     console.log('setCircle_gltfCircle', gltfCircle)
     groupCircle = gltfCircle.scene;
-    groupCircle.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+    groupCircle.position.set(dConfig.BlockSize * j, 0, dConfig.BlockSize * i); //表示が歯車の上に来るように調整
     // groupCircle.scale.set(1.5, 1.5, 1.5); //大きさの調整
     groupCircle.scale.set(3, 3, 3); //大きさの調整
     scene.add(groupCircle);
@@ -520,7 +521,7 @@ function SceneDungeon() {
     //中ボスのロードと表示位置の設定
     console.log('setMidBoss', gltfMidBoss)
     let groupMidBoss: THREE.Group = gltfMidBoss.scene.clone(true); // クローンを作成
-    groupMidBoss.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+    groupMidBoss.position.set(dConfig.BlockSize * j, 0, dConfig.BlockSize * i); //表示が歯車の上に来るように調整
     groupMidBoss.scale.set(5.0, 5.0, 5.0); //大きさの調整
     groupMidBoss.traverse((obj) => {
       if (obj.type === 'Mesh') {
@@ -544,7 +545,7 @@ function SceneDungeon() {
     //中ボスのロードと表示位置の設定
     console.log('setBoss', gltfBoss)
     groupBoss = gltfBoss.scene;
-    groupBoss.position.set(Config.BlockSize * j, 0, Config.BlockSize * i); //表示が歯車の上に来るように調整
+    groupBoss.position.set(dConfig.BlockSize * j, 0, dConfig.BlockSize * i); //表示が歯車の上に来るように調整
     groupBoss.scale.set(0.6, 0.6, 0.6); //大きさの調整
     groupBoss.traverse((obj) => {
       if (obj.type === 'Mesh') {
@@ -614,7 +615,7 @@ const gameLoop = () => {
 // マウスクリックイベントを設定
 let clickedTreasureId: number | null = null;
 const handleClick = (event: MouseEvent) => {
-  if (statusStore.processDungeon == Config.processBattle) return;
+  if (statusStore.processDungeon == config.processBattle) return;
   // if (showUIStore.party || showUIStore.character || showUIStore.item || showUIStore.skill || showUIStore.treasure) return;
   if (showUIStore.isAnyUIShow) return;
   // Raycasterのインスタンスを作成
@@ -691,7 +692,7 @@ const handleClick = (event: MouseEvent) => {
 function rayObjects(Intersects: THREE.Intersection[]): Boolean {
   // 宝箱がクリックされた場合
   if (Intersects.length > 0) {
-    if (Intersects[0].distance <= Config.BlockSize) {
+    if (Intersects[0].distance <= dConfig.BlockSize) {
       return true
     } else return false
   } else return false
@@ -726,11 +727,11 @@ const handleKeydown = (event: KeyboardEvent) => {
   switch (event.key) {
     case 'a':
     case 'A':
-      playerMove(Config.TurnLeft)
+      playerMove(dConfig.TurnLeft)
       break
     case 'd':
     case 'D':
-      playerMove(Config.TurnRight)
+      playerMove(dConfig.TurnRight)
       break
     default:
       playerMove(event.key)
@@ -740,7 +741,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 function playerMove(eventKey: string) {
   // console.log('playerMove_position', positionStore.playerPosition)
   //パーティorキャラクターui表示時
-  if (statusStore.processDungeon == Config.processBattle) return;
+  if (statusStore.processDungeon == config.processBattle) return;
   // if (showUIStore.party || showUIStore.character || showUIStore.item || showUIStore.skill || showUIStore.treasure) return;
   if (showUIStore.isAnyUIShow) return;
   if (!camera) return
@@ -750,33 +751,33 @@ function playerMove(eventKey: string) {
   let newPosition = positionStore.playerPosition.clone();
 
   switch (eventKey) {
-    case Config.ArrowUp:
+    case dConfig.ArrowUp:
       // 上矢印キーが押されたときに前に進む
-      newPosition.add(direction.multiplyScalar(Config.BlockSize));
+      newPosition.add(direction.multiplyScalar(dConfig.BlockSize));
       correctPosition()
       break
-    case Config.ArrowDown:
+    case dConfig.ArrowDown:
       // 下矢印キーが押されたときに後ろに進む
-      newPosition.sub(direction.multiplyScalar(Config.BlockSize));
+      newPosition.sub(direction.multiplyScalar(dConfig.BlockSize));
       correctPosition()
       break
-    case Config.ArrowLeft:
+    case dConfig.ArrowLeft:
       // 左矢印キーが押されたときに左に進む
-      newPosition.x += direction.z * (Config.BlockSize)
-      newPosition.z -= direction.x * (Config.BlockSize)
+      newPosition.x += direction.z * (dConfig.BlockSize)
+      newPosition.z -= direction.x * (dConfig.BlockSize)
       correctPosition()
       break
-    case Config.ArrowRight:
+    case dConfig.ArrowRight:
       // 右矢印キーが押されたときに右に進む
-      newPosition.x -= direction.z * (Config.BlockSize)
-      newPosition.z += direction.x * (Config.BlockSize)
+      newPosition.x -= direction.z * (dConfig.BlockSize)
+      newPosition.z += direction.x * (dConfig.BlockSize)
       correctPosition()
       break
-    case Config.TurnLeft:
+    case dConfig.TurnLeft:
       // Aキーが押されたときに視点を左に90度回転
       targetRotation += Math.PI / 2; // 目標回転角度を更新
       break
-    case Config.TurnRight:
+    case dConfig.TurnRight:
       // Dキーが押されたときに視点を右に90度回転
       targetRotation -= Math.PI / 2; // 目標回転角度を更新
       break
@@ -788,12 +789,12 @@ function playerMove(eventKey: string) {
     return;
   }
   function correctPosition() {
-    newPosition.x = Math.round(newPosition.x / Config.BlockSize) * Config.BlockSize;
-    newPosition.z = Math.round(newPosition.z / Config.BlockSize) * Config.BlockSize;
+    newPosition.x = Math.round(newPosition.x / dConfig.BlockSize) * dConfig.BlockSize;
+    newPosition.z = Math.round(newPosition.z / dConfig.BlockSize) * dConfig.BlockSize;
   }
   // 新しい位置が壁でないことを確認
-  let newX = Math.floor((newPosition.x + 5) / Config.BlockSize);
-  let newY = Math.floor((newPosition.z + 5) / Config.BlockSize);
+  let newX = Math.floor((newPosition.x + 5) / dConfig.BlockSize);
+  let newY = Math.floor((newPosition.z + 5) / dConfig.BlockSize);
   // 新しい位置が壁でなければ、プレイヤーの位置を更新
   if (!isWall(newY, newX)) {
     // Raycasterのインスタンスを作成
@@ -832,7 +833,7 @@ function playerMove(eventKey: string) {
           idBoss = intersectedMidBoss.id
         }
         //応答画面表示
-        confirmationMessage = Config.msgBeforeMidBoss
+        confirmationMessage = config.msgBeforeMidBoss
         showUIStore.message = true;
         return
       }
@@ -844,7 +845,7 @@ function playerMove(eventKey: string) {
       console.log('playerMove_intersectsBoss', intersectsBoss, groupBoss)
       if (rayObjects(intersectsBoss)) {
         //応答画面表示
-        confirmationMessage = Config.msgBeforeBoss
+        confirmationMessage = config.msgBeforeBoss
         showUIStore.message = true;
         return
       }
@@ -860,10 +861,10 @@ function playerMove(eventKey: string) {
         action.play();
         if (nowLayer == mapInfo.numLayers - 1) {
           //最下層の場合、町に戻る？
-          confirmationMessage = Config.msgLastLayer
+          confirmationMessage = config.msgLastLayer
         } else {
           //次に層に進む？
-          confirmationMessage = Config.msgNextLayer
+          confirmationMessage = config.msgNextLayer
         }
         flgNearCircle = true
         showUIStore.message = true;
@@ -880,9 +881,9 @@ function playerMove(eventKey: string) {
     positionStore.playerPosition.copy(newPosition);
     targetPosition.copy(newPosition); // 目標位置を新しい位置に更新
     // エンカウント確率を更新
-    encounter += randomNum(Config.encountMin, Config.encountMax)
+    encounter += randomNum(dConfig.encountMin, dConfig.encountMax)
     // エンカウント確率が一定の水準に達したらエンカウントをトリガー
-    if (encounter >= Config.encountLimit) {
+    if (encounter >= dConfig.encountLimit) {
       //出現モンスター設定
       setMonsterStore.setMonster(mapInfo.layers[nowLayer].monsterRank)
       triggerEncounter()
@@ -893,18 +894,18 @@ function playerMove(eventKey: string) {
 }
 // エンカウント処理
 function triggerEncounter() {
-  addNewLog(Config.logMonsterEncounter, 0)
+  addNewLog(dConfig.logMonsterEncounter, 0)
   showUIStore.map = false
-  statusStore.processDungeon = Config.processBattle
+  statusStore.processDungeon = config.processBattle
 }
 
 //確認メッセージ毎に応答処理
 const confirmationResponse = (response: string) => {
   showUIStore.message = false;
-  if (response == Config.textYes) {
+  if (response == config.textYes) {
     switch (confirmationMessage) {
       //次に層に進む
-      case Config.msgNextLayer:
+      case config.msgNextLayer:
         showLoading.value = true;
         showDungeon.value = false;
         nowLayer += 1
@@ -912,14 +913,14 @@ const confirmationResponse = (response: string) => {
         createLayer()
         break
       //最下層の場合、町に戻る
-      case Config.msgLastLayer:
+      case config.msgLastLayer:
         resetDungeon()
         stopAnimation()
-        statusStore.status = Config.statusTown
+        statusStore.status = config.statusTown
         break
       //中ボス戦
-      case Config.msgBeforeMidBoss:
-      case Config.msgBeforeBoss:
+      case config.msgBeforeMidBoss:
+      case config.msgBeforeBoss:
         setMonsterStore.setBoss(idBoss)
         triggerEncounter()
         break
@@ -1027,4 +1028,4 @@ function stopAnimation() {
   left: 2vw;
   bottom: 2vh;
 }
-</style>
+</style>@/process/CreateDungeon@/process/CreateDungeon@/process/LogService@/process/Common

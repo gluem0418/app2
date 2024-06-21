@@ -46,7 +46,7 @@
           <li v-for="skill in character.activeSkill" :key="skill.skill_id" @click="selectSkill(skill)" class="skillItem"
             :class="{
               'selected-tab': skill === selectedSkill,
-              'useless': (statusStore.processDungeon == Config.processSearch && skill.use == 1)
+              'useless': (statusStore.processDungeon == config.processSearch && skill.use == 1)
             }">
             <span class="marginLeft1">{{ skill.name }}</span>
             <span class="costValue">{{ skill.consume_amount }}</span>
@@ -69,7 +69,7 @@ import ActiveSkill from '@/class/ActiveSkill.ts';
 import Character from '@/class/Character.ts';
 import SkillInfo from '@/ui//SkillInfo.vue';
 
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 import ErrorMessage from '@/components/information/Information.vue';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
@@ -108,9 +108,9 @@ const selectSkill = (skill: PassiveSkill | ActiveSkill) => {
   selectedSkill.value = skill;
   if (skill instanceof PassiveSkill) return
   if (props.inUseSkill && selectedSkill.value == skill) {
-    if (statusStore.processDungeon == Config.processSearch && skill.use != 1) {
+    if (statusStore.processDungeon == config.processSearch && skill.use != 1) {
       useSkill(skill)
-    } else if (statusStore.processDungeon == Config.processBattle && skill.use != 2) {
+    } else if (statusStore.processDungeon == config.processBattle && skill.use != 2) {
       useSkill(skill)
     }
   }
@@ -140,7 +140,7 @@ const updateSkill = (skill: PassiveSkill) => {
       //スキル装着時、コストを確認
       if (Number(totalCost.value) + skill.skill_cost > props.character.passiveCost) {
         //コスト制限を超えたとき、エラーメッセージ 
-        errorMessage.value = Config.msgSkillCostError
+        errorMessage.value = config.msgSkillCostError
         showError.value = true;
       } else {
         skill.equip = true;
@@ -153,15 +153,15 @@ const updateSkill = (skill: PassiveSkill) => {
 const emit = defineEmits(["useSkill"])
 const useSkill = (skill: ActiveSkill) => {
   //HP MP消費量確認
-  if (skill.consume_type == Config.statusHP) {
+  if (skill.consume_type == config.statusHP) {
     if (skill.consume_amount > props.character!.nowHP) {
-      errorMessage.value = Config.msgHPLackError
+      errorMessage.value = config.msgHPLackError
       showError.value = true;
       return
     }
   } else {
     if (skill.consume_amount > props.character!.nowMP) {
-      errorMessage.value = Config.msgMPLackError
+      errorMessage.value = config.msgMPLackError
       showError.value = true;
       return
     }

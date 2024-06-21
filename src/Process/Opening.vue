@@ -3,8 +3,8 @@
     <div class="enter">ENTER THE CLICK</div>
   </div>
   <div v-else class="background">
-    <div class="title">{{ Config.title }}</div>
-    <SelectBtn class="btnCard" id="btn2" :inside="Config.newgame" @click="newgame()"></SelectBtn>
+    <div class="title">{{ config.title }}</div>
+    <SelectBtn class="btnCard" id="btn2" :inside="config.newgame" @click="newgame()"></SelectBtn>
   </div>
 </template>
 
@@ -12,7 +12,7 @@
 import { ref, onMounted } from 'vue';
 
 import SelectBtn from '@/components/flame/GreenBtn.vue';
-import Config from '@/config.ts';
+import config from '@/config/commonConfig.ts';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
 const statusStore = useStatusStore()
@@ -27,26 +27,26 @@ const isGameStart = ref(false);
 onMounted(() => {
   if (window.innerHeight > window.innerWidth) {
     window.onload = () => {
-      alert(Config.msgInGame1)
+      alert(config.msgInGame1)
     }
   }
   //music start
   window.onload = () => {
-    alert(Config.msgInGame2)
+    alert(config.msgInGame2)
   }
 });
 
 //イベント送信
 function startOpening() {
   isGameStart.value = true;
-  audioStore.playBgm(Config.mscTitle) // ここで音楽を再生
+  audioStore.playBgm(config.mscTitle) // ここで音楽を再生
 }
 
 //イベント送信
 function newgame() {
   // enterFullscreen()
-  statusStore.status = Config.statusTown
-  statusStore.processTown = Config.statusTown
+  statusStore.status = config.statusTown
+  statusStore.processTown = config.statusTown
 }
 
 </script>
