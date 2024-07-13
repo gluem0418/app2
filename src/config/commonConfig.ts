@@ -33,12 +33,12 @@ export default {
   processEquipShop: 'EQUPMENT SHOP',
   processItemShop: 'ITEM SHOP',
 
-  nameDungeon1: 'Forest of Envy',
-  nameDungeon2: 'Swamp of Gluttony',
+  nameDungeon1: 'Forest of Greed',
+  nameDungeon2: 'Swamp of Envy',
   nameDungeon3: 'Desert of Sloth',
-  nameDungeon4: 'Volcano of Wrath',
-  nameDungeon5: 'Cave of Greed',
-  nameDungeon6: 'Palace of Lust',
+  nameDungeon4: 'Cave of Gluttony',
+  nameDungeon5: 'Palace of Lust',
+  nameDungeon6: 'Volcano of Wrath',
   nameDungeon7: 'Tower of Pride',
 
   //キャラクター
@@ -113,8 +113,8 @@ export default {
   msgNextLayer: 'Are you Going to the next layer?',
   msgLastLayer: 'Are you going back to town?',
 
-  msgBeforeMidBoss: 'There is a scary feeling from here on out.Do you really want to move on?',
-  msgBeforeBoss: 'There is a incredibly scary feeling from here on out.Do you really want to move on?',
+  msgBeforeMidBoss: 'There is a scary feeling from here on out. Do you really want to move on?',
+  msgBeforeBoss: 'There is a incredibly scary feeling from here on out. Do you really want to move on?',
 
   msgAddPartyError: 'The party is full. Please remove someone.',
   msgRemovePartyError: 'This character cannot remove from party.',

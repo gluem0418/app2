@@ -63,9 +63,9 @@ import iconInn from "/icon/town/inn.jpg"
 import iconDungeon1 from "/icon/town/forest.jpg"
 import iconDungeon2 from "/icon/town/swamp.jpg"
 import iconDungeon3 from "/icon/town/desert.jpg"
-import iconDungeon4 from "/icon/town/volcano.jpg"
-import iconDungeon5 from "/icon/town/cave.jpg"
-import iconDungeon6 from "/icon/town/palace.jpg"
+import iconDungeon4 from "/icon/town/cave.jpg"
+import iconDungeon5 from "/icon/town/palace.jpg"
+import iconDungeon6 from "/icon/town/volcano.jpg"
 import iconDungeon7 from "/icon/town/tower.jpg"
 
 //ロード時
@@ -82,7 +82,7 @@ function clickShop(name: string) {
 let confirmationMessage: string
 let selectDungeon: string
 function clickDungeon(name: string) {
-  confirmationMessage = config.msgEnterDungeon + name + '.'
+  confirmationMessage = config.msgEnterDungeon + name + '?'
   selectDungeon = name
   showUIStore.message = true
 }

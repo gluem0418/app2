@@ -13,40 +13,35 @@ export default function useCharacterSkill(
   showAreaSkill: Ref<string | null>
 ) {
   //キャラクター向けのアニメーション表示
+  // function toCharacterSkill(skillEffect: SkillEffect): Promise<void> {
+  //   return new Promise((resolve) => {
   function toCharacterSkill(skillEffect: SkillEffect) {
 
+    console.log('toCharacterSkill', Date.now())
+    //
     toSkillEffect.value = skillEffect
-    switch (skillEffect.target_type) {
-      case bConfig.targetMyself:
-      case bConfig.targetOneFriend:
-        startCharacterAnime.value = true
-        //以降の処理はCurrent.vueで
-        break
-      case bConfig.targetRandomFriend:
-      case bConfig.targetAllFriends:
-        showAreaSkill.value = bConfig.targetAll
-        skillAnime.value = skillEffect.skill_anime
-        break
-      default:
-    }
+    startCharacterAnime.value = true
     setTimeout(() => {
+      //
+      console.log('toCharacterSkill_setTimeout', Date.now())
+      //
       startCharacterAnime.value = false
-      //キャラクター向けのエフェクトありの場合
-      if (toCharacterEffect.value.some(effect => effect !== null)) {
-        showCharacterEffect(skillEffect)
-      }
     }, skillEffect.anime_time);
-  }
+  };
   //キャラクター向けのエフェクト表示
   function showCharacterEffect(skillEffect: SkillEffect) {
+    // function showCharacterEffect(skillEffect: SkillEffect): Promise<void> {
+    // return new Promise((resolve) => {
+
     console.log('showCharacterEffect_toCharacterEffect.value', toCharacterEffect.value);
     startCharacterEffect.value = true
     toCharacterEffectType.value = skillEffect.effect_type
     //以降の処理はCurrent.vueで
     setTimeout(() => {
       startCharacterEffect.value = false
+      // resolve();  // アニメーションが完了したらresolveを呼び出してPromiseを解決します。
     }, bConfig.effectTime);
-  }
+  };
   return {
     toCharacterSkill,
     showCharacterEffect,

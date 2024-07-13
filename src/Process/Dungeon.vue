@@ -43,34 +43,6 @@ import dConfig from '@/config/dungeonConfig.ts';
 
 import { randomNum } from '@/process/Common.ts';
 
-import imgWall01 from '/img/dungeon/wall/forest1.jpg';
-
-import imgWall11 from '/img/dungeon/wall/water03.jpg';
-import imgWall02 from '/img/dungeon/wall/mable-black-p.jpg';
-import imgWall03 from '/img/dungeon/wall/wood-deck-02.jpg';
-import imgWall04 from '/img/dungeon/wall/stone-tile02-p.jpg';
-import imgWall05 from '/img/dungeon/wall/brick1.jpg';
-import imgWall06 from '/img/dungeon/wall/tesukiwashi06.jpg';
-const alyImgWall = new Array(
-  imgWall01, imgWall02, imgWall03, imgWall04, imgWall05, imgWall06)
-// 床
-import imgFloor01 from '/img/dungeon/floor/forest1.jpg';
-
-// import imgFloor01 from '/img/back/floor/water03.jpg';
-import imgFloor02 from '/img/dungeon/floor/Wonder-Marble.jpg';
-import imgFloor03 from '/img/dungeon/floor/wood-deck-03.jpg';
-import imgFloor04 from '/img/dungeon/floor/rockland3.jpg';
-import imgFloor05 from '/img/dungeon/floor/rockland2.jpg';
-import imgFloor06 from '/img/dungeon/floor/tatami02.jpg';
-const alyImgFloor = new Array(
-  imgWall01, imgFloor02, imgFloor03, imgFloor04, imgFloor05, imgFloor06)
-
-// 天井
-// import img_ceil01 from '/img/back/floor/ceil01.png';
-// ドア
-// import imgLeftDoor1 from '/img/dungeon/door/leftdoor1.jpg';
-// import imgRightDoor1 from '/img/dungeon/door/rightdoor1.jpg';
-
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
 const statusStore = useStatusStore()
@@ -107,9 +79,12 @@ if (!wmapInfo) {
 }
 // let scene = new THREE.Scene()
 let scene: THREE.Scene
-let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+// let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 let renderer = new THREE.WebGLRenderer();
 let targetPosition = new THREE.Vector3(); // カメラの目標位置
+let sphere: THREE.Mesh;
+
 // let camera: THREE.PerspectiveCamera
 // let renderer: THREE.WebGLRenderer;
 // let targetPosition: THREE.Vector3; // カメラの目標位置
@@ -117,9 +92,9 @@ let pointLight: THREE.PointLight;
 let spotLight: THREE.SpotLight;
 let targetRotation = 0; // カメラの目標回転角度
 let encounter = 0; // エンカウントの確率を管理する変数
-let imgWall: string
-let imgFloor: string
-let imgCeil: string
+// let imgWall: string
+// let imgFloor: string
+// let imgCeil: string
 // doorの定義
 let gltfDoor: GLTF
 interface Door {
@@ -188,15 +163,15 @@ onMounted(() => {
       window.addEventListener('keydown', handleKeydown)
       window.addEventListener('click', handleClick)
       // レンダリングループ
-      animate();
+      // animate();
       gameLoop();
     });
   });
   // ダンジョンの情報セット
   function whichDungeon() {
-    imgWall = mapInfo.wallUrl
-    imgFloor = mapInfo.floorUrl
-    imgCeil = mapInfo.ceilUrl
+    // imgWall = mapInfo.wallUrl
+    // imgFloor = mapInfo.floorUrl
+    // imgCeil = mapInfo.ceilUrl
     audioStore.playBgm(mapInfo.music)
     statusStore.musicDungeon = mapInfo.music
   }
@@ -289,25 +264,28 @@ function initScene() {
   // camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.copy(positionStore.playerPosition);
   addNewLog(dConfig.logEnterDungeon, 0)
-  //全体光源
-  // const light = new THREE.AmbientLight(0xFFFFFF, 1.0);  
-  //PointLight(色, 光の強さ, 距離, 光の減衰率)
-  pointLight = new THREE.PointLight(lightParams.point, 10, 50, 0.5);
-  pointLight.position.copy(positionStore.playerPosition);
-  scene.add(pointLight);
+  //光源設定
+  if (mapInfo.light == 'pointLight') {
+    //PointLight(色, 光の強さ, 距離, 光の減衰率)
+    pointLight = new THREE.PointLight(lightParams.point, 10, 50, 0.5);
+    pointLight.position.copy(positionStore.playerPosition);
+    scene.add(pointLight);
+  } else {
+    //全体光源
+    const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1.0);
+    scene.add(ambientLight);
+  }
 }
 
 // ダンジョンを描画
 function SceneDungeon() {
-  // テクスチャをランダムに選択
-  // indexTexture = Math.floor(Math.random() * alyImgWall.length);
   const loadPic = new THREE.TextureLoader();
+
   // 壁
   const wGeometry = new THREE.PlaneGeometry(dConfig.BlockSize, dConfig.BlockHeight);
-  const wTexture = loadPic.load(imgWall);
+  const wTexture = loadPic.load(mapInfo.wallUrl);
   const wMaterial = new THREE.MeshPhongMaterial({ map: wTexture, side: THREE.DoubleSide, bumpMap: wTexture, bumpScale: 0.2 });
   // 扉
-  // const dGeometry = new THREE.PlaneGeometry(Config.BlockSize / 2, Config.BlockHeight);
   const dGeometry = new THREE.PlaneGeometry(dConfig.BlockSize / 2, dConfig.BlockHeight / 1.5);
   // const dMaterial = new THREE.MeshPhongMaterial({ map: null, side: THREE.DoubleSide, bumpMap: null, bumpScale: 0.2 });
   const dMaterial = new THREE.MeshPhongMaterial({
@@ -318,21 +296,41 @@ function SceneDungeon() {
     transparent: true, // 透明性を有効にする
     opacity: 0 // 透明度を設定（0 = 完全に透明、1 = 完全に不透明）
   });
-  // const dTextureLeft = loadPic.load(imgLeftDoor1);
-  // const dTextureRight = loadPic.load(imgRightDoor1);
-  // const dMaterialLeft = new THREE.MeshPhongMaterial({ map: dTextureLeft, side: THREE.DoubleSide, bumpMap: dTextureLeft, bumpScale: 0.2 });
-  // const dMaterialRight = new THREE.MeshPhongMaterial({ map: dTextureRight, side: THREE.DoubleSide, bumpMap: dTextureRight, bumpScale: 0.2 });
-  const wdGeometry = new THREE.PlaneGeometry(dConfig.BlockSize, dConfig.BlockHeight / 3); //扉の上の壁
   // 床
   const fGeometry = new THREE.PlaneGeometry(dConfig.BlockSize, dConfig.BlockSize);
-  // const fTexture = loadPic.load(alyImgFloor[indexTexture]);
-  const fTexture = loadPic.load(imgFloor);
+  const fTexture = loadPic.load(mapInfo.floorUrl);
   const fMaterial = new THREE.MeshPhongMaterial({ map: fTexture, side: THREE.DoubleSide, bumpMap: fTexture, bumpScale: 0.2 });
-  // 天井
-  // var cGeometry = new THREE.PlaneGeometry(Config.BlockSize, Config.BlockHeight);
-  const cTexture = loadPic.load(imgCeil);
-  const cMaterial = new THREE.MeshPhongMaterial({ map: cTexture, side: THREE.DoubleSide, bumpMap: cTexture, bumpScale: 0.2 });
 
+  // 天井
+  const cTexture = loadPic.load(mapInfo.ceilUrl);
+  const cMaterial = new THREE.MeshPhongMaterial({ map: cTexture, side: THREE.DoubleSide, bumpMap: cTexture, bumpScale: 0.2 });
+  // 扉の上の壁
+  const wdGeometry = new THREE.PlaneGeometry(dConfig.BlockSize, dConfig.BlockHeight / 2.5); //扉の上の壁
+
+  // 屋根がないダンジョンでは空を設定
+  if (mapInfo.skyUrl) {
+    const Sgeometry = new THREE.SphereGeometry(mapInfo.mapWidth * dConfig.BlockSize / 1.5, 64, 64);
+    Sgeometry.scale(-1, 1, 1);
+    const sTexture = loadPic.load(mapInfo.skyUrl);
+    sTexture.colorSpace = THREE.SRGBColorSpace; // THREE.LinearSRGBColorSpace THREE.SRGBColorSpace
+
+    const Smaterial = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      map: sTexture,
+      // side: THREE.BackSide
+      //wireframe: true,
+    });
+
+    sphere = new THREE.Mesh(Sgeometry, Smaterial);
+    sphere.position.set(mapInfo.mapWidth * dConfig.BlockSize / 2, 0, mapInfo.mapHeight * dConfig.BlockSize / 2);
+    scene.add(sphere);
+
+    // const sTexture = loadPic.load(mapInfo.skyUrl);
+    // sTexture.colorSpace = THREE.SRGBColorSpace; // THREE.LinearSRGBColorSpace THREE.SRGBColorSpace
+    // scene.background = new THREE.Color('#000');
+    // scene.background = sTexture;
+
+  }
 
   for (let i = 0; i < state.MapData.length; i++) {
     for (let j = 0; j < state.MapData[i].length; j++) {
@@ -345,11 +343,13 @@ function SceneDungeon() {
         planeFloor.rotation.x = 90 * Math.PI / 180;
         scene.add(planeFloor);
 
-        // 天井はマップが出来てから設置
-        const planeCeil = new THREE.Mesh(fGeometry, cMaterial);
-        planeCeil.position.set(dConfig.BlockSize * j, dConfig.BlockHeight, dConfig.BlockSize * i);
-        planeCeil.rotation.x = 90 * Math.PI / 180;
-        scene.add(planeCeil);
+        // 空がない場合は天井を描画
+        if (!mapInfo.skyUrl) {
+          const planeCeil = new THREE.Mesh(fGeometry, cMaterial);
+          planeCeil.position.set(dConfig.BlockSize * j, dConfig.BlockHeight, dConfig.BlockSize * i);
+          planeCeil.rotation.x = 90 * Math.PI / 180;
+          scene.add(planeCeil);
+        }
 
         // 通路や部屋の上下左右で壁がある場合に壁を描画
         if (isWall(i - 1, j)) {
@@ -420,25 +420,30 @@ function SceneDungeon() {
     console.log('setDoor_gltfDoor', gltfDoor)
     let groupDoor: THREE.Group = gltfDoor.scene.clone(true); // クローンを作成
     const meshDoor = new THREE.Mesh(dGeometry, dMaterial);
-    const planeWallDoor = new THREE.Mesh(wdGeometry, wMaterial);
+    let planeWallDoor: THREE.Mesh
+    if (mapInfo.skyUrl) {
+      planeWallDoor = new THREE.Mesh(wdGeometry, wMaterial);
+    } else {
+      planeWallDoor = new THREE.Mesh(wdGeometry, cMaterial);
+    }
 
     switch (position) {
       case 'Up':
         groupDoor.position.set(dConfig.BlockSize * j, 0, dConfig.BlockSize * (i - 0.5));
         meshDoor.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 3, dConfig.BlockSize * (i - 0.5));
-        planeWallDoor.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 1.2, dConfig.BlockSize * (i - 0.5));
+        planeWallDoor.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 1.3, dConfig.BlockSize * (i - 0.5));
         break
       case 'Under':
         groupDoor.position.set(dConfig.BlockSize * j, 0, dConfig.BlockSize * (i + 0.5));
         meshDoor.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 3, dConfig.BlockSize * (i + 0.5));
-        planeWallDoor.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 1.2, dConfig.BlockSize * (i + 0.5));
+        planeWallDoor.position.set(dConfig.BlockSize * j, dConfig.BlockHeight / 1.3, dConfig.BlockSize * (i + 0.5));
         break
       case 'Left':
         groupDoor.position.set(dConfig.BlockSize * (j - 0.5), 0, dConfig.BlockSize * i);
         groupDoor.rotation.y = 90 * Math.PI / 180;
         meshDoor.position.set(dConfig.BlockSize * (j - 0.5), dConfig.BlockHeight / 3, dConfig.BlockSize * i);
         meshDoor.rotation.y = 90 * Math.PI / 180;
-        planeWallDoor.position.set(dConfig.BlockSize * (j - 0.5), dConfig.BlockHeight / 1.2, dConfig.BlockSize * i);
+        planeWallDoor.position.set(dConfig.BlockSize * (j - 0.5), dConfig.BlockHeight / 1.3, dConfig.BlockSize * i);
         planeWallDoor.rotation.y = 90 * Math.PI / 180;
         break
       case 'Right':
@@ -446,12 +451,11 @@ function SceneDungeon() {
         groupDoor.rotation.y = 90 * Math.PI / 180;
         meshDoor.position.set(dConfig.BlockSize * (j + 0.5), dConfig.BlockHeight / 3, dConfig.BlockSize * i);
         meshDoor.rotation.y = 90 * Math.PI / 180;
-        planeWallDoor.position.set(dConfig.BlockSize * (j + 0.5), dConfig.BlockHeight / 1.2, dConfig.BlockSize * i);
+        planeWallDoor.position.set(dConfig.BlockSize * (j + 0.5), dConfig.BlockHeight / 1.3, dConfig.BlockSize * i);
         planeWallDoor.rotation.y = 90 * Math.PI / 180;
         break
       default:
     }
-
     groupDoor.scale.set(0.5, 0.5, 0.5); //大きさの調整
     scene.add(groupDoor);
     scene.add(meshDoor);
@@ -576,11 +580,43 @@ function groupTransparent(group: THREE.Group) {
   });
 }
 
-let animateId: number;
+// let animateId: number;
+// const animate = function () {
+//   animateId = requestAnimationFrame(animate);
+//   // requestAnimationFrame(animate);
+//   //3dモデルアニメーション
+//   const delta = clock.getDelta();
+//   // 各扉のアニメーションを更新
+//   doors.forEach(door => {
+//     door.mixer.update(delta);
+//   });
+//   // 各宝箱のアニメーションを更新
+//   treasures.forEach(treasure => {
+//     treasure.mixer.update(delta);
+//   });
+//   //魔方陣のアニメーション
+//   if (mixerCircle) mixerCircle.update(delta)
+//   renderer.render(scene, camera);
+// };
+
+let gameLoopId: number
 const clock = new THREE.Clock();
-const animate = function () {
-  animateId = requestAnimationFrame(animate);
-  // requestAnimationFrame(animate);
+const gameLoop = () => {
+  // カメラの位置を更新
+  if (!camera.position.equals(targetPosition)) {
+    camera.position.lerp(targetPosition, 0.05);
+    if (mapInfo.light == 'pointLight') {
+      pointLight.position.copy(targetPosition);
+    }
+  }
+  // カメラの回転を更新
+  if (camera.rotation.y !== targetRotation) {
+    camera.rotation.y += (targetRotation - camera.rotation.y) * 0.10;
+  }
+  //空の回転を更新
+  if (mapInfo.skyUrl) {
+    sphere.rotation.y += 0.0001;
+  }
   //3dモデルアニメーション
   const delta = clock.getDelta();
   // 各扉のアニメーションを更新
@@ -594,20 +630,6 @@ const animate = function () {
   //魔方陣のアニメーション
   if (mixerCircle) mixerCircle.update(delta)
   renderer.render(scene, camera);
-};
-
-let gameLoopId: number
-const gameLoop = () => {
-  // カメラの位置を更新
-  if (!camera.position.equals(targetPosition)) {
-    camera.position.lerp(targetPosition, 0.05);
-    pointLight.position.copy(targetPosition);
-  }
-
-  // カメラの回転を更新
-  if (camera.rotation.y !== targetRotation) {
-    camera.rotation.y += (targetRotation - camera.rotation.y) * 0.10;
-  }
 
   gameLoopId = requestAnimationFrame(gameLoop); // 次のフレームでゲームループを再度呼び出す
 }
@@ -842,7 +864,6 @@ function playerMove(eventKey: string) {
     if (groupBoss) {
       const intersectsBoss = raycaster.intersectObject(groupBoss, true);
       // ボスが近くにいる場合、選択肢
-      console.log('playerMove_intersectsBoss', intersectsBoss, groupBoss)
       if (rayObjects(intersectsBoss)) {
         //応答画面表示
         confirmationMessage = config.msgBeforeBoss
@@ -969,7 +990,7 @@ function resetDungeon() {
 }
 // アニメーションを停止する関数
 function stopAnimation() {
-  cancelAnimationFrame(animateId);
+  // cancelAnimationFrame(animateId);
   cancelAnimationFrame(gameLoopId);
 }
 </script>
@@ -1028,4 +1049,4 @@ function stopAnimation() {
   left: 2vw;
   bottom: 2vh;
 }
-</style>@/process/CreateDungeon@/process/CreateDungeon@/process/LogService@/process/Common
+</style>

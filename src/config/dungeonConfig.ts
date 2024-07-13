@@ -12,12 +12,11 @@ export default {
   SetCircle: 100,  //魔方陣
 
   BlockSize: 10, //1ブロックあたりの長さ
-  BlockHeight: 20, //壁の高さ  
+  // BlockHeight: 20, //壁の高さ  
+  BlockHeight: 25, //壁の高さ  
 
   //ミニマップ
   MiniHeight: 300,
-  // MiniWallColor: '#d4c08d',  
-  // MiniRoomColor: '#C2B8B2',
   MiniRoomColor: '#3B413C',
   MiniMoveColor: '#F2EDD5',
   MiniPlayerColor: '#CBEF43',
@@ -33,7 +32,7 @@ export default {
   //エンカウント
   encountMin: 1,
   encountMax: 5,
-  encountLimit: 10,  //エンカウント発生ポイント
+  encountLimit: 1000,  //エンカウント発生ポイント
   //ダンジョン素材
   pathDoor: '3d/doors1.glb',
   pathTreasure: '3d/treasure_box.glb',

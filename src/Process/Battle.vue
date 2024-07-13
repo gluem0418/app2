@@ -5,8 +5,9 @@
     <TurnOrder class=turnOrder :turnOrder="turnOrder" :numOrder="numOrder" />
     <!-- monster  -->
     <div class=monsterGrid>
-      <div v-for="(cell, index) in monsterGrid" :key="index" class="monsterCell"
-        :class="{ pickMonster: isTarget(cell), currentMonster: cell != null && cell == currentMonster }">
+      <div v-for="(cell, index) in monsterGrid" :key="index" class="monsterCell" :class="{
+        pickMonster: isTarget(cell), currentMonster: cell != null && cell == currentMonster
+      }">
 
         <div v-if="cell" @click="clickTarget(index, cell)" @mouseover="overTarget(index, cell)"
           @mouseout="outTarget(index)">
@@ -17,7 +18,10 @@
           <!-- 単体用スキル -->
           <img v-if="showOneSkill[index]" :src="skillAnime" class="skillOneEffect" alt="skill effect"
             @load="loadSkillAnime(index)">
+          <!-- <img :src="cell.GraphicUrl" class="monsterImage" :id="'monsterImage' + index" alt="monsterImage"
+            :class="{ boss: setMonsterStore.isBoss, topRow: !setMonsterStore.isBoss && index <= 2, bottomRow: !setMonsterStore.isBoss && index >= 3 }"> -->
           <img :src="cell.GraphicUrl" class="monsterImage" :id="'monsterImage' + index" alt="monsterImage">
+            <!-- :class="{ boss: setMonsterStore.isBoss }"> -->
         </div>
 
         <div v-if="selectMonster && selectMonster == cell" class="monsterInfo">
@@ -54,7 +58,8 @@
     <CurrentUI class="CurrentUI" :currentCharacter="currentCharacter" :targetCharacter="targetCharacter"
       :startCharacterAnime="startCharacterAnime" :startCharacterEffect="startCharacterEffect"
       :toSkillEffect="toSkillEffect" :toCharacterEffect="toCharacterEffect" :toCharacterEffectType="toCharacterEffectType"
-      :selectionMode="selectionMode" @selectCharacter='selectCharacter' />
+      :selectionMode="selectionMode" @selectCharacter='selectCharacter' @skillAnimeFinish='skillAnimeFinish'
+      @effectFinish='effectFinish' />
 
     <ActionLog ref="actionLog" class="actionLog" />
 
@@ -502,6 +507,14 @@ let animeTime: number
 let effectTime: number
 let actionTimes: number
 let targetNow: number
+//スキル完了検出
+let resolveAnimePromise: Function | null = null;
+let resolveEffectPromise: Function | null = null;
+
+// let skillAnimationCompleted = null;
+// const skillAnimationResolver = ref<((...args: any[]) => any) | undefined>(undefined);
+// const skillAnimationResolver = ref<((value: unknown) => void) | null>(null);
+
 async function turnAction(current: Current) {
   addNewLog(current.name + "'s " + activeSkill.name, 1)
   //HP MP消費
@@ -531,12 +544,26 @@ async function turnAction(current: Current) {
       }
       //アニメーションあり
       if (skillEffect.skill_anime) {
-        toCharacterSkill(skillEffect)
-      } else {
-        //アニメーションなしでエフェクトあり
-        if (toCharacterEffect.value.some(effect => effect !== null)) {
-          showCharacterEffect(skillEffect)
+        // ターゲットによりアニメーションの表示場所を設定
+        switch (skillEffect.target_type) {
+          case bConfig.targetMyself:
+          case bConfig.targetOneFriend:
+            // アニメーションを開始し、完了待ち
+            toCharacterSkill(skillEffect)
+            await waitForSkillFinish();
+            break
+          case bConfig.targetRandomFriend:
+          case bConfig.targetAllFriends:
+            //アニメーション表示
+            await skillAttackAnime(skillEffect)
+            break
+          default:
         }
+      }
+      //エフェクトありの場合、エフェクトを表示して完了待ち
+      if (toCharacterEffect.value.some(effect => effect !== null)) {
+        showCharacterEffect(skillEffect)
+        await waitForEffectFinish();
       }
     } else if (skillEffect.target == 2) {
       //キャラクターの敵対象スキル
@@ -569,16 +596,22 @@ async function turnAction(current: Current) {
       //アニメーションあり
       if (skillEffect.skill_anime) {
         //アニメーション表示
-        skillAttackAnime(skillEffect)
+        await skillAttackAnime(skillEffect)
       } else {
         //アニメーションなしでエフェクトあり
         if (toMonsterEffect.value.some(effect => effect !== null)) {
-          showMonsterEffect()
+          await showMonsterEffect()
         }
       }
-      effectTime = bConfig.effectTime + actionTimes * bConfig.delayTime
+      // effectTime = bConfig.effectTime + actionTimes * bConfig.delayTime
     }
-    await timer(animeTime + effectTime);
+    //
+    // effectTime = bConfig.effectTime + actionTimes * bConfig.delayTime
+    console.log('animeTime', animeTime)
+    console.log('effectTime', effectTime)
+    //
+    // await timer(animeTime + effectTime);
+    await timer(bConfig.nextTime);
     //HPが0のモンスターをgridから削除
     for (let monster of targetMonster.value) {
       if (monster.nowHP == 0) {
@@ -586,6 +619,36 @@ async function turnAction(current: Current) {
         monsterGrid.value = monsterGrid.value.map(cell => cell === monster ? null : cell);
       }
     }
+  }
+}
+// 非同期関数でアニメーションの完了を待つ
+async function waitForSkillFinish() {
+  return new Promise<void>((resolve) => {
+    resolveAnimePromise = resolve;
+    console.log('waitForSkillFinish', resolveAnimePromise)
+  });
+}
+// Currentでのアニメーション完了後
+const skillAnimeFinish = () => {
+  if (resolveAnimePromise) {
+    console.log('skillAnimeFinish', resolveAnimePromise)
+    resolveAnimePromise();
+    resolveAnimePromise = null;
+  }
+}
+// 非同期関数でエフェクトの完了を待つ
+async function waitForEffectFinish() {
+  return new Promise<void>((resolve) => {
+    resolveEffectPromise = resolve;
+    console.log('waitForEffectFinish', resolveEffectPromise)
+  });
+}
+// Currentでのエフェクト完了後
+const effectFinish = () => {
+  if (resolveEffectPromise) {
+    console.log('effectFinish', resolveEffectPromise)
+    resolveEffectPromise();
+    resolveEffectPromise = null;
   }
 }
 
@@ -689,117 +752,110 @@ function calcCrit(rate: number, SPD: number): boolean {
   return randomValue <= hitRate / 100; // 命中率を100で割って0から1の範囲にする
 }
 
-//スキル攻撃のアニメーション
-function skillAttackAnime(skillEffect: SkillEffect) {
-  // if (skillEffect.skill_anime == '') return
-  //skill animation
-  skillAnime.value = skillEffect.skill_anime
-  //skill show position
-  let cellIndex = targetMonster.value[0].order!
-  if (skillEffect.target_type == bConfig.targetOneEnemy) {
-    //target one enemy
-    showOneSkill.value[cellIndex] = true
-  } else {
-    //target more enemy
-    showAreaSkill.value = skillEffect.target_type
-    switch (skillEffect.target_type) {
-      case bConfig.targetColumnEnemy:
-        skillLeft.value = 7 + (cellIndex % 3) * 27; // 
-        break
-      case bConfig.targetRowEnemy:
-        skillTop.value = 15 + Math.floor(cellIndex / 3) * 25; // 
-        break
-      case bConfig.targetAllEnemy:
-        showAreaSkill.value = bConfig.targetAll
-        break
-      case bConfig.targetRandomEnemy:
-        showAreaSkill.value = bConfig.targetAll
-        break
-      default:
+//スキルのアニメーション
+let resolveSkillAnime: () => void;
+function skillAttackAnime(skillEffect: SkillEffect): Promise<void> {
+  return new Promise((resolve) => {
+    // function skillAttackAnime(skillEffect: SkillEffect) {
+    //skill animation
+    skillAnime.value = skillEffect.skill_anime
+    //skill show position
+    let cellIndex: number = 0;
+    if (targetMonster.value[0]) {
+      cellIndex = targetMonster.value[0].order!
     }
-  }
+    if (skillEffect.target_type == bConfig.targetOneEnemy) {
+      //target one enemy
+      showOneSkill.value[cellIndex] = true
+    } else {
+      //target more enemy
+      showAreaSkill.value = skillEffect.target_type
+      switch (skillEffect.target_type) {
+        case bConfig.targetColumnEnemy:
+          skillLeft.value = 7 + (cellIndex % 3) * 27; // 
+          break
+        case bConfig.targetRowEnemy:
+          skillTop.value = 15 + Math.floor(cellIndex / 3) * 25; // 
+          break
+        case bConfig.targetAllEnemy:
+        case bConfig.targetRandomEnemy:
+        case bConfig.targetAllFriends:
+        case bConfig.targetRandomFriend:
+          showAreaSkill.value = bConfig.targetAll
+          break
+        default:
+      }
+    }
+    // スキルロード後
+    resolveSkillAnime = resolve;
+  });
 }
 
 // スキルロード後
-const loadSkillAnime = (index: number = 0) => {
-  setTimeout(() => {
+// const loadSkillAnime = (index: number = 0) => {
+function loadSkillAnime(index: number = 0) {
+  setTimeout(async () => {
     showAreaSkill.value = '';
     showOneSkill.value[index] = false
     //モンスターのエフェクト表示
     if (targetNow == 2 && toMonsterEffect.value.some(effect => effect !== null)) {
-      showMonsterEffect()
+      await showMonsterEffect()
     }
+    resolveSkillAnime();
   }, animeTime);
 }
 
-//キャラクター向けのアニメーション表示
-// function toCharacterSkill(skillEffect: SkillEffect) {
-
-//   toSkillEffect.value = skillEffect
-//   switch (skillEffect.target_type) {
-//     case Config.targetMyself:
-//     case Config.targetOneFriend:
-//       startCharacterAnime.value = true
-//       //以降の処理はCurrent.vueで
-//       break
-//     case Config.targetRandomFriend:
-//     case Config.targetAllFriends:
-//       showAreaSkill.value = Config.targetAll
-//       skillAnime.value = skillEffect.skill_anime
-//       break
-//     default:
-//   }
-//   setTimeout(() => {
-//     startCharacterAnime.value = false
-//     //キャラクター向けのエフェクトありの場合
-//     if (toCharacterEffect.value.some(effect => effect !== null)) {
-//       showCharacterEffect(skillEffect)
-//     }
-//   }, animeTime);
-// }
 //モンスター対象のエフェクト表示
-function showMonsterEffect() {
-
-  let delay = bConfig.delayTime;
-  for (let effects of toMonsterEffect.value) {
-    // if (effects.length === 0) continue; // 空の配列をスキップ
-    if (Array.isArray(effects)) {
-      for (let effect of effects) {
-        setTimeout(() => {
-          effect.visible = true;
-          // さらに2秒後にエフェクトを非表示
+// function showMonsterEffect() {
+function showMonsterEffect(): Promise<void> {
+  return new Promise((resolve) => {
+    let delay = bConfig.delayTime;
+    for (let effects of toMonsterEffect.value) {
+      // if (effects.length === 0) continue; // 空の配列をスキップ
+      if (Array.isArray(effects)) {
+        for (let effect of effects) {
           setTimeout(() => {
-            effect.visible = false;
-          }, bConfig.effectTime);
-        }, delay);
-        delay += bConfig.delayTime;
+            effect.visible = true;
+            // さらに2秒後にエフェクトを非表示
+            setTimeout(() => {
+              effect.visible = false;
+            }, bConfig.effectTime);
+          }, delay);
+          delay += bConfig.delayTime;
+        }
       }
     }
-  }
+    // 全てのエフェクトが完了したときにPromiseを解決
+    setTimeout(resolve, bConfig.effectTime + delay);
+  });
 }
-
-// function showCharacterEffect(skillEffect: SkillEffect) {
-//   console.log('showCharacterEffect_toCharacterEffect.value', toCharacterEffect.value);
-//   startCharacterEffect.value = true
-//   toCharacterEffectType.value = skillEffect.effect_type
-//   effectTime = Config.effectTime;
-//   setTimeout(() => {
-//     startCharacterEffect.value = false
-//   }, Config.effectTime);
-// }
-
 // モンスターの行動を処理する関数
-function monsterTurn(monster: Monster) {
+async function monsterTurn(monster: Monster) {
   battleProcess.value = "monsterTurn"
-  // animation test
+  // monster animation
   anime({
     targets: '#monsterImage' + monster.order!,
-    // translateX: 250,
-    scale: [1, 2, 1],
-    duration: 1000,
-    rotate: -30,
-    // easing: 'easeInOutCubic' // 加減速の種類
-    easing: 'linear' // 加減速の種類
+    translateX: [
+      { value: randomNum(-500, 500), duration: randomNum(0, 250), delay: randomNum(0, 100) },
+      { value: 0, duration: randomNum(0, 250), delay: randomNum(0, 100) }
+    ],
+    translateY: [
+      { value: randomNum(-500, 500), duration: randomNum(0, 250), delay: randomNum(0, 100) },
+      { value: 0, duration: randomNum(0, 250), delay: randomNum(0, 100) }
+    ],
+    // opacity: [0, 1],
+    scale: [1.5, 2.5],
+    duration: bConfig.monsterAttackTime,
+    rotate: randomNum(0, 100),
+    easing: 'easeInOutBounce', // 加減速の種類
+    complete: function () { //callback関数
+      anime.set('#monsterImage' + monster.order!, {
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+        rotate: 0,
+      });
+    }
   });
 
   //使用スキル決定
@@ -839,7 +895,7 @@ function monsterTurn(monster: Monster) {
       break
     default:
   }
-  turnAction(monster);
+  await turnAction(monster);
 }
 // モンスターの攻撃対象を決定
 const selectMonsterAction = () => {
@@ -960,39 +1016,30 @@ function endTurn() {
 
 .monsterGrid {
   position: absolute;
-  top: 34vh;
-  left: 7vw;
+  top: 21vh;
+  left: 1vw;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  transform: skewX(-30deg);
-  grid-row-gap: 1vh;
+  /* transform: skewX(-30deg); */
+  grid-row-gap: 3vh;
   grid-column-gap: 1vh;
 }
 
 .monsterCell {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align:center;
+  align-content: unsafe end;
   border-radius: 1vw;
-  height: 25vh;
-  width: 27vw;
+  height: 33vh;
+  width: 30vw;
   /* border: 0.2vw solid #624CAB; */
 }
 
 .monsterImage {
-  /* align-items: bottom; */
-  position: absolute;
-  bottom: 0;
-  left: 35%;
-  transform: translate(-50%, 0) skewX(30deg);
-  /* width:50vw; */
-  /* height: 50vh; */
-  /* max-width: 50vw; */
+  vertical-align: top;
   max-height: 80vh;
   /* object-fit: contain; */
-  /* object-fit: cover; */
 }
 
 @keyframes blinkBorder1 {
@@ -1036,9 +1083,10 @@ function endTurn() {
 
 .skillOneEffect {
   position: absolute;
-  top: 20%;
+  /* top: 20%; */
+  top: 50%;
   left: 40%;
-  transform: translate(-50%, -50%) skewX(30deg);
+  transform: translate(-50%, -50%);
   max-height: 70vh;
   z-index: 5;
 }
@@ -1072,16 +1120,19 @@ function endTurn() {
 }
 
 .monsterInfo {
-  transform: translate(-50%, -190%) skewX(30deg);
+  position: absolute;
+  margin-top: -85%;
+  margin-left: 10%;
+  /* transform: translate(10%, -110%); */
   background-image: url('/img/flame/flame042201.png');
   background-size: 100% 100%;
-  padding: 3vh 4vw;
+  padding-top: 3vh;
+  /* padding: 3vh 4vw; */
   height: 14vh;
   width: 23vw;
   font-size: 3vh;
   font-family: "Trade Winds";
   pointer-events: none;
-  /* z-index: 10; */
 }
 
 .monsterName {
@@ -1089,6 +1140,7 @@ function endTurn() {
 }
 
 .progress-bar-hp {
+  margin-left: -0.5vw;
   width: 13vw;
 }
 

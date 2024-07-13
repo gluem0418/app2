@@ -15,8 +15,8 @@ const props = defineProps({
   background-size: 100% 100%;
   padding: 3vh 4vw;
   color: #F2EDD5;
-  /* color: #260101; */
-  font-size: 4vh;
+  /* color: #260101; */   
+  font-size: 2vw;
 }
 
 .btnFlame:hover {

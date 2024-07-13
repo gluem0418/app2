@@ -31,8 +31,10 @@ const props = defineProps({
 
 .nowMP {
   position: absolute;
+  width:100%;
+  text-align:right;
   margin-top: -0.1vh;
-  margin-left: 4vw;
+  padding-right: 1vw;
   font-family: "Trade Winds";
   font-size: 2.5vh;
 }

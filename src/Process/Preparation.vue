@@ -166,11 +166,10 @@ async function useAction(item: Item | ActiveSkill) {
       //アニメーションあり
       if (skillEffect.skill_anime) {
         toCharacterSkill(skillEffect)
-      } else {
-        //アニメーションなしでエフェクトあり
-        if (toCharacterEffect.value.some(effect => effect !== null)) {
-          showCharacterEffect(skillEffect)
-        }
+      }
+      //でエフェクトあり
+      if (toCharacterEffect.value.some(effect => effect !== null)) {
+        showCharacterEffect(skillEffect)
       }
     }
     await timer(animeTime + bConfig.effectTime);
@@ -309,6 +308,7 @@ const useReturnItem = () => {
   position: absolute;
   color: #F2EDD5;
   font-family: "Trade Winds";
+  font-size:1.8vw;
   top: 18vh;
   left: 37vw;
   animation: slideLeft 0.3s ease-in-out;
@@ -317,12 +317,13 @@ const useReturnItem = () => {
 .OkBtn {
   position: absolute;
   top: 22vh;
-  right: 22.7vw;
+  right: 23.7vw;
 }
+
 .CancelBtn {
   position: absolute;
   top: 35vh;
-  right: 20vw;
+  right: 21vw;
 }
 
 .fade-enter-active,

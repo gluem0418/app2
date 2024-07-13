@@ -59,24 +59,24 @@ function newgame() {
   height: 100vh;
   text-align: center;
   font-family: "Mystery Quest";
+  color: #BFAD8A;
 }
 
 .title {
   font-family: "Fredericka The Great";
-  color: #BFAD8A;
+  /* color: #BFAD8A; */
   font-size: 12vw;
   padding-top: 4%;
 }
 
 .enter {
   position: absolute;
-  color: #BFAD8A;
+  /* color: #BFAD8A; */
   top: 50%;
   left: 50%;
   font-size: 5vw;
   transform: translateY(-50%) translateX(-50%);
 }
-
 #btn1 {
   position: absolute;
   top: 55%;

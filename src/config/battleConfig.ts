@@ -9,7 +9,8 @@ export default {
   maxEffectLeft: 50,
   normalDamageRate: 1,  //通常攻撃
   critDamageRate: 1.5,  //クリティカル攻撃
-  effectTime: 1000,  //エフェクト表示時間
+  // effectTime: 1000,  //エフェクト表示時間
+  effectTime: 500,  //エフェクト表示時間
   normalAttackTime: 400,  //通常攻撃時間
   monsterAttackTime: 500,  //モンスター通常攻撃時間
   delayTime: 100,  //エフェクト表示の時間差

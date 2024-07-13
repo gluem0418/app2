@@ -50,6 +50,8 @@ const toCharacterAnime = ref<string | null>(null)
 const showCharacterAnime = ref<boolean[]>(new Array(partyStore.characters.length).fill(false));;
 const showCharacterEffect = ref<boolean[]>(new Array(partyStore.characters.length).fill(false));
 
+const emit = defineEmits(["selectCharacter", 'skillAnimeFinish', 'effectFinish'])
+
 // キャラクターを選択中に呼び出す関数
 function overTarget(character: Character) {
   if (props.selectionMode != bConfig.targetOneFriend) return
@@ -75,26 +77,35 @@ function clickTarget(character: Character) {
 }
 
 // 対象キャラクター指定
-const emit = defineEmits(["selectCharacter"])
 const selectCharacter = (selectType: string, character: Character | null = null) => {
   emit('selectCharacter', selectType, character)
 };
 
 // スキルロード後
 const loadSkillAnime = (index: number = 0) => {
+  //
+  console.log('loadSkillAnime', Date.now())
+  //
   if (!props.toSkillEffect) return
   setTimeout(() => {
+    //
+    console.log('loadSkillAnime_setTimeout', Date.now())
+    //
     showCharacterAnime.value[index] = false
     toCharacterAnime.value = null;
+    emit('skillAnimeFinish')
   }, props.toSkillEffect.anime_time)
 }
 
 //キャラクター向けのエフェクトを表示
 function effectToCharacters(index: number) {
   if (props.toCharacterEffect[index] == null) return;
+  console.log('effectToCharacters', Date.now())
+
   showCharacterEffect.value[index] = true;
   setTimeout(() => {
     showCharacterEffect.value[index] = false
+    console.log('effectToCharacters_setTimeout', Date.now())
   }, bConfig.effectTime);
 }
 
@@ -104,7 +115,7 @@ watch(() => props.startCharacterAnime, () => {
   if (!props.toSkillEffect) return
   console.log('startCharacterAnime', props.toSkillEffect)
   //キャラクター向けスキルのアニメーション表示
-  toCharacterAnime.value =  props.toSkillEffect.skill_anime
+  toCharacterAnime.value = props.toSkillEffect.skill_anime
   showCharacterAnime.value[getCharacterIndex(props.targetCharacter[0])] = true
 })
 
@@ -118,6 +129,9 @@ watch(() => props.startCharacterEffect, () => {
     }, delay);
     delay += bConfig.delayTime;
   }
+  setTimeout(() => {
+    emit('effectFinish')
+  }, delay + bConfig.effectTime);
 })
 
 </script>

@@ -225,8 +225,8 @@ export default function CreateDungeon(mapInfo: Dungeon, nowLayer: number) {
           break
         // 魔方陣を配置
         case dConfig.strCircle:
-          // state.MapSet[randomY][randomX] = Config.SetCircle;
-          state.MapSet[state.initPoint.Y][state.initPoint.X - 1] = dConfig.SetCircle;
+          state.MapSet[randomY][randomX] = dConfig.SetCircle;
+          // state.MapSet[state.initPoint.Y][state.initPoint.X - 1] = dConfig.SetCircle;
           break
         // 中ボスを配置
         case dConfig.strMidBoss:

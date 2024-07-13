@@ -13,6 +13,8 @@ export default class Dungeon {
   wallUrl: string;
   floorUrl: string;
   ceilUrl: string;
+  skyUrl: string;
+  light: string;
   mapHeight: number;
   mapWidth: number;
   roomCountMin: number;
@@ -32,6 +34,8 @@ export default class Dungeon {
     this.wallUrl = data.wallUrl;
     this.floorUrl = data.floorUrl;
     this.ceilUrl = data.ceilUrl;
+    this.skyUrl = data.skyUrl;
+    this.light = data.light;
     this.mapHeight = data.mapHeight;
     this.mapWidth = data.mapWidth;
     this.roomCountMin = data.roomCountMin;

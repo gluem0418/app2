@@ -21,7 +21,8 @@
 
     <IconChange class="IconChange" @click="changeOrder" v-show="showUIStore.party" :class="{ 'changing': changing }" />
 
-    <div v-if="(statusStore.processDungeon == config.processSearch) && !showUIStore.character">
+    <div
+      v-if="statusStore.status == config.statusDungeon && statusStore.processDungeon == config.processSearch && !showUIStore.character">
       <IconSkill class="IconSkill" @click="clickIcon(bConfig.actionSkill)" />
       <IconBag class="IconBag" @click="clickIcon(bConfig.actionItem)" />
     </div>
@@ -88,7 +89,7 @@ const characterBack = () => {
 
 };
 //かばんアイコン
-const clickIcon = (kind :string) => {
+const clickIcon = (kind: string) => {
   if (kind == bConfig.actionItem) {
     showUIStore.item = !showUIStore.item
     showUIStore.skill = false
@@ -267,6 +268,7 @@ const changeOrder = () => {
   right: 19vw;
   bottom: 0.5vh;
 }
+
 .IconBag {
   position: absolute;
   right: 11vw;
