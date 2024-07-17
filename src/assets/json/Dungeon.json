@@ -182,7 +182,7 @@
         ],
         "monsterRank": 1,
         "midBoss": [
-          1021
+          1031
         ],
         "numBoss": 0
       },
@@ -192,7 +192,7 @@
         ],
         "monsterRank": 1,
         "midBoss": [
-          1022
+          1032,1033
         ],
         "numBoss": 0
       },
@@ -203,7 +203,58 @@
         ],
         "monsterRank": 2,
         "midBoss": [],
-        "numBoss": 2003
+        "numBoss": 2004
+      }
+    ]
+  },
+  {
+    "name": "Palace of Lust",
+    "info": "A mysterious cave filled with dangerous creatures and treasures.",
+    "wallUrl": "img/dungeon/w_palace.jpg",
+    "floorUrl": "img/dungeon/f_palace.jpg",
+    "ceilUrl": "img/dungeon/f_palace.jpg",
+    "skyUrl": "",
+    "light": "pointLight",
+    "mapHeight": 200,
+    "mapWidth": 200,
+    "roomCountMin": 7,
+    "roomCountMax": 12,
+    "roomMinHeight": 20,
+    "roomMaxHeight": 40,
+    "roomMinWidth": 20,
+    "roomMaxWidth": 40,
+    "meetPointCount": 2,
+    "music": "maou_bgm_orchestra25",
+    "numLayers": 3,
+    "layers": [
+      {
+        "treasureRank": [
+          1
+        ],
+        "monsterRank": 1,
+        "midBoss": [
+          1031
+        ],
+        "numBoss": 0
+      },
+      {
+        "treasureRank": [
+          1,2
+        ],
+        "monsterRank": 1,
+        "midBoss": [
+          1032,1033
+        ],
+        "numBoss": 0
+      },
+      {
+        "treasureRank": [
+          1,
+          2
+        ],
+        "monsterRank": 2,
+        "midBoss": [],
+        "numBoss": 2004
       }
     ]
   }

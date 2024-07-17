@@ -79,11 +79,12 @@ if (!wmapInfo) {
 }
 // let scene = new THREE.Scene()
 let scene: THREE.Scene
-let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+// let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
 // let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 500);
 let renderer = new THREE.WebGLRenderer();
 let targetPosition = new THREE.Vector3(); // カメラの目標位置
-let sphere: THREE.Mesh;
+// let sphere: THREE.Mesh;
 
 // let camera: THREE.PerspectiveCamera
 // let renderer: THREE.WebGLRenderer;
@@ -261,7 +262,6 @@ function initScene() {
   positionStore.playerPosition = new THREE.Vector3(dConfig.BlockSize * state.initPoint.X, 5, dConfig.BlockSize * state.initPoint.Y);
   targetPosition.copy(positionStore.playerPosition);
   // カメラの位置をプレイヤーの位置と同期
-  // camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.copy(positionStore.playerPosition);
   addNewLog(dConfig.logEnterDungeon, 0)
   //光源設定
@@ -309,26 +309,26 @@ function SceneDungeon() {
 
   // 屋根がないダンジョンでは空を設定
   if (mapInfo.skyUrl) {
-    const Sgeometry = new THREE.SphereGeometry(mapInfo.mapWidth * dConfig.BlockSize / 1.5, 64, 64);
-    Sgeometry.scale(-1, 1, 1);
+    // const Sgeometry = new THREE.SphereGeometry(mapInfo.mapWidth * dConfig.BlockSize / 1.5, 64, 64);
+    // Sgeometry.scale(-1, 1, 1);
     const sTexture = loadPic.load(mapInfo.skyUrl);
-    sTexture.colorSpace = THREE.SRGBColorSpace; // THREE.LinearSRGBColorSpace THREE.SRGBColorSpace
+    scene.background = sTexture;
+    // sTexture.colorSpace = THREE.SRGBColorSpace; // THREE.LinearSRGBColorSpace THREE.SRGBColorSpace
 
-    const Smaterial = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      map: sTexture,
-      // side: THREE.BackSide
-      //wireframe: true,
-    });
+    // const Smaterial = new THREE.MeshBasicMaterial({
+    //   color: 0xffffff,
+    //   map: sTexture,
+    //   // side: THREE.BackSide
+    //   //wireframe: true,
+    // });
 
-    sphere = new THREE.Mesh(Sgeometry, Smaterial);
-    sphere.position.set(mapInfo.mapWidth * dConfig.BlockSize / 2, 0, mapInfo.mapHeight * dConfig.BlockSize / 2);
-    scene.add(sphere);
+    // sphere = new THREE.Mesh(Sgeometry, Smaterial);
+    // sphere.position.set(mapInfo.mapWidth * dConfig.BlockSize / 2, 0, mapInfo.mapHeight * dConfig.BlockSize / 2);
+    // scene.add(sphere);
 
     // const sTexture = loadPic.load(mapInfo.skyUrl);
     // sTexture.colorSpace = THREE.SRGBColorSpace; // THREE.LinearSRGBColorSpace THREE.SRGBColorSpace
     // scene.background = new THREE.Color('#000');
-    // scene.background = sTexture;
 
   }
 
@@ -614,9 +614,9 @@ const gameLoop = () => {
     camera.rotation.y += (targetRotation - camera.rotation.y) * 0.10;
   }
   //空の回転を更新
-  if (mapInfo.skyUrl) {
-    sphere.rotation.y += 0.0001;
-  }
+  // if (mapInfo.skyUrl) {
+  //   sphere.rotation.y += 0.0001;
+  // }
   //3dモデルアニメーション
   const delta = clock.getDelta();
   // 各扉のアニメーションを更新
