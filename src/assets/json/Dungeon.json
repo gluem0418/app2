@@ -212,7 +212,7 @@
     "info": "A mysterious cave filled with dangerous creatures and treasures.",
     "wallUrl": "img/dungeon/w_palace.jpg",
     "floorUrl": "img/dungeon/f_palace.jpg",
-    "ceilUrl": "img/dungeon/f_palace.jpg",
+    "ceilUrl": "img/dungeon/c_palace.jpg",
     "skyUrl": "",
     "light": "pointLight",
     "mapHeight": 200,

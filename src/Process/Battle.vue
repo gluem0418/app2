@@ -229,12 +229,13 @@ onMounted(async () => {
   setMusic()
   await timer(bConfig.awaitTime);  //
   setMonster()
-  battleProcess.value = "startTurn"
-  battleMessage.value = String(numTurn) + ' Turn Start'
+  // battleProcess.value = "startTurn"
+  // battleMessage.value = String(numTurn) + ' Turn Start'
   // 戦闘ループ
   while (battleProcess.value !== "result") {
     //ターン開始を表示し、スタート
     battleProcess.value = "startTurn"
+    battleMessage.value = String(numTurn) + ' Turn Start'
     await startTurn()
   }
 })
@@ -1029,11 +1030,14 @@ function endTurn() {
 .monsterCell {
   position: relative;
   text-align:center;
-  align-content: unsafe end;
+  /* align-content: unsafe end; */
   border-radius: 1vw;
   height: 33vh;
   width: 30vw;
-  /* border: 0.2vw solid #624CAB; */
+  display: flex;
+  justify-content: center;
+  align-items: unsafe end;
+    /* border: 0.2vw solid #624CAB; */
 }
 
 .monsterImage {
@@ -1083,7 +1087,6 @@ function endTurn() {
 
 .skillOneEffect {
   position: absolute;
-  /* top: 20%; */
   top: 50%;
   left: 40%;
   transform: translate(-50%, -50%);
@@ -1121,13 +1124,11 @@ function endTurn() {
 
 .monsterInfo {
   position: absolute;
-  margin-top: -85%;
-  margin-left: 10%;
-  /* transform: translate(10%, -110%); */
+  top:-20%;
+  left:0%;
   background-image: url('/img/flame/flame042201.png');
   background-size: 100% 100%;
   padding-top: 3vh;
-  /* padding: 3vh 4vw; */
   height: 14vh;
   width: 23vw;
   font-size: 3vh;

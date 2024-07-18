@@ -32,7 +32,7 @@ export default {
   //エンカウント
   encountMin: 1,
   encountMax: 5,
-  encountLimit: 1000,  //エンカウント発生ポイント
+  encountLimit: 10,  //エンカウント発生ポイント
   //ダンジョン素材
   pathDoor: '3d/doors1.glb',
   pathTreasure: '3d/treasure_box.glb',
