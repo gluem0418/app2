@@ -233,7 +233,7 @@
         ],
         "monsterRank": 1,
         "midBoss": [
-          1031
+          1041
         ],
         "numBoss": 0
       },
@@ -243,7 +243,7 @@
         ],
         "monsterRank": 1,
         "midBoss": [
-          1032,1033
+          1042,1043
         ],
         "numBoss": 0
       },
@@ -254,7 +254,58 @@
         ],
         "monsterRank": 2,
         "midBoss": [],
-        "numBoss": 2004
+        "numBoss": 2005
+      }
+    ]
+  },
+  {
+    "name": "Volcano of Wrath",
+    "info": "A mysterious cave filled with dangerous creatures and treasures.",
+    "wallUrl": "img/dungeon/w_volcano.jpg",
+    "floorUrl": "img/dungeon/f_volcano.jpg",
+    "ceilUrl": "img/dungeon/w_volcano.jpg",
+    "skyUrl": "",
+    "light": "pointLight",
+    "mapHeight": 200,
+    "mapWidth": 200,
+    "roomCountMin": 7,
+    "roomCountMax": 12,
+    "roomMinHeight": 20,
+    "roomMaxHeight": 40,
+    "roomMinWidth": 20,
+    "roomMaxWidth": 40,
+    "meetPointCount": 2,
+    "music": "maou_bgm_neorock62",
+    "numLayers": 3,
+    "layers": [
+      {
+        "treasureRank": [
+          1
+        ],
+        "monsterRank": 1,
+        "midBoss": [
+          1041
+        ],
+        "numBoss": 0
+      },
+      {
+        "treasureRank": [
+          1,2
+        ],
+        "monsterRank": 1,
+        "midBoss": [
+          1042,1043
+        ],
+        "numBoss": 0
+      },
+      {
+        "treasureRank": [
+          1,
+          2
+        ],
+        "monsterRank": 2,
+        "midBoss": [],
+        "numBoss": 2005
       }
     ]
   }
