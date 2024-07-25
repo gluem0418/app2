@@ -86,6 +86,9 @@ export default {
   monNumMin: 1, //モンスター最小数
   monNumMax: 6, //モンスター最大数
 
+  // voice
+  voiceEnMale: 'Google UK English Male',
+
   // music
   mscTitle: 'maou_bgm_orchestra18',
   mscOpening: 'maou_bgm_fantasy08',

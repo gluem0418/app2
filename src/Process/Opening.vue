@@ -1,17 +1,17 @@
 <template>
+  <!-- <div class="background"> -->
   <div class="background" @click="endOpening">
     <div class="text" v-for="(line, index) in lines" :key="index" :style="{ animationDelay: `${index * 2}s` }"
       @animationend="handleAnimationEnd(index)">
       {{ line }}
     </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-
 import config from '@/config/commonConfig.ts';
+import { speakText } from '@/process/Common.ts';
 //状態管理
 import { useStatusStore } from '@/stores/Status.ts';
 const statusStore = useStatusStore()
@@ -26,12 +26,14 @@ const lines = ref<string[]>([]);
 
 //ロード時
 onMounted(() => {
+  console.log('Opening_onMounted')
   audioStore.playBgm(config.mscOpening)
   // テキスト読込
   // 改行コードを統一
   let text = txtOpening.replace(/\r\n|\r/g, '\n');
   // 改行ごとに分割して配列に格納
   lines.value = text.split('\n');
+  speakText(text, 0.5)
 });
 
 // アニメーション終了時の処理
