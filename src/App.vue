@@ -1,5 +1,8 @@
 <template>
   <div class="UI">
+    <div v-if="statusStore.status == config.statusTitle">
+      <TitleScreen />
+    </div>
     <div v-if="statusStore.status == config.statusOpening">
       <Opening />
     </div>
@@ -25,6 +28,7 @@
 
 <script setup lang="ts">
 
+import TitleScreen from '@/process/Title.vue';
 import Opening from '@/process/Opening.vue';
 import Town from '@/process/Town.vue';
 import Dungeon from '@/process/Dungeon.vue';

@@ -174,7 +174,7 @@
     "roomMaxWidth": 40,
     "meetPointCount": 2,
     "music": "maou_bgm_orchestra25",
-    "numLayers": 3,
+    "numLayers": 4,
     "layers": [
       {
         "treasureRank": [
@@ -192,7 +192,17 @@
         ],
         "monsterRank": 1,
         "midBoss": [
-          1032,1033
+          1032
+        ],
+        "numBoss": 0
+      },
+      {
+        "treasureRank": [
+          1,2
+        ],
+        "monsterRank": 1,
+        "midBoss": [
+          1033
         ],
         "numBoss": 0
       },
@@ -225,7 +235,7 @@
     "roomMaxWidth": 40,
     "meetPointCount": 2,
     "music": "maou_bgm_orchestra25",
-    "numLayers": 3,
+    "numLayers": 4,
     "layers": [
       {
         "treasureRank": [
@@ -243,7 +253,17 @@
         ],
         "monsterRank": 1,
         "midBoss": [
-          1042,1043
+          1042
+        ],
+        "numBoss": 0
+      },
+      {
+        "treasureRank": [
+          1,2
+        ],
+        "monsterRank": 1,
+        "midBoss": [
+          1043
         ],
         "numBoss": 0
       },
@@ -276,7 +296,7 @@
     "roomMaxWidth": 40,
     "meetPointCount": 2,
     "music": "maou_bgm_neorock62",
-    "numLayers": 3,
+    "numLayers": 4,
     "layers": [
       {
         "treasureRank": [
@@ -284,7 +304,7 @@
         ],
         "monsterRank": 1,
         "midBoss": [
-          1041
+          1051
         ],
         "numBoss": 0
       },
@@ -294,7 +314,17 @@
         ],
         "monsterRank": 1,
         "midBoss": [
-          1042,1043
+          1052
+        ],
+        "numBoss": 0
+      },
+      {
+        "treasureRank": [
+          1,2
+        ],
+        "monsterRank": 1,
+        "midBoss": [
+          1053
         ],
         "numBoss": 0
       },
@@ -305,7 +335,78 @@
         ],
         "monsterRank": 2,
         "midBoss": [],
-        "numBoss": 2005
+        "numBoss": 2006
+      }
+    ]
+  },
+  {
+    "name": "Tower of Pride",
+    "info": "A mysterious cave filled with dangerous creatures and treasures.",
+    "wallUrl": "img/dungeon/w_tower.jpg",
+    "floorUrl": "img/dungeon/f_tower.jpg",
+    "ceilUrl": "img/dungeon/c_tower.jpg",
+    "skyUrl": "",
+    "light": "pointLight",
+    "mapHeight": 200,
+    "mapWidth": 200,
+    "roomCountMin": 7,
+    "roomCountMax": 12,
+    "roomMinHeight": 20,
+    "roomMaxHeight": 40,
+    "roomMinWidth": 20,
+    "roomMaxWidth": 40,
+    "meetPointCount": 2,
+    "music": "maou_bgm_orchestra21",
+    "numLayers": 5,
+    "layers": [
+      {
+        "treasureRank": [
+          1
+        ],
+        "monsterRank": 1,
+        "midBoss": [
+          1061
+        ],
+        "numBoss": 0
+      },
+      {
+        "treasureRank": [
+          1,2
+        ],
+        "monsterRank": 1,
+        "midBoss": [
+          1062
+        ],
+        "numBoss": 0
+      },
+      {
+        "treasureRank": [
+          1,2
+        ],
+        "monsterRank": 1,
+        "midBoss": [
+          1063
+        ],
+        "numBoss": 0
+      },
+      {
+        "treasureRank": [
+          1,2
+        ],
+        "monsterRank": 1,
+        "midBoss": [
+          1064
+        ],
+        "numBoss": 0
+      },
+      {
+        "treasureRank": [
+          1,
+          2
+        ],
+        "monsterRank": 2,
+        "midBoss": [],
+        "numBoss": 2007
       }
     ]
   }

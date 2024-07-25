@@ -15,6 +15,7 @@ export default {
   strLog2: 'BATTLE',
 
   //statusStore
+  statusTitle: 'TITLE',
   statusOpening: 'OPENING',
   statusTown: 'TOWN',
   statusDungeon: 'DUNGEON',
@@ -87,6 +88,7 @@ export default {
 
   // music
   mscTitle: 'maou_bgm_orchestra18',
+  mscOpening: 'maou_bgm_fantasy08',
   mscTown: 'maou_bgm_acoustic36',
 
   mscBattle1: 'Bite_the_Bullet',

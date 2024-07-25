@@ -3,7 +3,7 @@ import config from '@/config/commonConfig.ts';
 
 export const useStatusStore = defineStore('status', {
   state: () => ({
-    status: config.statusOpening,
+    status: config.statusTitle,
     processTown: config.statusTown,
     processDungeon: '',
     guildMenu: '',
